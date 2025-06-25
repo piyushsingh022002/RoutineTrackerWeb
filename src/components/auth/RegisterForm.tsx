@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import { RegisterCredentials } from '../../types';
+import type { RegisterCredentials } from '../../types';
 import { Button, Input, Alert } from '../common';
 
 const FormContainer = styled(motion.form)`
@@ -113,6 +113,7 @@ const RegisterForm: React.FC = () => {
       navigate('/dashboard');
     } catch (err) {
       // Error is handled by the AuthContext
+       console.error("Registration failed:", err);
     }
   };
 

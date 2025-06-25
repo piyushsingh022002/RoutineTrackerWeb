@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
-import { LoginCredentials } from '../../types';
+import type { LoginCredentials } from '../../types';
 import { Button, Input, Alert } from '../common';
 
 const FormContainer = styled(motion.form)`
@@ -95,6 +95,7 @@ const LoginForm: React.FC = () => {
       navigate('/dashboard');
     } catch (err) {
       // Error is handled by the AuthContext
+       console.error("Login failed:", err);
     }
   };
 
