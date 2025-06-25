@@ -134,82 +134,74 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [state, dispatch] = useReducer(notesReducer, initialState);
   const { isAuthenticated } = useAuth();
 
-  // Get all notes
   const getNotes = async () => {
     if (!isAuthenticated) return;
-    
+
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
       const res = await axios.get(`${API_URL}/notes`);
       dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
-      const errorMessage = err.response?.data?.message || 'Failed to fetch notes';
+      const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
   };
 
-  // Get a single note by ID
   const getNote = async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
     try {
       const res = await axios.get(`${API_URL}/notes/${id}`);
       dispatch({ type: 'GET_NOTE_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
-      const errorMessage = err.response?.data?.message || 'Failed to fetch note';
+      const errorMessage = getErrorMessage(err, 'Failed to fetch note');
       dispatch({ type: 'GET_NOTE_FAILURE', payload: errorMessage });
     }
   };
 
-  // Create a new note
   const createNote = async (note: Partial<Note>) => {
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
       const res = await axios.post(`${API_URL}/notes`, note);
       dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
-      const errorMessage = err.response?.data?.message || 'Failed to create note';
+      const errorMessage = getErrorMessage(err, 'Failed to create note');
       dispatch({ type: 'CREATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
   };
 
-  // Update an existing note
   const updateNote = async (id: string, note: Partial<Note>) => {
     dispatch({ type: 'UPDATE_NOTE_REQUEST' });
     try {
       const res = await axios.put(`${API_URL}/notes/${id}`, note);
       dispatch({ type: 'UPDATE_NOTE_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
-      const errorMessage = err.response?.data?.message || 'Failed to update note';
+      const errorMessage = getErrorMessage(err, 'Failed to update note');
       dispatch({ type: 'UPDATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
   };
 
-  // Delete a note
   const deleteNote = async (id: string) => {
     dispatch({ type: 'DELETE_NOTE_REQUEST' });
     try {
       await axios.delete(`${API_URL}/notes/${id}`);
       dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
     } catch (err: unknown) {
-      const errorMessage = err.response?.data?.message || 'Failed to delete note';
+      const errorMessage = getErrorMessage(err, 'Failed to delete note');
       dispatch({ type: 'DELETE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
   };
 
-  // Clear current note
   const clearCurrentNote = () => {
     dispatch({ type: 'CLEAR_CURRENT_NOTE' });
   };
 
-  // Clear error
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
-  // Fetch notes when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       getNotes();
@@ -234,7 +226,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 };
 
-// Custom hook to use notes context
 export const useNotes = () => {
   const context = useContext(NotesContext);
   if (context === undefined) {
@@ -242,3 +233,33 @@ export const useNotes = () => {
   }
   return context;
 };
+
+// ✅ Safe error helper function
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (typeof err === 'object' && err !== null) {
+    // Use a type guard to check if 'response' property exists and is an object
+    const maybeError = err as Record<string, unknown>;
+    if (
+      'response' in maybeError &&
+      typeof maybeError.response === 'object' &&
+      maybeError.response !== null
+    ) {
+      const response = maybeError.response as Record<string, unknown>;
+      if (
+        'data' in response &&
+        typeof response.data === 'object' &&
+        response.data !== null
+      ) {
+        const data = response.data as Record<string, unknown>;
+        if (
+          'message' in data &&
+          typeof data.message === 'string'
+        ) {
+          return data.message;
+        }
+      }
+    }
+  }
+  return fallback;
+}
+
