@@ -126,16 +126,6 @@ const PrimaryButton = styled(Button)`
   }
 `;
 
-const DangerButton = styled(Button)`
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-
-  &:hover {
-    background-color: var(--danger-hover);
-  }
-`;
-
 // Reverted Form to original styling (removed hover-related styles)
 const Form = styled.form`
   display: flex;
@@ -367,13 +357,11 @@ const NoteEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const {
-    notes,
     getNote,
     createNote,
     updateNote,
     clearCurrentNote,
     currentNote,
-    isLoading,
     error,
   } = useNotes();
 
@@ -436,7 +424,7 @@ const NoteEditor: React.FC = () => {
 
   // Handle file upload
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
+    if (e.target?.files) {
       const newFiles = Array.from(e.target.files);
 
       // Validate file types
@@ -504,7 +492,7 @@ const NoteEditor: React.FC = () => {
 
         navigate("/dashboard");
       } catch (err) {
-        // Error is handled by the notes context
+         console.error("Note submission failed:", err);
       } finally {
         setIsSaving(false);
       }
@@ -529,7 +517,7 @@ const NoteEditor: React.FC = () => {
   //   doc.save(`${title || "note"}.pdf`);
   // };
 
- const handleDownloadPDF = (imageFile) => {
+ const handleDownloadPDF = (imageFile : File | null) => {
   const doc = new jsPDF();
 
   try {
@@ -547,7 +535,7 @@ const NoteEditor: React.FC = () => {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const imgData = e.target.result; // Base64 string
+          const imgData = e.target?.result as string; // Base64 string
           // Add image to PDF (adjust x, y, width, height as needed)
           doc.addImage(imgData, "JPEG", 20, 100, 100, 100);
           // Save the PDF after image is added
@@ -716,7 +704,7 @@ const NoteEditor: React.FC = () => {
             )}
           </FormGroup>
 
-          <DownloadButton type="button" onClick={handleDownloadPDF}>
+          <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
             Download as PDF
             <FaDownload />
           </DownloadButton>

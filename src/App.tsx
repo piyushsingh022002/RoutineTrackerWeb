@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './context/AuthContext';
+import { BrowserRouter as Router, Routes, Route} from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
 import { NotesProvider } from './context/NotesContext';
 import { NotificationsProvider } from './context/NotificationsContext';
 import LandingPage from './pages/LandingPage';
@@ -10,36 +10,6 @@ import NoteEditor from './pages/NoteEditor';
 import ViewNote from './pages/ViewNote';
 import NotFound from './pages/NotFound';
 import './styles/global.css';
-
-// // Protected route component
-// const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-//   const { isAuthenticated, isLoading } = useAuth();
-
-//   if (isLoading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   if (!isAuthenticated) {
-//     return <Navigate to="/login" />;
-//   }
-
-//   return children;
-// };
-
-// // Public route component (redirects to dashboard if authenticated)
-// const PublicRoute = ({ children }: { children: JSX.Element }) => {
-//   const { isAuthenticated, isLoading } = useAuth();
-
-//   if (isLoading) {
-//     return <div>Loading...</div>;
-//   }
-
-//   if (isAuthenticated) {
-//     return <Navigate to="/dashboard" />;
-//   }
-
-//   return children;
-// };
 
 function App() {
   return (
