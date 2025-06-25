@@ -262,7 +262,7 @@ const ViewNote: React.FC = () => {
         await deleteNote(id);
         navigate('/dashboard');
       } catch (err) {
-        // Error is handled by the notes context
+        console.error("Login again please!!", err);
       }
     }
   };
