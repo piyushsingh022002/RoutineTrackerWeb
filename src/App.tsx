@@ -10,6 +10,9 @@ import NoteEditor from './pages/NoteEditor';
 import ViewNote from './pages/ViewNote';
 import NotFound from './pages/NotFound';
 import './styles/global.css';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { PublicRoute } from './components/PublicRoute';
+
 
 function App() {
   return (
@@ -22,25 +25,25 @@ function App() {
               <Route 
                 path="/" 
                 element={
-                  // <PublicRoute>
+                   <PublicRoute>
                     <LandingPage />
-                  // </PublicRoute>
+                   </PublicRoute>
                 } 
               />
               <Route 
                 path="/login" 
                 element={
-                  // <PublicRoute>
+                   <PublicRoute>
                     <LoginPage />
-                  // </PublicRoute>
+                   </PublicRoute>
                 } 
               />
               <Route 
                 path="/register" 
                 element={
-                  // <PublicRoute>
+                   <PublicRoute>
                     <RegisterPage />
-                  // </PublicRoute>
+                   </PublicRoute>
                 } 
               />
               
@@ -48,33 +51,33 @@ function App() {
               <Route 
                 path="/dashboard" 
                 element={
-                  // <ProtectedRoute>
+                   <ProtectedRoute>
                     <Dashboard />
-                  // </ProtectedRoute>
+                   </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/notes/new" 
                 element={
-                  // <ProtectedRoute>
+                   <ProtectedRoute>
                     <NoteEditor />
-                  // </ProtectedRoute>
+                   </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/notes/:id" 
                 element={
-                  // <ProtectedRoute>
+                   <ProtectedRoute>
                     <ViewNote />
-                  // </ProtectedRoute>
+                   </ProtectedRoute>
                 } 
               />
               <Route 
                 path="/notes/:id/edit" 
                 element={
-                  // <ProtectedRoute>
+                   <ProtectedRoute>
                     <NoteEditor />
-                  // </ProtectedRoute>
+                   </ProtectedRoute>
                 } 
               />
               

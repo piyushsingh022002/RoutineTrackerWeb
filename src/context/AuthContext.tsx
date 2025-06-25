@@ -13,6 +13,22 @@ const initialState: AuthState = {
   isLoading: true,
   error: null,
 };
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
+}
+
+function isAxiosErrorWithMessage(err: unknown): err is { response: { data: { message: string } } } {
+  if (!isObject(err)) return false;
+
+  const response = err.response;
+  if (!isObject(response)) return false;
+
+  const data = response.data;
+  if (!isObject(data)) return false;
+
+  return typeof data.message === 'string';
+}
+
 
 // Auth action types
 type AuthAction =
@@ -101,53 +117,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [state.token]);
 
   // Load user on initial render if token exists
-  useEffect(() => {
-    const loadUser = async () => {
-      if (!state.token) {
-        dispatch({ type: 'LOAD_USER_FAIL' });
-        return;
-      }
+useEffect(() => {
+  const loadUser = async () => {
+    if (!state.token) {
+      dispatch({ type: 'LOAD_USER_FAIL' });
+      return;
+    }
 
-      try {
-        const res = await axios.get(`${API_URL}/auth/user`);
-        dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data.data });
-      } catch (err) {
-        dispatch({ type: 'LOAD_USER_FAIL' });
-      }
-    };
+    try {
+      const res = await axios.get(`${API_URL}/auth/user`);
+      dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data.data });
+    } catch {
+      dispatch({ type: 'LOAD_USER_FAIL' });
+    }
+  };
 
-    loadUser();
-  }, [state.token]);
+  loadUser();
+}, [state.token]);
+
 
   // Login user
-  const login = async (credentials: LoginCredentials) => {
-    try {
-      const res = await axios.post(`${API_URL}/auth/login`, credentials);
-      dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: res.data.data,
-      });
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Login failed';
-      dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
-      throw new Error(errorMessage);
-    }
-  };
+ const login = async (credentials: LoginCredentials) => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/login`, credentials);
+    dispatch({
+      type: 'LOGIN_SUCCESS',
+      payload: res.data.data,
+    });
+  } catch (err: unknown) {
+    const errorMessage = isAxiosErrorWithMessage(err)
+      ? err.response.data.message
+      : 'Login failed';
+
+    dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
+    throw new Error(errorMessage);
+  }
+};
+
 
   // Register user
-  const register = async (credentials: RegisterCredentials) => {
-    try {
-      const res = await axios.post(`${API_URL}/auth/register`, credentials);
-      dispatch({
-        type: 'REGISTER_SUCCESS',
-        payload: res.data.data,
-      });
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || 'Registration failed';
-      dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
-      throw new Error(errorMessage);
-    }
-  };
+ const register = async (credentials: RegisterCredentials) => {
+  try {
+    const res = await axios.post(`${API_URL}/auth/register`, credentials);
+    dispatch({
+      type: 'REGISTER_SUCCESS',
+      payload: res.data.data,
+    });
+  } catch (err: unknown) {
+    const errorMessage = isAxiosErrorWithMessage(err)
+      ? err.response.data.message
+      : 'Registration failed';
+
+    dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
+    throw new Error(errorMessage);
+  }
+};
+
 
   // Logout user
   const logout = () => {
@@ -182,3 +207,4 @@ export const useAuth = () => {
   }
   return context;
 };
+
