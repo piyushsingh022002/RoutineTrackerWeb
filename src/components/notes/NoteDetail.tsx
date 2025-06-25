@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { Note } from '../../types';
+import type { Note } from '../../types';
 import { Button, Badge, Card } from '../common';
 
 interface NoteDetailProps {

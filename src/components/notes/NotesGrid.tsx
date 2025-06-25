@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Note } from '../../types';
+import type { Note } from '../../types';
 import NoteCard from './NoteCard';
 import { Loader } from '../common';
 

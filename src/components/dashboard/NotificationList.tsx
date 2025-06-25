@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { format, formatDistanceToNow } from 'date-fns';
-import { Notification } from '../../types';
+import type { Notification } from '../../types';
 import { Card, Button } from '../common';
 
 interface NotificationListProps {
@@ -42,7 +42,7 @@ const NotificationCount = styled.span`
   border-radius: 9999px;
 `;
 
-const NotificationList = styled.div`
+const NotificationListContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -149,7 +149,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
       ) : notifications.length === 0 ? (
         <EmptyState>No notifications to display</EmptyState>
       ) : (
-        <NotificationList>
+        <NotificationListContainer>
           <AnimatePresence>
             {notifications.map((notification) => (
               <NotificationItem
@@ -173,7 +173,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
                     <Button 
                       variant="outline" 
                       size="small" 
-                      onClick={() => onMarkAsRead(notification.id)}
+                      onClick={() => onMarkAsRead(notification.id.toString())}
                     >
                       Mark as read
                     </Button>
@@ -182,7 +182,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
               </NotificationItem>
             ))}
           </AnimatePresence>
-        </NotificationList>
+        </NotificationListContainer>
       )}
     </NotificationContainer>
   );

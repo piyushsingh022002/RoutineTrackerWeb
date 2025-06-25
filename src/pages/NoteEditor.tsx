@@ -503,20 +503,6 @@ const NoteEditor: React.FC = () => {
   const handleCancel = () => {
     navigate(-1);
   };
-
-  // Handle PDF download
-  // const handleDownloadPDF = () => {
-  //   const doc = new jsPDF();
-  //   doc.setFontSize(16);
-  //   doc.text("Note", 20, 20);
-  //   doc.setFontSize(12);
-  //   doc.text(`Title: ${title}`, 20, 30);
-  //   doc.text("Content:", 20, 40);
-  //   doc.text(content, 20, 50, { maxWidth: 170 });
-  //   doc.text(`Tags: ${tags.join(", ")}`, 20, 90);
-  //   doc.save(`${title || "note"}.pdf`);
-  // };
-
  const handleDownloadPDF = (imageFile : File | null) => {
   const doc = new jsPDF();
 

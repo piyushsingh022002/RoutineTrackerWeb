@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { Note } from '../../types';
+import type { Note } from '../../types';
 import { Button, Input, Alert } from '../common';
 
 interface NoteFormProps {
@@ -237,7 +237,7 @@ const NoteForm: React.FC<NoteFormProps> = ({
         setMediaUrls([]);
       }
     } catch (err) {
-      // Error is handled by the parent component
+      console.error("failed:", err);
     }
   };
 
