@@ -86,7 +86,7 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
     case 'DELETE_NOTE_SUCCESS':
       return {
         ...state,
-        notes: state.notes.filter((note) => note.id !== action.payload),
+        notes: state.notes.filter((note) => note.id.toString() !== action.payload),
         currentNote: null,
         isLoading: false,
       };
@@ -142,7 +142,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await axios.get(`${API_URL}/notes`);
       dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data.data });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = err.response?.data?.message || 'Failed to fetch notes';
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
@@ -154,7 +154,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await axios.get(`${API_URL}/notes/${id}`);
       dispatch({ type: 'GET_NOTE_SUCCESS', payload: res.data.data });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = err.response?.data?.message || 'Failed to fetch note';
       dispatch({ type: 'GET_NOTE_FAILURE', payload: errorMessage });
     }
@@ -166,7 +166,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await axios.post(`${API_URL}/notes`, note);
       dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: res.data.data });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = err.response?.data?.message || 'Failed to create note';
       dispatch({ type: 'CREATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
@@ -179,7 +179,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       const res = await axios.put(`${API_URL}/notes/${id}`, note);
       dispatch({ type: 'UPDATE_NOTE_SUCCESS', payload: res.data.data });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = err.response?.data?.message || 'Failed to update note';
       dispatch({ type: 'UPDATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
@@ -192,7 +192,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       await axios.delete(`${API_URL}/notes/${id}`);
       dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
-    } catch (err: any) {
+    } catch (err: unknown) {
       const errorMessage = err.response?.data?.message || 'Failed to delete note';
       dispatch({ type: 'DELETE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
