@@ -3,24 +3,41 @@ import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { useAuth } from '../context/AuthContext';
+import { device } from '../styles/breakpoints';
 
 const LoginContainer = styled.div`
   min-height: 100vh;
-  width: 1430px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem;
   background-color: var(--bg-color);
+
+   @media ${device.sm} {
+    padding: 2rem;
+  }
+
+  @media ${device.md} {
+    padding: 3rem;
+  }
 `;
 
 const LoginCard = styled(motion.div)`
   width: 100%;
   max-width: 400px;
+  justify-content: center;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
   background-color: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 2rem;
+  padding: 1.5rem;
+
+   @media ${device.md} {
+    padding: 2rem;
+  }
 `;
 
 const Logo = styled.div`
@@ -150,6 +167,7 @@ const LoginPage: React.FC = () => {
         navigate('/dashboard');
       } catch (err) {
         // Error is handled by the auth context
+        console.error('Login failed:', err);
       } finally {
         setIsSubmitting(false);
       }
