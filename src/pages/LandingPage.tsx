@@ -3,11 +3,20 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
+import { device } from '../styles/breakpoints';
 
 const LandingContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+
+  @media ${device.sm} {
+      padding: 2rem;
+    }
+  
+    @media ${device.md} {
+      padding: 3rem;
+    }
 `;
 
 const Header = styled.header`
