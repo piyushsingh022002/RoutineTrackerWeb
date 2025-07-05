@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: LoginCredentials) => {
     try {
       const res = await axios.post(`${API_URL}/auth/login`, credentials);
-      dispatch({ type: 'LOGIN_SUCCESS', payload: res.data.data });
+      dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Login failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
@@ -107,7 +107,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (credentials: RegisterCredentials) => {
     try {
       const res = await axios.post(`${API_URL}/auth/register`, credentials);
-      dispatch({ type: 'REGISTER_SUCCESS', payload: res.data.data });
+      dispatch({ type: 'REGISTER_SUCCESS', payload: res.data});
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Registration failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });

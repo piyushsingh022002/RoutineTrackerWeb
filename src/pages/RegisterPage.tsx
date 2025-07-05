@@ -238,8 +238,9 @@ const RegisterPage: React.FC = () => {
       try {
         await register({ username, email, password, confirmPassword });
         navigate('/dashboard');
-      } catch (err) {
+      } catch (err:unknown) {
         // Error is handled by the auth context
+        console.log(err);
       } finally {
         setIsSubmitting(false);
       }
