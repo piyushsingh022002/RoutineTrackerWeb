@@ -139,7 +139,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/notes`);
+      const res = await axios.get(`${API_URL}/GetNotes`);
       dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
