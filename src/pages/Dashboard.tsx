@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import styled from 'styled-components';
 import { useAuth } from '../context/AuthContext';
@@ -424,8 +424,11 @@ const Dashboard: React.FC = () => {
     if (showUserMenu) setShowUserMenu(false);
   };
 
+  const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
+    navigate('/');
   };
 
   return (
