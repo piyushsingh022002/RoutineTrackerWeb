@@ -429,6 +429,7 @@ const Dashboard: React.FC = () => {
   const handleLogout = () => {
     logout();
     navigate('/');
+    console.log('User logged out');
   };
 
   return (
