@@ -4,6 +4,9 @@ import { NotesProvider } from './context/NotesContext';
 import { NotificationsProvider } from './context/NotificationsContext';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import Profile from './pages/ProfilePage';
+import Settings from './pages/SettingsPage';
+import NotificationPage from './pages/NotificationsPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import NoteEditor from './pages/NoteEditor';
@@ -53,6 +56,30 @@ function App() {
                 element={
                    <ProtectedRoute>
                     <Dashboard />
+                   </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/profile" 
+                element={
+                   <ProtectedRoute>
+                    <Profile />
+                   </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/settings" 
+                element={
+                   <ProtectedRoute>
+                    <Settings />
+                   </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/notifications" 
+                element={
+                   <ProtectedRoute>
+                    <NotificationPage />
                    </ProtectedRoute>
                 } 
               />
