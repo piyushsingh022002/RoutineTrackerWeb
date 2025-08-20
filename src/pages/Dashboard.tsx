@@ -446,8 +446,8 @@ const Dashboard: React.FC = () => {
             InternRoutineTracker
           </Logo>
           <NavActions>
-            <NotificationBadge 
-              onClick={toggleNotifications}
+            {/* <NotificationBadge 
+              onClick={() => navigate("/notifications")}
               onMouseEnter={() => setIsNotificationHovered(true)}
               onMouseLeave={() => setIsNotificationHovered(false)}
             >
@@ -455,7 +455,7 @@ const Dashboard: React.FC = () => {
                 whileHover={{ scale: 1.2 }}
                 transition={{ duration: 0.2 }}
               >
-                🔔
+                (🔔)
                 <AnimatePresence>
                   {isNotificationHovered && !showNotifications && (
                     <NotificationTooltip
@@ -497,7 +497,47 @@ const Dashboard: React.FC = () => {
                   </NotificationDropdown>
                 )}
               </AnimatePresence>
-            </NotificationBadge>
+            </NotificationBadge> */}
+            <NotificationBadge
+  onClick={() => navigate("/notifications")}
+  onMouseEnter={() => setShowNotifications(true)}
+  onMouseLeave={() => setShowNotifications(false)}
+>
+  <NotificationIcon
+    whileHover={{ scale: 1.2 }}
+    transition={{ duration: 0.2 }}
+  >
+    🔔
+  </NotificationIcon>
+  {unreadCount > 0 && <Badge>{unreadCount}</Badge>}
+  <AnimatePresence>
+    {showNotifications && (
+      <NotificationDropdown
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2 }}
+      >
+        {notifications.length > 0 ? (
+          notifications.map((notification) => (
+            <NotificationItem
+              key={notification.id.toString()}
+              isRead={notification.isRead}
+            >
+              <NotificationMessage>{notification.message}</NotificationMessage>
+              <NotificationTime>
+                {new Date(notification.createdAt).toLocaleString()}
+              </NotificationTime>
+            </NotificationItem>
+          ))
+        ) : (
+          <EmptyNotifications>No notifications</EmptyNotifications>
+        )}
+      </NotificationDropdown>
+    )}
+  </AnimatePresence>
+</NotificationBadge>
+
             <UserMenu onClick={toggleUserMenu}>
               <Avatar
                 whileHover={{ scale: 1.1 }}
