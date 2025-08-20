@@ -4,6 +4,8 @@ import { NotesProvider } from './context/NotesContext';
 import { NotificationsProvider } from './context/NotificationsContext';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
+import Profile from './pages/ProfilePage';
+import Settings from './pages/SettingsPage';
 import RegisterPage from './pages/RegisterPage';
 import Dashboard from './pages/Dashboard';
 import NoteEditor from './pages/NoteEditor';
