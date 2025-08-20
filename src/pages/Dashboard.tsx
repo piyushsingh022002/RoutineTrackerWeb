@@ -514,8 +514,8 @@ const Dashboard: React.FC = () => {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <DropdownItem>Profile</DropdownItem>
-                    <DropdownItem>Settings</DropdownItem>
+                    <DropdownItem  as={Link} to="/profile">Profile</DropdownItem>
+                    <DropdownItem  as={Link} to="/settings">Settings</DropdownItem>
                     <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
                   </Dropdown>
                 )}
