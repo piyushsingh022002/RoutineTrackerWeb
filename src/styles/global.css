@@ -22,6 +22,26 @@
   --transition: all 0.2s ease-in-out;
 }
 
+.dark {
+  --primary-color: #6366f1;
+  --primary-hover: #818cf8;
+  --secondary-color: #34d399;
+  --secondary-hover: #6ee7b7;
+  --danger-color: #f87171;
+  --danger-hover: #fca5a5;
+  --text-color: #f3f4f6;
+  --text-light: #9ca3af;
+  --bg-color: #18181b;
+  --bg-light: #27272a;
+  --bg-dark: #111827;
+  --border-color: #27272a;
+}
+
+.dark body {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
 * {
   margin: 0;
   padding: 0;
