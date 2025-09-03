@@ -5,26 +5,38 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
 
+import { device } from '../../styles/breakpoints';
 const HeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1.25rem 2rem;
   background-color: #ffffff;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 0;
   z-index: 100;
+  @media ${device.tablet} {
+    padding: 1rem 1rem;
+  }
+  @media ${device.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.75rem 0.5rem;
+  }
 `;
 
 const Logo = styled(Link)`
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: bold;
   color: #4a6cf7;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  @media ${device.mobile} {
+    font-size: 1.25rem;
+  }
 `;
 
 const LogoIcon = styled.span`
@@ -35,6 +47,9 @@ const Nav = styled.nav`
   display: flex;
   align-items: center;
   gap: 1.5rem;
+  @media ${device.mobile} {
+    gap: 0.75rem;
+  }
 `;
 
 const NavLink = styled(Link)`

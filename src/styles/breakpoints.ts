@@ -1,11 +1,15 @@
+
+// Mobile-first breakpoints
 export const breakpoints = {
-  sm: '640px',
-  md: '768px',
-  lg: '1024px',
+  mobile: '480px',
+  tablet: '768px',
+  laptop: '1024px',
+  desktop: '1200px',
 };
 
 export const device = {
-  sm: `(min-width: ${breakpoints.sm})`,
-  md: `(min-width: ${breakpoints.md})`,
-  lg: `(min-width: ${breakpoints.lg})`,
+  mobile: `(max-width: ${breakpoints.mobile})`,
+  tablet: `(max-width: ${breakpoints.tablet})`,
+  laptop: `(max-width: ${breakpoints.laptop})`,
+  desktop: `(min-width: ${breakpoints.desktop})`,
 };

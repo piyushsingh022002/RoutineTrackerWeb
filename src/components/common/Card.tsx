@@ -52,6 +52,7 @@ const getBorderRadius = (borderRadius: 'small' | 'medium' | 'large') => {
   }
 };
 
+import { device } from '../../styles/breakpoints';
 const StyledCard = styled(motion.div)<{
   $hoverable: boolean;
   $elevation: 'low' | 'medium' | 'high';
@@ -67,7 +68,15 @@ const StyledCard = styled(motion.div)<{
   width: ${(props) => (props.$fullWidth ? '100%' : 'auto')};
   transition: box-shadow 0.3s ease, transform 0.3s ease;
   cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
-  
+  box-sizing: border-box;
+
+  @media ${device.tablet} {
+    padding: 1rem;
+  }
+  @media ${device.mobile} {
+    padding: 0.5rem;
+  }
+
   &:hover {
     box-shadow: ${(props) => props.$hoverable ? getElevation('high') : getElevation(props.$elevation)};
   }

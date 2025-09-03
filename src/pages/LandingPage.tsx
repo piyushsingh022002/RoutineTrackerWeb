@@ -9,32 +9,41 @@ const LandingContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-  @media ${device.sm} {
-      padding: 2rem;
-    }
-  
-    @media ${device.md} {
-      padding: 3rem;
-    }
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
+  @media ${device.tablet} {
+    padding: 2rem 1rem;
+  }
+  @media ${device.laptop} {
+    padding: 3rem 2rem;
+  }
 `;
 
 const Header = styled.header`
-  padding: 1.5rem;
+  padding: 1.25rem 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  @media ${device.tablet} {
+    padding: 1.5rem 1rem;
+  }
 `;
 
 const Logo = styled.div`
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
   color: var(--primary-color);
+  @media ${device.mobile} {
+    font-size: 1.25rem;
+  }
 `;
 
 const NavLinks = styled.div`
   display: flex;
   gap: 1rem;
+  @media ${device.mobile} {
+    gap: 0.5rem;
+  }
 `;
 
 const NavLink = styled(Link)`
@@ -83,30 +92,37 @@ const Hero = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 2rem;
+  padding: 2rem 0.5rem;
   width: 100%;
+  @media ${device.tablet} {
+    padding: 2rem 1rem;
+  }
 `;
 
 const HeroTitle = styled(motion.h1)`
-  font-size: 3rem;
+  font-size: 2.2rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
   color: var(--text-color);
-
-  @media (min-width: 768px) {
+  @media ${device.tablet} {
+    font-size: 3rem;
+  }
+  @media (min-width: 1024px) {
     font-size: 4rem;
   }
-    .highlight {
+  .highlight {
     color: rgb(64, 175, 230);
   }
 `;
 
 const HeroSubtitle = styled(motion.p)`
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: var(--text-light);
   margin-bottom: 2.5rem;
   width: 100%;
-  /* max-width: 600px; */
+  @media ${device.tablet} {
+    font-size: 1.25rem;
+  }
 `;
 
 const ButtonGroup = styled(motion.div)`
@@ -114,6 +130,11 @@ const ButtonGroup = styled(motion.div)`
   gap: 1rem;
   margin-bottom: 3rem;
   justify-content: center;
+  flex-wrap: wrap;
+  @media ${device.mobile} {
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
 `;
 
 const PrimaryButton = styled(Link)`
@@ -208,11 +229,10 @@ span.icon {
 
 const FeatureGrid = styled(motion.div)`
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: 1fr;
   gap: 2rem;
   width: 100%;
-  
-  @media (min-width: 768px) {
+  @media ${device.tablet} {
     grid-template-columns: repeat(3, 1fr);
   }
 `;
@@ -277,12 +297,14 @@ const FeatureDescription = styled.p`
 
 const FeatureCard = styled(motion.div)`
   background-color: white;
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
   border: 1px solid transparent;
   transition: var(--transition), background-color 0.3s ease, color 0.3s ease, border 0.3s ease;
-
+  @media ${device.mobile} {
+    padding: 0.75rem;
+  }
   &:hover {
     box-shadow: var(--shadow-md);
     transform: translateY(-5px);
@@ -290,12 +312,10 @@ const FeatureCard = styled(motion.div)`
     color: #f0f0f0;
     border: 1px solid rgb(64, 175, 230);
   }
-
   &:hover ${FeatureTitle},
   &:hover ${FeatureDescription} {
     color:rgb(64, 175, 230);
   }
-
   &:hover ${FeatureIcon} {
     animation: popIcon 0.6s ease forwards;
   }
@@ -315,12 +335,15 @@ const GlobalStyle = createGlobalStyle`
 
 
 const Footer = styled.footer`
-  padding: 2rem;
+  padding: 1.5rem 0.5rem;
   text-align: center;
   background-color: var(--bg-light);
   border-top: 1px solid var(--border-color);
   color: var(--text-light);
   font-size: 0.875rem;
+  @media ${device.tablet} {
+    padding: 2rem 1rem;
+  }
 `;
 
 const LandingPage: React.FC = () => {
