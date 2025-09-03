@@ -85,7 +85,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       try {
         const res = await axios.get(`${API_URL}/auth/user`);
-        dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data.data });
+        dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data });
       } catch {
         dispatch({ type: 'LOAD_USER_FAIL' });
       }
