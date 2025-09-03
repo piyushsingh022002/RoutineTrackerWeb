@@ -50,6 +50,8 @@
 html, body, #root {
   height: 100%;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -131,7 +133,24 @@ button, .button {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  box-sizing: border-box;
 }
+
+@media (max-width: 1280px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+@media (max-width: 1024px) {
+  .container {
+    max-width: 768px;
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 0.5rem;
+}}
 
 .card {
   background-color: var(--bg-light);

@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import { device } from '../../styles/breakpoints';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -11,23 +12,18 @@ const LayoutContainer = styled.div`
 
 const Main = styled.main`
   flex: 1;
-  padding: 2rem;
-  max-width: 1200px;
+  padding: 2rem 1.5rem;
+  max-width: 75rem;
   width: 100%;
   margin: 0 auto;
-  
-  /* Responsive breakpoints */
-  @media (max-width: 1280px) {
-    max-width: 1024px;
-  }
-  
-  @media (max-width: 1024px) {
-    max-width: 768px;
-  }
-  
-  @media (max-width: 768px) {
+  box-sizing: border-box;
+
+  @media ${device.tablet} {
     max-width: 100%;
-    padding: 1.5rem;
+    padding: 1.25rem 0.75rem;
+  }
+  @media ${device.mobile} {
+    padding: 0.75rem 0.25rem;
   }
 `;
 

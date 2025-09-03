@@ -11,15 +11,14 @@ const LoginContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1rem 0.5rem;
   background-color: var(--bg-color);
-
-   @media ${device.sm} {
-    padding: 2rem;
+  box-sizing: border-box;
+  @media ${device.tablet} {
+    padding: 2rem 1rem;
   }
-
-  @media ${device.md} {
-    padding: 3rem;
+  @media ${device.laptop} {
+    padding: 3rem 2rem;
   }
 `;
 
@@ -33,10 +32,12 @@ const LoginCard = styled(motion.div)`
   background-color: white;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
-  padding: 1.5rem;
-
-   @media ${device.md} {
+  padding: 1.25rem;
+  @media ${device.tablet} {
     padding: 2rem;
+  }
+  @media ${device.mobile} {
+    padding: 0.75rem;
   }
 `;
 

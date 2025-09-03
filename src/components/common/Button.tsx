@@ -119,6 +119,7 @@ const getButtonSize = (size: ButtonSize) => {
 //     cursor: not-allowed;
 //   }
 // `;
+import { device } from '../../styles/breakpoints';
 const StyledButton = styled.button<{
   $variant: ButtonVariant;
   $size: ButtonSize;
@@ -133,21 +134,25 @@ const StyledButton = styled.button<{
   cursor: pointer;
   transition: all 0.2s ease;
   width: ${(props) => (props.$fullWidth ? '100%' : 'auto')};
-  
   background-color: ${(props) => getButtonColor(props.$variant).bg};
   color: ${(props) => getButtonColor(props.$variant).text};
   border: ${(props) =>
     getButtonColor(props.$variant).border
       ? `1px solid ${getButtonColor(props.$variant).border}`
       : 'none'};
-  
   padding: ${(props) => getButtonSize(props.$size).padding};
   font-size: ${(props) => getButtonSize(props.$size).fontSize};
-  
+  @media ${device.tablet} {
+    font-size: 0.95rem;
+    padding: 0.4rem 0.8rem;
+  }
+  @media ${device.mobile} {
+    font-size: 0.85rem;
+    padding: 0.3rem 0.6rem;
+  }
   &:hover:not(:disabled) {
     background-color: ${(props) => getButtonColor(props.$variant).hover};
   }
-  
   &:disabled {
     opacity: 0.6;
     cursor: not-allowed;
