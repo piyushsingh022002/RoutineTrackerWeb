@@ -185,8 +185,8 @@ const Header: React.FC = () => {
   };
 
   const getUserInitials = () => {
-    if (!user?.username) return '';
-    return user.username
+    if (!user?.name) return '';
+    return user.name
       .split(' ')
       .map((n) => n[0])
       .join('')
@@ -232,7 +232,7 @@ const Header: React.FC = () => {
           <Sidebar>
             <SidebarHeader>
               <SidebarAvatar>{getUserInitials()}</SidebarAvatar>
-              <SidebarUserName>{user?.username}</SidebarUserName>
+              <SidebarUserName>{user?.name}</SidebarUserName>
             </SidebarHeader>
             <SidebarNav>
               <SidebarNavLink to="/dashboard" onClick={() => setSidebarOpen(false)}>Dashboard</SidebarNavLink>
