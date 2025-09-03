@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/common/Header';
 import { device } from '../styles/breakpoints';
-
-// Dummy data and helpers for demonstration (replace with real data/hooks)
-const user = { username: 'User' };
+import { useAuth } from '../context/AuthContext';
 const totalNotes = 10;
 const thisWeekNotes = 5;
 const streak = 3;
@@ -102,6 +100,14 @@ const DashboardHeader = styled.div`
 const WelcomeText = styled.h1`
   font-size: 1.5rem;
   font-weight: 600;
+  font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+`;
+
+const UserName = styled.span`
+  color: #60a5fa;
+  font-family: 'Fira Mono', 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
 `;
 
 
@@ -200,12 +206,15 @@ const EmptyNotesSubtext = styled.div`
 `;
 
 const Dashboard = () => {
+  const { user } = useAuth();
   return (
     <DashboardContainer>
       <Header />
       <Content>
         <DashboardHeader>
-          <WelcomeText>Welcome back, {user?.username}!</WelcomeText>
+          <WelcomeText>
+            Welcome, <UserName>{user?.name || 'User'}</UserName> !
+          </WelcomeText>
           <CreateNoteButton to="/notes/new">
             <span>+</span> New Note
           </CreateNoteButton>
