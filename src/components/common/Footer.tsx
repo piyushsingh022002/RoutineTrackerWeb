@@ -2,25 +2,35 @@ import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 
+import { device } from '../../styles/breakpoints';
 const FooterContainer = styled.footer`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 2rem;
+  padding: 2rem 1.5rem;
   background-color: #f8f9fa;
   margin-top: auto;
+  width: 100%;
+  box-sizing: border-box;
+  @media ${device.tablet} {
+    padding: 1.25rem 0.75rem;
+  }
+  @media ${device.mobile} {
+    padding: 0.75rem 0.25rem;
+  }
 `;
 
 const FooterContent = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  max-width: 1200px;
+  max-width: 75rem;
   margin-bottom: 1.5rem;
-
-  @media (max-width: 768px) {
+  gap: 2rem;
+  @media ${device.tablet} {
     flex-direction: column;
     gap: 2rem;
+    max-width: 100%;
   }
 `;
 

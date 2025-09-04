@@ -22,6 +22,26 @@
   --transition: all 0.2s ease-in-out;
 }
 
+.dark {
+  --primary-color: #6366f1;
+  --primary-hover: #818cf8;
+  --secondary-color: #34d399;
+  --secondary-hover: #6ee7b7;
+  --danger-color: #f87171;
+  --danger-hover: #fca5a5;
+  --text-color: #f3f4f6;
+  --text-light: #9ca3af;
+  --bg-color: #18181b;
+  --bg-light: #27272a;
+  --bg-dark: #111827;
+  --border-color: #27272a;
+}
+
+.dark body {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -30,6 +50,8 @@
 html, body, #root {
   height: 100%;
   width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 body {
@@ -111,7 +133,24 @@ button, .button {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1rem;
+  box-sizing: border-box;
 }
+
+@media (max-width: 1280px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+@media (max-width: 1024px) {
+  .container {
+    max-width: 768px;
+  }
+}
+@media (max-width: 768px) {
+  .container {
+    max-width: 100%;
+    padding: 0 0.5rem;
+}}
 
 .card {
   background-color: var(--bg-light);
