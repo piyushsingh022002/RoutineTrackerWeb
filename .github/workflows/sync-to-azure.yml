@@ -1,0 +1,56 @@
+name: Sync GitHub main to Azure Repos and open PR
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  sync-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout GitHub repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Git identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Add Azure remote and push integration branch
+        env:
+          AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
+          AZ_ORG: ${{ secrets.AZ_ORG }}
+          AZ_PROJECT: ${{ secrets.AZ_PROJECT }}
+          AZ_REPO: ${{ secrets.AZ_REPO }}
+        run: |
+          api="https://dev.azure.com/${AZ_ORG}/${AZ_PROJECT}/_apis/git/repositories/${AZ_REPO}"
+
+          # Find an existing active PR from github-main-sync -> main
+          get_url="${api}/pullrequests?searchCriteria.sourceRefName=refs/heads/github-main-sync&searchCriteria.targetRefName=refs/heads/main&searchCriteria.status=active&api-version=7.1-preview.1"
+          existing=$(curl -sS -u :${AZURE_DEVOPS_PAT} "$get_url")
+          pr_count=$(echo "$existing" | jq '.count')
+          title="Sync: GitHub main -> Azure main"
+          description="Automated sync from GitHub main to Azure Repos via GitHub Actions. Merge this PR to deploy."
+
+          if [ "$pr_count" -gt 0 ]; then
+            pr_id=$(echo "$existing" | jq '.value[0].pullRequestId')
+            echo "Updating existing PR #$pr_id"
+            patch_url="${api}/pullrequests/${pr_id}?api-version=7.1-preview.1"
+            curl -sS -u :${AZURE_DEVOPS_PAT} -X PATCH -H "Content-Type: application/json" \
+              -d "{\"title\":\"${title}\",\"description\":\"${description}\"}" \
+              "$patch_url" >/dev/null
+          else
+            echo "Creating new PR"
+            post_url="${api}/pullrequests?api-version=7.1-preview.1"
+            
+            # Fix the heredoc issue by creating a multi-line string directly
+            payload=$(echo "{\"sourceRefName\": \"refs/heads/github-main-sync\", \
+                            \"targetRefName\": \"refs/heads/main\", \
+                            \"title\": \"${title}\", \
+                            \"description\": \"${description}\", \
+                            \"supportsIterations\": true}")
+
+            curl -sS -u :${AZURE_DEVOPS_PAT} -X POST -H "Content-Type: application/json" -d "$payload" "$post_url" >/dev/null
+          fi
