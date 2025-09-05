@@ -6,6 +6,7 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 import { useAuth } from '../context/AuthContext';
+import { Header } from '../components/common';
 
 const PageBackground = styled.div`
   min-height: 100vh;
@@ -227,7 +228,8 @@ const ProfilePage: React.FC = () => {
     author: 'Robert Collier',
   };
 
-  return (
+  return (<>
+  <Header />
     <PageBackground>
       <Container>
         <EditCard elevation="medium" borderRadius="large" fullWidth>
@@ -386,6 +388,7 @@ const ProfilePage: React.FC = () => {
         )}
       </Container>
     </PageBackground>
+    </>
   );
 };
 

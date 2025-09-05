@@ -12,7 +12,7 @@ const HeaderContainer = styled.header`
   align-items: center;
   padding: 1.25rem 2rem;
   background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+ 
   position: sticky;
   top: 0;
   z-index: 100;
@@ -27,8 +27,9 @@ const HeaderContainer = styled.header`
 `;
 
 const Logo = styled(Link)`
-  font-size: 2rem;
+  font-size: 3rem;
   font-weight: bold;
+  font-family: 'Playfair Display', serif;
   color: #4a6cf7;
   text-decoration: none;
   display: flex;
@@ -43,12 +44,26 @@ const LogoIcon = styled.span`
   font-size: 1.8rem;
 `;
 
+
 const Nav = styled.nav`
   display: flex;
   align-items: center;
   gap: 1.5rem;
   @media ${device.mobile} {
     gap: 0.75rem;
+  }
+`;
+
+const ExternalLink = styled.a`
+  color: #4a6cf7;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-right: 0.5rem;
+  transition: color 0.2s;
+  &:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
   }
 `;
 
@@ -174,7 +189,7 @@ const SidebarBottom = styled.div`
 
 
 const Header: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -202,26 +217,67 @@ const Header: React.FC = () => {
         </Logo>
 
         <Nav>
-          {isAuthenticated ? (
-            <>
-              <Hamburger onClick={() => setSidebarOpen(true)} aria-label="Open user menu">
-                <Bar />
-                <Bar />
-                <Bar />
-              </Hamburger>
-            </>
-          ) : (
-            <>
-              <NavLink to="/login">Login</NavLink>
-              <NavLink to="/register">
-                <Button 
-                  variant="primary"
-                  size="small"
+          {isLoading ? null : (
+            isAuthenticated ? (
+              <>
+                <ExternalLink
+                  href="https://text-utils-piyush.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Text Utils"
                 >
-                  Register
-                </Button>
-              </NavLink>
-            </>
+                  Text Utils
+                </ExternalLink>
+                <Hamburger onClick={() => setSidebarOpen(true)} aria-label="Open user menu">
+                  <Bar />
+                  <Bar />
+                  <Bar />
+                </Hamburger>
+              </>
+            ) : (
+              <>
+                <ExternalLink
+                  href="https://piyushsingh.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Admin's Portfolio"
+                >
+                  Admin's Portfolio
+                </ExternalLink>
+                <NavLink to="/noteplus">
+                  <Button
+                    variant="primary"
+                    size="small"
+                  >
+                    Noteplus
+                  </Button>
+                </NavLink>
+                <NavLink to="/aboutIRT">
+                  <Button
+                    variant="primary"
+                    size="small"
+                  >
+                    About
+                  </Button>
+                </NavLink>
+                <NavLink to="/login">
+                  <Button
+                    variant="primary"
+                    size="small"
+                  >
+                    Login
+                  </Button>
+                </NavLink>
+                <NavLink to="/register">
+                  <Button
+                    variant="primary"
+                    size="small"
+                  >
+                    Register
+                  </Button>
+                </NavLink>
+              </>
+            )
           )}
         </Nav>
       </HeaderContainer>
@@ -251,7 +307,7 @@ const Header: React.FC = () => {
               </Button>
             </SidebarNav>
             <SidebarBottom>
-              <Button 
+              <Button
                 variant="primary"
                 size="small"
                 onClick={handleLogout}

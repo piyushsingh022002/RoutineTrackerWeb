@@ -19,7 +19,9 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
 
-
+import NotePlusPage from './pages/NotePlusPage';
+import AboutIRTPage from './pages/AboutIRTPage';
+                
 
 function App() {
   return (
@@ -48,10 +50,26 @@ function App() {
                   } 
                 />
                 <Route 
+                  path="/noteplus" 
+                  element={
+                    <PublicRoute>
+                      <NotePlusPage />
+                    </PublicRoute>
+                  } 
+                />
+                <Route 
                   path="/register" 
                   element={
                     <PublicRoute>
                       <RegisterPage />
+                    </PublicRoute>
+                  }
+                />
+                 <Route 
+                  path="/aboutIRT" 
+                  element={
+                    <PublicRoute>
+                      <AboutIRTPage />
                     </PublicRoute>
                   } 
                 />
