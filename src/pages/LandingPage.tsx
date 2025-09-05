@@ -11,6 +11,7 @@ const LandingContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 1rem 0.5rem;
+  background-color: #ffffff;
   box-sizing: border-box;
   @media ${device.tablet} {
     padding: 2rem 1rem;
