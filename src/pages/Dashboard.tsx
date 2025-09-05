@@ -3,15 +3,13 @@ import styled from 'styled-components';
 import Header from '../components/common/Header';
 import { device } from '../styles/breakpoints';
 import { useAuth } from '../context/AuthContext';
-const totalNotes = 10;
-const thisWeekNotes = 5;
-const streak = 3;
-const sortedNotes = [
-  { id: 1, createdAt: new Date(), title: 'Note 1', content: 'Content 1', tags: ['tag1', 'tag2'] },
-  { id: 2, createdAt: new Date(), title: 'Note 2', content: 'Content 2', tags: ['tag3'] },
-];
-function formatDate(date: Date) {
-  return new Date(date).toLocaleDateString();
+import { useNotes } from '../context/NotesContext';
+import Card from '../components/common/Card';
+import Button from '../components/common/Button';
+import { useState } from 'react';
+
+function formatDate(dateStr:any) {
+  return new Date(dateStr).toLocaleDateString();
 }
 
 const DashboardContainer = styled.div`
@@ -205,8 +203,52 @@ const EmptyNotesSubtext = styled.div`
   margin-bottom: 1rem;
 `;
 
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.18);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalBox = styled(Card)`
+  max-width: 420px;
+  width: 100%;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(74,108,247,0.13);
+  padding: 2rem 1.5rem;
+  z-index: 2100;
+  position: relative;
+`;
+
+const ModalClose = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #4a6cf7;
+  cursor: pointer;
+`;
+
 const Dashboard = () => {
   const { user } = useAuth();
+  const { notes, isLoading } = useNotes();
+  const [showAll, setShowAll] = useState(false);
+
+  // Sort notes by createdAt descending
+  const sortedNotes = [...(notes || [])].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  const recentNotes = sortedNotes.slice(0, 2);
+  const hasMoreThanTwo = sortedNotes.length > 2;
+
   return (
     <DashboardContainer>
       <Header />
@@ -222,39 +264,33 @@ const Dashboard = () => {
         <StatsGrid>
           <StatCard>
             <StatTitle>Total Notes</StatTitle>
-            <StatValue>{totalNotes}</StatValue>
+            <StatValue>{sortedNotes.length}</StatValue>
           </StatCard>
           <StatCard>
             <StatTitle>This Week</StatTitle>
-            <StatValue>{thisWeekNotes}</StatValue>
+            <StatValue>{0}</StatValue>
           </StatCard>
           <StatCard>
             <StatTitle>Current Streak</StatTitle>
-            <StatValue>{streak} days</StatValue>
+            <StatValue>{0} days</StatValue>
           </StatCard>
           <StatCard>
             <StatTitle>Completion Rate</StatTitle>
-            <StatValue>{totalNotes > 0 ? Math.round((thisWeekNotes / 7) * 100) : 0}%</StatValue>
+            <StatValue>0%</StatValue>
           </StatCard>
         </StatsGrid>
         <h2 className="text-xl font-semibold mb-4">Recent Notes</h2>
         <NotesGrid>
-          {sortedNotes.length > 0 ? (
-            sortedNotes.map((note) => (
+          {isLoading ? (
+            <EmptyNotes>Loading...</EmptyNotes>
+          ) : recentNotes.length > 0 ? (
+            recentNotes.map((note) => (
               <NoteCard
                 key={note.id.toString()}
                 to={`/notes/${note.id}`}
               >
                 <NoteDate>{formatDate(note.createdAt)}</NoteDate>
                 <NoteTitle>{note.title}</NoteTitle>
-                <NoteContent>{note.content}</NoteContent>
-                {note.tags && note.tags.length > 0 && (
-                  <NoteTags>
-                    {note.tags.map((tag, index) => (
-                      <NoteTag key={index}>{tag}</NoteTag>
-                    ))}
-                  </NoteTags>
-                )}
               </NoteCard>
             ))
           ) : (
@@ -272,6 +308,43 @@ const Dashboard = () => {
             </EmptyNotes>
           )}
         </NotesGrid>
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
+          <Button
+            variant="primary"
+            size="medium"
+            disabled={!hasMoreThanTwo}
+            onClick={() => setShowAll(true)}
+            style={{ minWidth: 180, opacity: hasMoreThanTwo ? 1 : 0.6 }}
+          >
+            View All Notes
+          </Button>
+        </div>
+        {showAll && (
+          <ModalOverlay>
+            <ModalBox elevation="high" borderRadius="large" fullWidth>
+              <ModalClose onClick={() => setShowAll(false)}>&times;</ModalClose>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#4a6cf7', marginBottom: 18 }}>All Notes</h3>
+              {sortedNotes.length === 0 ? (
+                <div style={{ color: '#888', textAlign: 'center' }}>No notes found.</div>
+              ) : (
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {sortedNotes.map((note) => (
+                    <li key={note.id} style={{
+                      padding: '0.7rem 0.5rem',
+                      borderBottom: '1px solid #e5e7eb',
+                      fontSize: 16,
+                      color: '#222',
+                      cursor: 'pointer',
+                      transition: 'background 0.18s',
+                    }}>
+                      {note.title}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </ModalBox>
+          </ModalOverlay>
+        )}
       </Content>
     </DashboardContainer>
   );

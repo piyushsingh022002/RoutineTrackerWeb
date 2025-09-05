@@ -4,7 +4,7 @@ import type { Note } from '../types';
 import { useAuth } from './AuthContext';
 
 // API base URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5186/api/Notes';
+const API_URL = import.meta.env.VITE_API_URL || 'http://studentroutinetrackerapi.onrender.com/api';
 
 // Notes state interface
 interface NotesState {
@@ -139,8 +139,8 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/GetNotes`);
-      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data.data });
+      const res = await axios.get(`${API_URL}/Notes`);
+      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data});
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
@@ -161,7 +161,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const createNote = async (note: Partial<Note>) => {
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
-      const res = await axios.post(`${API_URL}`, note);
+      const res = await axios.post(`${API_URL}/Notes`, note);
       dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: res.data.data });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to create note');
