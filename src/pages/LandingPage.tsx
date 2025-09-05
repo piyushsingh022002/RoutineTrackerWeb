@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
 import { device } from '../styles/breakpoints';
+import Header from '../components/common/Header';
 
 const LandingContainer = styled.div`
   min-height: 100vh;
@@ -19,57 +20,7 @@ const LandingContainer = styled.div`
   }
 `;
 
-const Header = styled.header`
-  padding: 1.25rem 0.5rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  @media ${device.tablet} {
-    padding: 1.5rem 1rem;
-  }
-`;
 
-const Logo = styled.div`
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  @media ${device.mobile} {
-    font-size: 1.25rem;
-  }
-`;
-
-const NavLinks = styled.div`
-  display: flex;
-  gap: 1rem;
-  @media ${device.mobile} {
-    gap: 0.5rem;
-  }
-`;
-
-const NavLink = styled(Link)`
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: var(--transition);
-
-  &:hover {
-    background-color: rgba(79, 70, 229, 0.1);
-  }
-`;
-
-const ButtonLink = styled(Link)`
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: var(--transition);
-
-  &:hover {
-    background-color: var(--primary-hover);
-    color: white;
-  }
-`;
 
 // const Hero = styled.div`
 //   flex: 1;
@@ -391,13 +342,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <LandingContainer>
-      <Header>
-        <Logo>InternRoutineTracker</Logo>
-        <NavLinks>
-          <NavLink to="/login">Login</NavLink>
-          <ButtonLink to="/register">Register</ButtonLink>
-        </NavLinks>
-      </Header>
+  <Header />
 
       <Hero>
         <motion.div
