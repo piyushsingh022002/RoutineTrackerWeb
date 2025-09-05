@@ -221,7 +221,7 @@ const Header: React.FC = () => {
             isAuthenticated ? (
               <>
                 <ExternalLink
-                  href="https://text-utils-piyush.vercel.app/"
+                  href="https://my-portfolio-kappa-five-56.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
                   title="Text Utils"
