@@ -157,25 +157,25 @@ const NoteTitle = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const NoteContent = styled.p`
-  font-size: 0.95rem;
-  color: var(--text-color);
-  margin-bottom: 0.5rem;
-`;
+// const NoteContent = styled.p`
+//   font-size: 0.95rem;
+//   color: var(--text-color);
+//   margin-bottom: 0.5rem;
+// `;
 
-const NoteTags = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
+// const NoteTags = styled.div`
+//   display: flex;
+//   flex-wrap: wrap;
+//   gap: 0.5rem;
+// `;
 
-const NoteTag = styled.span`
-  background: var(--primary-color);
-  color: #fff;
-  border-radius: 12px;
-  padding: 0.15rem 0.75rem;
-  font-size: 0.8rem;
-`;
+// const NoteTag = styled.span`
+//   background: var(--primary-color);
+//   color: #fff;
+//   border-radius: 12px;
+//   padding: 0.15rem 0.75rem;
+//   font-size: 0.8rem;
+// `;
 
 const EmptyNotes = styled.div`
   display: flex;
