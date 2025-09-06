@@ -7,41 +7,54 @@ import { useAuth } from '../../context/AuthContext';
 
 import { device } from '../../styles/breakpoints';
 const HeaderContainer = styled.header`
+  width: 100vw;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  background-color: #ffffff;
- 
-  position: sticky;
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+  font-family: 'Montserrat', 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
+  /* Responsive header height variable */
+  --header-height: 88px;
+  height: var(--header-height);
   @media ${device.tablet} {
     padding: 1rem 1rem;
+    --header-height: 72px;
+    height: var(--header-height);
   }
   @media ${device.mobile} {
     flex-direction: column;
     align-items: flex-start;
     padding: 0.75rem 0.5rem;
+    --header-height: 64px;
+    height: var(--header-height);
   }
 `;
 
 const Logo = styled(Link)`
-  font-size: 3rem;
-  font-weight: bold;
-  font-family: 'Playfair Display', serif;
-  color: #4a6cf7;
+  font-size: 2.6rem;
+  font-weight: 900;
+  font-family: 'Montserrat', 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
+  color: #2b2d42;
   text-decoration: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  letter-spacing: 2px;
   @media ${device.mobile} {
     font-size: 1.25rem;
   }
 `;
 
 const LogoIcon = styled.span`
-  font-size: 1.8rem;
+  font-size: 2.5rem;
+  margin-right: 0.25rem;
+  color: #4a6cf7;
 `;
 
 
@@ -70,11 +83,17 @@ const ExternalLink = styled.a`
 const NavLink = styled(Link)`
   color: #555;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s ease;
+  font-weight: 700;
+  transition: color 0.2s ease, box-shadow 0.2s, border-bottom 0.2s, transform 0.18s cubic-bezier(.4,1.4,.6,1.1);
+  position: relative;
 
   &:hover {
     color: #4a6cf7;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 2px;
+    transform: scale(1.13);
+    z-index: 2;
   }
 `;
 
@@ -212,11 +231,11 @@ const Header: React.FC = () => {
     <>
       <HeaderContainer>
         <Logo to={isAuthenticated ? '/dashboard' : '/'}>
-          <LogoIcon>📝</LogoIcon>
-          Intern Routine Tracker
+          <LogoIcon>🗂️</LogoIcon>
+          NoteNest
         </Logo>
 
-        <Nav>
+        <Nav style={{ flex: 1, justifyContent: 'center', gap: '2.5rem' }}>
           {isLoading ? null : (
             isAuthenticated ? (
               <>
@@ -236,50 +255,31 @@ const Header: React.FC = () => {
               </>
             ) : (
               <>
-                <ExternalLink
-                  href="https://my-portfolio-kappa-five-56.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Admin's Portfolio"
-                >
-                  Admin's Portfolio
-                </ExternalLink>
                 <NavLink to="/noteplus">
-                  <Button
-                    variant="primary"
-                    size="small"
-                  >
-                    Noteplus
-                  </Button>
+                  NotePlus
                 </NavLink>
                 <NavLink to="/aboutIRT">
-                  <Button
-                    variant="primary"
-                    size="small"
-                  >
-                    About
-                  </Button>
-                </NavLink>
-                <NavLink to="/login">
-                  <Button
-                    variant="primary"
-                    size="small"
-                  >
-                    Login
-                  </Button>
+                  About
                 </NavLink>
                 <NavLink to="/register">
-                  <Button
-                    variant="primary"
-                    size="small"
-                  >
-                    Register
-                  </Button>
+                  Register
                 </NavLink>
               </>
             )
           )}
         </Nav>
+        {!isAuthenticated && !isLoading && (
+          <div style={{ marginLeft: 'auto' }}>
+            <ExternalLink
+              href="https://my-portfolio-kappa-five-56.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Admin's Portal"
+            >
+              Admin's Portal
+            </ExternalLink>
+          </div>
+        )}
       </HeaderContainer>
 
       {sidebarOpen && (
