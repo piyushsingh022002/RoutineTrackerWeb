@@ -2,7 +2,7 @@ import { device } from "../styles/breakpoints";
 import { Button, Header } from "../components/common";
 import { motion } from "framer-motion";
 import styled from "styled-components";
-import React, { useState } from "react";
+// import React, { useState } from "react";
 
 // Notes-related icons for hero section
 const notesIcons = [
@@ -22,22 +22,6 @@ const NotesIconsRow = styled(motion.div)`
     margin-top: 1.5rem;
   }
 `;
-const BottomCTASection = styled.section`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin: 3rem 0 2rem 0;
-  padding: 2rem 1rem;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  border-radius: 24px;
-  box-shadow: 0 4px 24px rgba(74,108,247,0.13);
-`;
-
-
-
-
-
 
 const Hero = styled(motion.div)`
   width: 100%;
@@ -136,55 +120,6 @@ const PrimaryButton = styled(Button)`
     opacity: 1;
   }
 `;
-
-/*const FeatureCard = styled(motion.div)`
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-
-  &:hover {
-    box-shadow: var(--shadow-md);
-    transform: translateY(-5px);
-  }
-`;
-
-const FeatureIcon = styled.div`
-  font-size: 1.5rem;
-  color: var(--primary-color);
-  margin-bottom: 1rem;
-`;
-          <PrimaryButton
-            type="button"
-            onClick={handleRegister}
-            disabled={isSaving}
-            onMouseEnter={() => setIsRegisterHovered(true)}
-            onMouseLeave={() => setIsRegisterHovered(false)}
-          >
-            Get Started <span className="icon">🚀</span>
-          </PrimaryButton>
-          <PrimaryButton
-            type="button"
-            onClick={handleLogin}
-            disabled={isSaving}
-            onMouseEnter={() => setIsLoginHovered(true)}
-            onMouseLeave={() => setIsLoginHovered(false)}
-          >
-            Login <span className="icon">🔑</span>
-          </PrimaryButton>
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-`;
-
-const FeatureDescription = styled.p`
-  color: var(--text-light);
-  font-size: 0.875rem;
-`;
-*/
-
-/* updated code for the feature cards */
 
 const Footer = styled.footer`
   padding: 1.5rem 0.5rem;
@@ -300,9 +235,9 @@ const FeatureItem = styled.li`
 
 
 const LandingPage: React.FC = () => {
-  const [isRegisterHovered, setIsRegisterHovered] = useState(false);
-  const [isLoginHovered, setIsLoginHovered] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
+  // const [isRegisterHovered, setIsRegisterHovered] = useState(false);
+  // const [isLoginHovered, setIsLoginHovered] = useState(false);
+  // const [isSaving, setIsSaving] = useState(false);
 
   const handleRegister = () => {
     // You can add analytics, loading, or navigation logic here
@@ -329,18 +264,18 @@ const LandingPage: React.FC = () => {
             <PrimaryButton
               type="button"
               onClick={handleRegister}
-              disabled={isSaving}
-              onMouseEnter={() => setIsRegisterHovered(true)}
-              onMouseLeave={() => setIsRegisterHovered(false)}
+              // disabled={isSaving}
+              // onMouseEnter={() => setIsRegisterHovered(true)}
+              // onMouseLeave={() => setIsRegisterHovered(false)}
             >
               Get Started <span className="icon">🚀</span>
             </PrimaryButton>
             <PrimaryButton
               type="button"
               onClick={handleLogin}
-              disabled={isSaving}
-              onMouseEnter={() => setIsLoginHovered(true)}
-              onMouseLeave={() => setIsLoginHovered(false)}
+              // disabled={isSaving}
+              // onMouseEnter={() => setIsLoginHovered(true)}
+              // onMouseLeave={() => setIsLoginHovered(false)}
             >
               Login <span className="icon">🔑</span>
             </PrimaryButton>
