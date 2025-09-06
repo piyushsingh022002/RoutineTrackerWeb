@@ -1,4 +1,4 @@
-# Intern Routine Tracker Frontend
+# Routine Tracker Web
 
 This is the frontend for the Intern Routine Tracker application, built with React, TypeScript, and Vite.
 
