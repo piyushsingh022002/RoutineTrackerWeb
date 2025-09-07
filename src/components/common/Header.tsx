@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../../context/ThemeContext';
 import Button from './Button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink as RouterNavLink, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
+import { useNotes } from '../../context/NotesContext';
+import { useNotifications } from '../../context/NotificationsContext';
 
 import { device } from '../../styles/breakpoints';
 const HeaderContainer = styled.header`
@@ -36,32 +38,33 @@ const HeaderContainer = styled.header`
   }
 `;
 
-const Logo = styled(Link)`
-  font-size: 2.6rem;
-  font-weight: 900;
-  font-family: 'Montserrat', 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
-  color: #2b2d42;
-  text-decoration: none;
+const LeftGroup = styled.div`
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  letter-spacing: 2px;
-  @media ${device.mobile} {
-    font-size: 1.25rem;
-  }
+  gap: 1.25rem;
 `;
 
-const LogoIcon = styled.span`
-  font-size: 2.5rem;
-  margin-right: 0.25rem;
-  color: #4a6cf7;
+const Logo = styled(Link)`
+  font-size: 2rem;
+  font-weight: 900;
+  color: #2b2d42;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 `;
 
+const LogoImg = styled.img`
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  object-fit: contain;
+`;
 
 const Nav = styled.nav`
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   @media ${device.mobile} {
     gap: 0.75rem;
   }
@@ -80,129 +83,155 @@ const ExternalLink = styled.a`
   }
 `;
 
-const NavLink = styled(Link)`
-  color: #555;
+const StyledNavLink = styled(RouterNavLink)`
+  color: #444;
   text-decoration: none;
   font-weight: 700;
-  transition: color 0.2s ease, box-shadow 0.2s, border-bottom 0.2s, transform 0.18s cubic-bezier(.4,1.4,.6,1.1);
-  position: relative;
-
-  &:hover {
+  padding: 0.25rem 0.35rem;
+  border-radius: 6px;
+  transition: color 0.15s ease, transform 0.15s ease;
+  &.active {
     color: #4a6cf7;
     text-decoration: underline;
-    text-underline-offset: 4px;
+    text-underline-offset: 6px;
     text-decoration-thickness: 2px;
-    transform: scale(1.13);
-    z-index: 2;
+    transform: translateY(-1px);
   }
+  &:hover { color: #4a6cf7; }
 `;
 
+// Right-side utilities
+const RightGroup = styled.div`
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+`;
 
-const Hamburger = styled.button`
-  background: none;
+const IconButton = styled.button`
+  background: transparent;
   border: none;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  margin-left: 0.5rem;
-  z-index: 110;
-  &:focus {
-    outline: 2px solid var(--primary-color);
-  }
+  font-size: 1.25rem;
+  padding: 0.35rem;
+  border-radius: 8px;
+  line-height: 1;
+  position: relative;
+  &:hover { background: rgba(74,108,247,0.08); }
 `;
 
-const Bar = styled.span`
-  width: 22px;
-  height: 3px;
-  background: #333;
-  margin: 2px 0;
-  border-radius: 2px;
-  display: block;
-`;
-
-const SidebarOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0,0,0,0.2);
-  z-index: 120;
-`;
-
-const Sidebar = styled.aside`
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 320px;
-  height: 100vh;
-  background: #fff;
-  box-shadow: -2px 0 12px rgba(0,0,0,0.08);
-  z-index: 130;
-  display: flex;
-  flex-direction: column;
-  padding: 2rem 1.5rem 1rem 1.5rem;
-  transition: transform 0.3s cubic-bezier(.4,0,.2,1);
-`;
-
-const SidebarHeader = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 2rem;
-`;
-
-const SidebarAvatar = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  background: var(--primary-color);
+const Badge = styled.span`
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: #ef4444;
   color: #fff;
-  display: flex;
+  font-size: 0.65rem;
+  min-width: 18px;
+  height: 18px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
+  border-radius: 999px;
+  padding: 0 5px;
+`;
+
+const StreakPill = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  color: #f97316; /* orange */
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  padding: 6px 10px;
+  border-radius: 999px;
+  margin: 0 6px;
 `;
 
-const SidebarUserName = styled.div`
-  font-weight: 600;
-  font-size: 1.1rem;
-  color: #222;
+const AvatarButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 2px;
 `;
 
-const SidebarNav = styled.nav`
+const Avatar = styled.div<{ $src?: string; }>`
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: ${(p) => p.$src ? `url(${p.$src}) center/cover no-repeat` : 'linear-gradient(135deg,#4a6cf7,#60a5fa)'};
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+`;
+
+// Profile dropdown (replaces sidebar)
+const ProfileDropdown = styled.div`
+  position: absolute;
+  top: calc(var(--header-height) - 8px);
+  right: 16px;
+  width: 320px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(2,6,23,0.15);
+  padding: 16px 14px 12px 14px;
+  z-index: 1200;
+`;
+
+const ProfileHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px 12px 6px;
+`;
+
+const ProfileName = styled.div`
+  font-weight: 700;
+  color: #111827;
+`;
+
+const QuickGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 10px 4px 14px 4px;
+`;
+
+const QuickItem = styled.div`
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 10px 8px;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  margin-bottom: auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: #374151;
 `;
 
-const SidebarNavLink = styled(Link)`
-  color: #333;
-  font-size: 1.05rem;
-  text-decoration: none;
-  font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-radius: 6px;
-  transition: background 0.2s;
-  &:hover {
-    background: var(--bg-color);
-    color: var(--primary-color);
-  }
-`;
-
-const SidebarBottom = styled.div`
-  margin-top: 2rem;
+const Menu = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  padding-top: 6px;
+`;
+
+const MenuItem = styled.button`
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 10px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #111827;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  &:hover { background: #f3f4f6; }
 `;
 
 
@@ -210,8 +239,11 @@ const SidebarBottom = styled.div`
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { toggleTheme } = useTheme();
+  const { notes } = useNotes();
+  const { unreadCount } = useNotifications();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -227,97 +259,148 @@ const Header: React.FC = () => {
       .toUpperCase();
   };
 
+  // Compute current streak based on notes' createdAt dates
+  const currentStreak = useMemo(() => {
+    if (!notes || notes.length === 0) return 0;
+    const dates = Array.from(
+      new Set(
+        notes
+          .map((n) => new Date(n.createdAt))
+          .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime())
+      )
+    ).sort((a, b) => b - a);
+    let streak = 0;
+    const today = new Date();
+    let cursor = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+    let idx = 0;
+    while (idx < dates.length) {
+      if (dates[idx] === cursor) {
+        streak += 1;
+        cursor -= 24 * 60 * 60 * 1000; // previous day
+        idx += 1;
+      } else if (dates[idx] === cursor - 24 * 60 * 60 * 1000) {
+        // If today missing but yesterday present, streak starts from yesterday only if today has no note
+        if (streak === 0) {
+          // Allow starting at yesterday if no today note
+          streak += 1;
+          cursor -= 24 * 60 * 60 * 1000;
+          idx += 1;
+        } else {
+          break;
+        }
+      } else {
+        break;
+      }
+    }
+    return streak;
+  }, [notes]);
+
+  // Close menu on outside click
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      if (!menuRef.current) return;
+      if (!(e.target instanceof Node)) return;
+      if (!menuRef.current.contains(e.target)) setMenuOpen(false);
+    };
+    if (menuOpen) document.addEventListener('mousedown', onDocClick);
+    return () => document.removeEventListener('mousedown', onDocClick);
+  }, [menuOpen]);
+
   return (
     <>
       <HeaderContainer>
-        <Logo to={isAuthenticated ? '/dashboard' : '/'}>
-          <LogoIcon>🗂️</LogoIcon>
-          NoteNest
-        </Logo>
-
-        <Nav style={{ flex: 1, justifyContent: 'center', gap: '2.5rem' }}>
-          {isLoading ? null : (
-            isAuthenticated ? (
-              <>
-                <ExternalLink
-                  href="https://text-utils-piyush.vercel.app/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  title="Text Utils"
-                >
-                  Text Utils
-                </ExternalLink>
-                <Hamburger onClick={() => setSidebarOpen(true)} aria-label="Open user menu">
-                  <Bar />
-                  <Bar />
-                  <Bar />
-                </Hamburger>
-              </>
-            ) : (
-              <>
-                <NavLink to="/noteplus">
-                  NotePlus
-                </NavLink>
-                <NavLink to="/aboutIRT">
-                  About
-                </NavLink>
-                <NavLink to="/register">
-                  Register
-                </NavLink>
-              </>
-            )
+        <LeftGroup>
+          <Logo to={isAuthenticated ? '/dashboard' : '/'} aria-label="Home">
+            <LogoImg
+              src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png"
+              alt="Routine Tracker logo (progress bars)"
+              loading="eager"
+              decoding="async"
+              draggable={false}
+            />
+          </Logo>
+          {!isLoading && (
+            <Nav>
+              <StyledNavLink to="/aboutIRT">About Us</StyledNavLink>
+              {/* External text editor */}
+              <ExternalLink href="https://text-utils-piyush.vercel.app/" target="_blank" rel="noopener noreferrer" title="Text Editor">
+                Text Editor
+              </ExternalLink>
+              {isAuthenticated && (
+                <>
+                  <StyledNavLink to="/dashboard">Dashboard</StyledNavLink>
+                  <StyledNavLink to="/notes/new">New Note</StyledNavLink>
+                </>
+              )}
+            </Nav>
           )}
-        </Nav>
-        {!isAuthenticated && !isLoading && (
-          <div style={{ marginLeft: 'auto' }}>
-            <ExternalLink
-              href="https://my-portfolio-kappa-five-56.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Admin's Portal"
-            >
-              Admin's Portal
-            </ExternalLink>
-          </div>
+        </LeftGroup>
+
+        {isAuthenticated && !isLoading ? (
+          <RightGroup>
+            {/* Notifications */}
+            <IconButton aria-label="Notifications" onClick={() => navigate('/notifications')}>
+              <span role="img" aria-label="bell">🔔</span>
+              {unreadCount > 0 && <Badge>{unreadCount > 9 ? '9+' : unreadCount}</Badge>}
+            </IconButton>
+
+            {/* Streak */}
+            <StreakPill title="Current streak">
+              <span role="img" aria-label="streak">🔥</span>
+              {currentStreak}
+            </StreakPill>
+
+            {/* Premium button */}
+            <Button variant="primary" size="small" onClick={() => navigate('/noteplus')}>
+              Premium
+            </Button>
+
+            {/* Profile avatar */}
+            <div style={{ position: 'relative' }} ref={menuRef}>
+              <AvatarButton aria-label="User menu" onClick={() => setMenuOpen((v) => !v)}>
+                <Avatar $src={user?.avatarUrl}>{!user?.name ? '' : getUserInitials()}</Avatar>
+              </AvatarButton>
+              {menuOpen && (
+                <ProfileDropdown>
+                  <ProfileHeader>
+                    <Avatar $src={user?.avatarUrl} />
+                    <div>
+                      <ProfileName>{user?.name || 'User'}</ProfileName>
+                      <div style={{ fontSize: 12, color: '#6b7280' }}>{user?.email}</div>
+                    </div>
+                  </ProfileHeader>
+                  <QuickGrid>
+                    <QuickItem title="My Lists">📋<div>My Lists</div></QuickItem>
+                    <QuickItem title="Notebook">📘<div>Notebook</div></QuickItem>
+                    <QuickItem title="Submissions">📝<div>Submissions</div></QuickItem>
+                    <QuickItem title="Progress">🟢<div>Progress</div></QuickItem>
+                    <QuickItem title="Points">🟡<div>Points</div></QuickItem>
+                    <QuickItem title="Try New Features">🧪<div>Try New</div></QuickItem>
+                  </QuickGrid>
+                  <Menu>
+                    <MenuItem onClick={() => navigate('/settings')}>⚙️ Settings</MenuItem>
+                    <MenuItem onClick={toggleTheme}>🌓 Appearance</MenuItem>
+                    <MenuItem onClick={handleLogout}>🚪 Sign Out</MenuItem>
+                  </Menu>
+                </ProfileDropdown>
+              )}
+            </div>
+          </RightGroup>
+        ) : (
+          !isLoading && (
+            <div style={{ marginLeft: 'auto' }}>
+              <ExternalLink
+                href="https://my-portfolio-kappa-five-56.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="Admin's Portal"
+              >
+                Admin's Portal
+              </ExternalLink>
+            </div>
+          )
         )}
       </HeaderContainer>
-
-      {sidebarOpen && (
-        <>
-          <SidebarOverlay onClick={() => setSidebarOpen(false)} />
-          <Sidebar>
-            <SidebarHeader>
-              <SidebarAvatar>{getUserInitials()}</SidebarAvatar>
-              <SidebarUserName>{user?.name}</SidebarUserName>
-            </SidebarHeader>
-            <SidebarNav>
-              <SidebarNavLink to="/dashboard" onClick={() => setSidebarOpen(false)}>Dashboard</SidebarNavLink>
-              <SidebarNavLink to="/notes/new" onClick={() => setSidebarOpen(false)}>New Note</SidebarNavLink>
-              <SidebarNavLink to="/profile" onClick={() => setSidebarOpen(false)}>Profile</SidebarNavLink>
-              <SidebarNavLink to="/settings" onClick={() => setSidebarOpen(false)}>Settings</SidebarNavLink>
-              <Button
-                variant="outline"
-                size="small"
-                onClick={toggleTheme}
-                style={{ minWidth: 40, marginTop: 8 }}
-                leftIcon={theme === 'light' ? '🌙' : '☀️'}
-                aria-label="Toggle theme"
-              >
-                {theme === 'light' ? 'Dark' : 'Light'}
-              </Button>
-            </SidebarNav>
-            <SidebarBottom>
-              <Button
-                variant="primary"
-                size="small"
-                onClick={handleLogout}
-              >
-                Logout
-              </Button>
-            </SidebarBottom>
-          </Sidebar>
-        </>
-      )}
     </>
   );
 };
