@@ -16,7 +16,8 @@ const HeaderContainer = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+  background: linear-gradient(120deg, rgba(248,250,252,0.92) 0%, rgba(224,231,255,0.92) 100%);
+  backdrop-filter: saturate(140%) blur(6px);
   font-family: 'Montserrat', 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
   position: fixed;
   top: 0;
@@ -84,12 +85,12 @@ const ExternalLink = styled.a`
 `;
 
 const StyledNavLink = styled(RouterNavLink)`
-  color: #444;
+  color: var(--text-color);
   text-decoration: none;
   font-weight: 700;
   padding: 0.25rem 0.35rem;
   border-radius: 6px;
-  transition: color 0.15s ease, transform 0.15s ease;
+  transition: color 160ms var(--easing-out), transform 160ms var(--easing-out), background-color 160ms var(--easing-out);
   &.active {
     color: #4a6cf7;
     text-decoration: underline;
@@ -97,7 +98,7 @@ const StyledNavLink = styled(RouterNavLink)`
     text-decoration-thickness: 2px;
     transform: translateY(-1px);
   }
-  &:hover { color: #4a6cf7; }
+  &:hover { color: #4a6cf7; background: rgba(74,108,247,0.08); }
 `;
 
 // Right-side utilities
@@ -117,7 +118,8 @@ const IconButton = styled.button`
   border-radius: 8px;
   line-height: 1;
   position: relative;
-  &:hover { background: rgba(74,108,247,0.08); }
+  transition: background-color 160ms var(--easing-out), transform 160ms var(--easing-out);
+  &:hover { background: rgba(74,108,247,0.12); transform: translateY(-1px); }
 `;
 
 const Badge = styled.span`
@@ -351,7 +353,7 @@ const Header: React.FC = () => {
             </StreakPill>
 
             {/* Premium button */}
-            <Button variant="primary" size="small" onClick={() => navigate('/noteplus')}>
+            <Button variant="primary" size="small" shape="pill" onClick={() => navigate('/noteplus')}>
               Premium
             </Button>
 

@@ -194,6 +194,7 @@ const RegisterForm: React.FC = () => {
       <Button
         type="submit"
         variant="primary"
+        shape="pill"
         fullWidth
         isLoading={isLoading}
         disabled={isLoading}

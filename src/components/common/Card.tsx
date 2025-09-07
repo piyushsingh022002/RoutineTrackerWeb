@@ -61,12 +61,12 @@ const StyledCard = styled(motion.div)<{
   $fullWidth: boolean;
   $clickable: boolean;
 }>`
-  background-color: #ffffff;
+  background-color: var(--bg-light);
   box-shadow: ${(props) => getElevation(props.$elevation)};
   border-radius: ${(props) => getBorderRadius(props.$borderRadius)};
   padding: ${(props) => getPadding(props.$padding)};
   width: ${(props) => (props.$fullWidth ? '100%' : 'auto')};
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  transition: box-shadow 220ms var(--easing-in-out), transform 220ms var(--easing-in-out), background-color 220ms var(--easing-in-out), color 220ms var(--easing-in-out);
   cursor: ${(props) => (props.$clickable ? 'pointer' : 'default')};
   box-sizing: border-box;
 
@@ -79,6 +79,7 @@ const StyledCard = styled(motion.div)<{
 
   &:hover {
     box-shadow: ${(props) => props.$hoverable ? getElevation('high') : getElevation(props.$elevation)};
+    transform: ${(props) => props.$hoverable ? 'translateY(-2px)' : 'none'};
   }
 `;
 
@@ -102,8 +103,8 @@ const Card: React.FC<CardProps> = ({
       $clickable={!!onClick}
       onClick={onClick}
       className={className}
-      whileHover={hoverable ? { scale: 1.02 } : {}}
-      whileTap={onClick ? { scale: 0.98 } : {}}
+  whileHover={hoverable ? { scale: 1.01 } : {}}
+  whileTap={onClick ? { scale: 0.99 } : {}}
     >
       {children}
     </StyledCard>
