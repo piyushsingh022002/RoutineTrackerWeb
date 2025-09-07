@@ -137,6 +137,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
           <Button 
             variant="outline" 
             size="small" 
+            shape="pill"
             onClick={onMarkAllAsRead}
           >
             Mark all as read
@@ -173,6 +174,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
                     <Button 
                       variant="outline" 
                       size="small" 
+                      shape="pill"
                       onClick={() => onMarkAsRead(notification.id.toString())}
                     >
                       Mark as read
