@@ -3,6 +3,8 @@ export interface User {
   name: string;
   email: string;
   createdAt: string;
+  // Optional profile image URL
+  avatarUrl?: string;
 }
 
 export interface AuthState {

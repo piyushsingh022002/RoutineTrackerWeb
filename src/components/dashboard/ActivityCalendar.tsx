@@ -12,7 +12,9 @@ interface ActivityCalendarProps {
 
 const CalendarContainer = styled(Card)`
   width: 100%;
-  padding: 1.5rem;
+  padding: 1rem 1rem 1.25rem 1rem;
+  box-sizing: border-box;
+  overflow: hidden; /* keep all inner visuals inside the card */
 `;
 
 const CalendarHeader = styled.div`
@@ -46,11 +48,12 @@ const Weekday = styled.div`
 const DaysGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 0.5rem;
+  gap: 0.4rem;
+  min-width: 0; /* avoid grid overflow */
 `;
 
-const DayCell = styled(motion.div)<{ $isCurrentMonth: boolean; $hasActivity: boolean; $isToday: boolean }>`
-  aspect-ratio: 1;
+const DayCell = styled(motion.div)<{ $isCurrentMonth: boolean; $isToday: boolean }>`
+  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -64,7 +67,6 @@ const DayCell = styled(motion.div)<{ $isCurrentMonth: boolean; $hasActivity: boo
   }};
   background-color: ${(props) => {
     if (props.$isToday) return '#4a6cf7';
-    if (props.$hasActivity) return '#d4edda';
     return 'transparent';
   }};
   border: ${(props) => (props.$isToday ? 'none' : '1px solid #dee2e6')};
@@ -74,7 +76,6 @@ const DayCell = styled(motion.div)<{ $isCurrentMonth: boolean; $hasActivity: boo
   &:hover {
     background-color: ${(props) => {
       if (props.$isToday) return '#3a5ce5';
-      if (props.$hasActivity) return '#c3e6cb';
       return '#f8f9fa';
     }};
   }
@@ -104,10 +105,23 @@ const DayCellWrapper = styled.div`
   position: relative;
 `;
 
+const Dot = styled.div<{ $color: string }>`
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: ${(p) => p.$color};
+`;
+
 const Legend = styled.div`
   display: flex;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  column-gap: 0.75rem;
+  row-gap: 0.5rem;
+  margin-top: 1rem;
   justify-content: center;
 `;
 
@@ -189,12 +203,12 @@ const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
           const activity = getActivityForDay(day);
           const isToday = isSameDay(day, today);
           const hasActivity = !!activity?.hasNote;
+          const isPast = day < new Date(today.getFullYear(), today.getMonth(), today.getDate());
           
           return (
             <DayCellWrapper key={day.toString()}>
               <DayCell
                 $isCurrentMonth={true}
-                $hasActivity={hasActivity}
                 $isToday={isToday}
                 initial={{ scale: 0.9, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -202,6 +216,8 @@ const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
               >
                 {format(day, 'd')}
               </DayCell>
+              {hasActivity && <Dot $color="#22c55e" />} {/* green dot */}
+              {!hasActivity && isPast && !isToday && <Dot $color="#ef4444" />} {/* red dot for past no note */}
               {activity && activity.streakCount > 1 && (
                 <StreakIndicator $streakCount={activity.streakCount}>
                   {activity.streakCount}
@@ -214,12 +230,16 @@ const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
       
       <Legend>
         <LegendItem>
-          <LegendColor $color="#d4edda" />
+          <LegendColor $color="#22c55e" />
           <span>Note Added</span>
         </LegendItem>
         <LegendItem>
           <LegendColor $color="#4a6cf7" />
           <span>Today</span>
+        </LegendItem>
+        <LegendItem>
+          <LegendColor $color="#ef4444" />
+          <span>No Note (past)</span>
         </LegendItem>
         <LegendItem>
           <LegendColor $color="#28a745" />
