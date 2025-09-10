@@ -788,7 +788,7 @@ const NoteEditor: React.FC = () => {
                 value={content}
                 height="320px"
                 extensions={codeExtensions}
-                onChange={(val) => setContent(val)}
+                onChange={(val:string) => setContent(val)}
                 basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
                 placeholder={placeholderText}
               />
