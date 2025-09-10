@@ -21,14 +21,18 @@ import { PublicRoute } from './components/PublicRoute';
 
 import NotePlusPage from './pages/NotePlusPage';
 import AboutIRTPage from './pages/AboutIRTPage';
+
 import CustomCursor from './components/common/CustomeCursor';
+
                 
 
 function App() {
   return (
     <ThemeProvider>
       <GlobalStyle />
+
   <CustomCursor />
+
       <Router>
         <AuthProvider>
           <NotesProvider>
