@@ -4,14 +4,23 @@ import { motion } from "framer-motion";
 import styled from "styled-components";
 import { device } from '../styles/breakpoints';
 import { useNotes } from "../context/NotesContext";
-import { FaStickyNote, FaDownload, FaTimes, FaCheck } from "react-icons/fa";
+import { FaStickyNote, FaDownload, FaTimes, FaCheck, FaUpload } from "react-icons/fa";
 import { jsPDF } from "jspdf";
+import Header from "../components/common/Header";
+// CodeMirror editor
+import CodeMirror from "@uiw/react-codemirror";
+import { markdown } from "@codemirror/lang-markdown";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { json as jsonLang } from "@codemirror/lang-json";
+import { html } from "@codemirror/lang-html";
+import { css as cssLang } from "@codemirror/lang-css";
 
 const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean }>`
   background: rgba(255,255,255,0.98);
   border-radius: 1.25rem;
   box-shadow: 0 10px 320px 0 rgba(31, 38, 135, 0.12);
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   padding: 2.5rem 2rem 2rem 2rem;
@@ -30,19 +39,22 @@ const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered:
 
 const EditorContainer = styled.div`
   min-height: 100vh;
-  width: 100vw;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  padding: 2.5rem 1rem 2rem 1rem;
+  width: 100%;
+  background: transparent; /* align with global background/cursor */
+  padding: 96px 0 2rem; /* offset for fixed header */
+  box-sizing: border-box;
+`;
+
+const Content = styled.main`
+  width: 80%;
+  margin: 0 auto;
   display: flex;
   align-items: flex-start;
   justify-content: center;
+  padding: 0 1rem;
   box-sizing: border-box;
-  @media ${device.tablet} {
-    padding: 2rem 0.5rem;
-  }
-  @media ${device.mobile} {
-    padding: 1rem 0.25rem;
-  }
+  @media ${device.tablet} { width: 92%; }
+  @media ${device.mobile} { width: 94%; padding: 0 0.5rem; }
 `;
 
 const EditorHeader = styled.div`
@@ -157,20 +169,17 @@ const Input = styled.input`
   }
 `;
 
-const Textarea = styled.textarea`
-  padding: 0.75rem;
+const EditorFieldWrap = styled(motion.div)`
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  min-height: 200px;
-  resize: vertical;
-  transition: var(--transition);
-
-  &:focus {
-    outline: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+  background: var(--bg-light);
+  &:focus-within { 
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
+  .cm-theme, .cm-editor { background: transparent; }
 `;
 
 const TagsInput = styled.div`
@@ -178,7 +187,7 @@ const TagsInput = styled.div`
   flex-wrap: wrap;
   gap: 0.5rem;
   padding: 0.5rem;
-  border: 1px solid Krebs-border-color);
+  border: 1px solid var(--border-color);
   border-radius: var(--radius);
   min-height: 42px;
   transition: var(--transition);
@@ -344,6 +353,31 @@ const DownloadButton = styled(Button)`
   }
 `;
 
+// Links list styles
+const LinksWrap = styled.div`
+  border: 1px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: var(--bg-light);
+`;
+
+const LinkRow = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.5rem;
+`;
+
+const SmallRemove = styled.button`
+  background: var(--danger-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+`;
+
 const NoteEditor: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -369,6 +403,13 @@ const NoteEditor: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [isCancelHovered, setIsCancelHovered] = useState(false);
   const [isSaveHovered, setIsSaveHovered] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importMessage, setImportMessage] = useState<string | null>(null);
+  type LinkItem = { title: string; url: string };
+  const [links, setLinks] = useState<LinkItem[]>([]);
+  const [syntax, setSyntax] = useState<
+    'markdown' | 'plain' | 'javascript' | 'typescript' | 'python' | 'json' | 'html' | 'css'
+  >('markdown');
 
   const isEditMode = !!id;
 
@@ -386,8 +427,11 @@ const NoteEditor: React.FC = () => {
   // Set form data when current note changes
   useEffect(() => {
     if (currentNote) {
-      setTitle(currentNote.title);
-      setContent(currentNote.content);
+  setTitle(currentNote.title);
+  // Extract links section if present and remove from content for editing
+  const { cleanContent, foundLinks } = parseLinksFromContent(currentNote.content);
+  setContent(cleanContent);
+  setLinks(foundLinks);
       setTags(currentNote.tags || []);
       setFileUrls(currentNote.mediaUrls || []);
     }
@@ -444,6 +488,24 @@ const NoteEditor: React.FC = () => {
     setFileUrls(newFileUrls);
   };
 
+  // CodeMirror extensions based on selected syntax
+  const codeExtensions = (() => {
+    switch (syntax) {
+      case 'markdown': return [markdown()];
+      case 'javascript': return [javascript({ jsx: true, typescript: false })];
+      case 'typescript': return [javascript({ jsx: true, typescript: true })];
+      case 'python': return [python()];
+      case 'json': return [jsonLang()];
+      case 'html': return [html()];
+      case 'css': return [cssLang()];
+      default: return [];
+    }
+  })();
+
+  const placeholderText = syntax === 'markdown'
+    ? 'Write in Markdown... (Headings, lists, code blocks, etc.)'
+    : 'Start typing your note...';
+
   // Form validation
   const validateForm = () => {
     const errors: { title?: string; content?: string } = {};
@@ -460,6 +522,48 @@ const NoteEditor: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
+  // Helpers for links section in content
+  const LINKS_START = '<!-- LINKS:START -->';
+  const LINKS_END = '<!-- LINKS:END -->';
+  const buildLinksBlock = (items: LinkItem[]) => {
+    if (!items.length) return '';
+    const lines = items.map((it) => `- [${it.title || it.url}](${it.url})`).join('\n');
+    return `\n\n${LINKS_START}\n## Links\n${lines}\n${LINKS_END}\n`;
+  };
+  const stripLinksBlock = (text: string) => {
+    const start = text.indexOf(LINKS_START);
+    const end = text.indexOf(LINKS_END);
+    if (start !== -1 && end !== -1 && end > start) {
+      return text.slice(0, start).trimEnd() + '\n\n' + text.slice(end + LINKS_END.length).trimStart();
+    }
+    return text;
+  };
+  const parseLinksFromContent = (text: string) => {
+    const start = text.indexOf(LINKS_START);
+    const end = text.indexOf(LINKS_END);
+    if (start !== -1 && end !== -1 && end > start) {
+      const between = text.slice(start, end);
+      const found: LinkItem[] = [];
+      const re = /- \[(.+?)\]\((https?:[^\)]+)\)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(between))) {
+        found.push({ title: m[1], url: m[2] });
+      }
+      return { cleanContent: stripLinksBlock(text), foundLinks: found };
+    }
+    return { cleanContent: text, foundLinks: [] as LinkItem[] };
+  };
+
+  const validateUrl = (val: string) => {
+    try { const u = new URL(val); return !!u.protocol && !!u.host; } catch { return false; }
+  };
+
+  const addLinkRow = () => setLinks((prev) => [...prev, { title: '', url: '' }]);
+  const updateLinkRow = (idx: number, key: keyof LinkItem, value: string) => {
+    setLinks((prev) => prev.map((l, i) => i === idx ? { ...l, [key]: value } : l));
+  };
+  const removeLinkRow = (idx: number) => setLinks((prev) => prev.filter((_, i) => i !== idx));
+
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -468,9 +572,14 @@ const NoteEditor: React.FC = () => {
       setIsSaving(true);
 
       try {
+        // Synthesize links block into content before sending
+        const prunedLinks = links.filter(l => l.url && validateUrl(l.url));
+        const contentWithoutLinks = stripLinksBlock(content);
+        const finalContent = contentWithoutLinks + buildLinksBlock(prunedLinks);
+
         const noteData = {
           title,
-          content,
+          content: finalContent,
           tags,
           mediaUrls: fileUrls,
         };
@@ -541,8 +650,47 @@ const NoteEditor: React.FC = () => {
   }
 };
 
+  // Import notes from JSON file
+  const handleImportNotesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImportMessage(null);
+    setIsImporting(true);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      const list = Array.isArray(data) ? data : Array.isArray(data?.notes) ? data.notes : null;
+      if (!list) throw new Error('Invalid file format. Expecting an array of notes or { "notes": [...] }');
+
+      let created = 0;
+      for (const item of list) {
+        const t = (item?.title ?? '').toString();
+        const c = (item?.content ?? '').toString();
+        if (!t && !c) continue;
+        await createNote({
+          title: t || 'Untitled',
+          content: c || '',
+          tags: Array.isArray(item?.tags) ? item.tags : [],
+          mediaUrls: Array.isArray(item?.mediaUrls) ? item.mediaUrls : [],
+        });
+        created++;
+      }
+      setImportMessage(created > 0 ? `Imported ${created} note${created === 1 ? '' : 's'} successfully.` : 'No valid notes found to import.');
+    } catch (err: any) {
+      console.error('Import failed:', err);
+      setImportMessage(err?.message || 'Import failed. Please check the file and try again.');
+    } finally {
+      setIsImporting(false);
+      // reset input to allow re-selecting the same file
+      e.target.value = '';
+    }
+  };
+
   return (
-    <EditorContainer>
+    <>
+      <Header />
+      <EditorContainer>
+        <Content>
       {/* Pass hover states to EditorCard */}
       <EditorCard
         initial={{ opacity: 0, y: 20 }}
@@ -557,6 +705,30 @@ const NoteEditor: React.FC = () => {
             {isEditMode ? "Edit Note" : "Create New Note"}
           </EditorTitle>
           <ButtonGroup>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 8 }}>
+              <label htmlFor="syntax" style={{ fontSize: 12, color: 'var(--text-light)' }}>Syntax</label>
+              <select
+                id="syntax"
+                value={syntax}
+                onChange={(e) => setSyntax(e.target.value as any)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: 10,
+                  border: '1px solid var(--border-color)',
+                  background: 'var(--bg-light)',
+                  color: 'var(--text-color)'
+                }}
+              >
+                <option value="markdown">Markdown</option>
+                <option value="plain">Plain Text</option>
+                <option value="javascript">JavaScript</option>
+                <option value="typescript">TypeScript</option>
+                <option value="python">Python</option>
+                <option value="json">JSON</option>
+                <option value="html">HTML</option>
+                <option value="css">CSS</option>
+              </select>
+            </div>
             <SecondaryButton
               type="button"
               onClick={handleCancel}
@@ -607,15 +779,47 @@ const NoteEditor: React.FC = () => {
 
           <FormGroup>
             <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your note here..."
-            />
+            <EditorFieldWrap
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+            >
+              <CodeMirror
+                value={content}
+                height="320px"
+                extensions={codeExtensions}
+                onChange={(val) => setContent(val)}
+                basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+                placeholder={placeholderText}
+              />
+            </EditorFieldWrap>
             {formErrors.content && (
               <ErrorMessage>{formErrors.content}</ErrorMessage>
             )}
+          </FormGroup>
+
+          <FormGroup>
+            <Label>Links (Title + URL)</Label>
+            <LinksWrap>
+              {links.map((l, idx) => (
+                <LinkRow key={idx}>
+                  <Input
+                    type="text"
+                    placeholder="Link title"
+                    value={l.title}
+                    onChange={(e) => updateLinkRow(idx, 'title', e.target.value)}
+                  />
+                  <Input
+                    type="url"
+                    placeholder="https://example.com"
+                    value={l.url}
+                    onChange={(e) => updateLinkRow(idx, 'url', e.target.value)}
+                  />
+                  <SmallRemove type="button" onClick={() => removeLinkRow(idx)}>Remove</SmallRemove>
+                </LinkRow>
+              ))}
+              <SecondaryButton type="button" onClick={addLinkRow}>+ Add Link</SecondaryButton>
+            </LinksWrap>
           </FormGroup>
 
           <FormGroup>
@@ -685,9 +889,33 @@ const NoteEditor: React.FC = () => {
             Download as PDF
             <FaDownload />
           </DownloadButton>
+          {/* Import Notes */}
+          <input
+            id="import-notes-input"
+            type="file"
+            accept="application/json"
+            style={{ display: 'none' }}
+            onChange={handleImportNotesChange}
+          />
+          <SecondaryButton
+            type="button"
+            onClick={() => document.getElementById('import-notes-input')?.click()}
+            disabled={isImporting}
+            style={{ marginTop: '0.75rem' }}
+          >
+            {isImporting ? 'Importing…' : 'Inport your Notes safely'}
+            <FaUpload />
+          </SecondaryButton>
+          {importMessage && (
+            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--text-light)' }}>
+              {importMessage}
+            </div>
+          )}
         </Form>
       </EditorCard>
-    </EditorContainer>
+        </Content>
+      </EditorContainer>
+    </>
   );
 };
 
