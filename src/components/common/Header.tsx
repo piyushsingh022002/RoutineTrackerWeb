@@ -267,6 +267,7 @@ const Header: React.FC = () => {
     const dates = Array.from(
       new Set(
         notes
+          .filter((n) => n && n.createdAt)
           .map((n) => new Date(n.createdAt))
           .map((d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime())
       )
@@ -329,10 +330,9 @@ const Header: React.FC = () => {
                 Text Editor
               </ExternalLink>
               {isAuthenticated && (
-                <>
-                  <StyledNavLink to="/dashboard">Dashboard</StyledNavLink>
-                  <StyledNavLink to="/notes/new">New Note</StyledNavLink>
-                </>
+                <StyledNavLink to="/dashboard" onClick={() => {
+                  console.debug('Header: Dashboard link clicked');
+                }}>Dashboard</StyledNavLink>
               )}
             </Nav>
           )}
