@@ -71,13 +71,9 @@ function App() {
                     </PublicRoute>
                   }
                 />
-                 <Route 
+                <Route 
                   path="/aboutIRT" 
-                  element={
-                    <PublicRoute>
-                      <AboutIRTPage />
-                    </PublicRoute>
-                  } 
+                  element={<AboutIRTPage />} 
                 />
                 
                 {/* Protected routes */}
