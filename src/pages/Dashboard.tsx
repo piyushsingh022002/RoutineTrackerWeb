@@ -57,7 +57,7 @@ function formatDate(dateStr: string | number | Date | undefined) {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { notes, isLoading, deleteNote } = useNotes();
+  const { notes, isLoading, deleteNote, clearCurrentNote } = useNotes();
   const [openNote, setOpenNote] = useState<Note | null>(null);
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
@@ -254,7 +254,10 @@ const Dashboard = () => {
                         variant="primary"
                         size="medium"
                         shape="pill"
-                        onClick={() => navigate(`/notes/${openNote.id}/edit`)}
+                        onClick={() => {
+                          clearCurrentNote();
+                          navigate(`/notes/${openNote.id}/edit`);
+                        }}
                         style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                       >
                         <FaEdit /> Edit
