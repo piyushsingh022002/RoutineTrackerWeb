@@ -4,7 +4,7 @@ import type { Note } from '../types';
 import { useAuth } from './AuthContext';
 
 // API base URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://studentroutinetrackerapi.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://studentroutinetrackerapi.onrender.com/api';
 
 // Notes state interface
 interface NotesState {
@@ -119,7 +119,8 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
 interface NotesContextType extends NotesState {
   getNotes: () => Promise<void>;
   getNote: (id: string) => Promise<void>;
-  createNote: (note: Partial<Note>) => Promise<void>;
+  // Return the created note so callers can await and receive the saved resource
+  createNote: (note: Partial<Note>) => Promise<Note>;
   updateNote: (id: string, note: Partial<Note>) => Promise<void>;
   deleteNote: (id: string) => Promise<void>;
   clearCurrentNote: () => void;
@@ -134,7 +135,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [state, dispatch] = useReducer(notesReducer, initialState);
   const { isAuthenticated } = useAuth();
 
-  const getNotes = async () => {
+  const getNotes = React.useCallback(async () => {
     if (!isAuthenticated) return;
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
@@ -145,7 +146,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
-  };
+  }, [isAuthenticated]);
 
   const getNote = async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
@@ -162,7 +163,12 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
       const res = await axios.post(`${API_URL}/Notes`, note);
-      dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: res.data.data });
+      // Support APIs that return the created resource as res.data.data or res.data
+  const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
+  const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
+  const created: Note = payload as Note;
+      dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: created });
+      return created;
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to create note');
       dispatch({ type: 'CREATE_NOTE_FAILURE', payload: errorMessage });
@@ -206,6 +212,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (isAuthenticated) {
       getNotes();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
 
   return (
