@@ -1,10 +1,47 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
-import styled from "styled-components";
-import { device } from '../styles/breakpoints';
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+// import { motion } from "framer-motion";
+import {
+  DialogOverlay,
+  DialogBox,
+  DialogClose,
+  EditorCard,
+  EditorContainer,
+  Content,
+  LeftColumn,
+  RightColumn,
+  ButtonGroup,
+  PrimaryButton,
+  SecondaryButton,
+  // Form,
+  FormGroup,
+  Label,
+  Input,
+  EditorFieldWrap,
+  TagsInput,
+  Tag,
+  TagText,
+  RemoveTagButton,
+  TagInput,
+  FileUploadContainer,
+  FileUploadIcon,
+  FileUploadText,
+  FileUploadSubtext,
+  FileInput,
+  FilePreviewContainer,
+  FilePreview,
+  FilePreviewImage,
+  FilePreviewDocument,
+  RemoveFileButton,
+  ErrorMessage,
+  DownloadButton,
+  LinksWrap,
+  LinkRow,
+  SmallRemove,
+} from './NoteEditor.style';
+import type { Note } from '../types';
 import { useNotes } from "../context/NotesContext";
-import { FaStickyNote, FaDownload, FaTimes, FaCheck, FaUpload } from "react-icons/fa";
+import { FaDownload, FaTimes, FaCheck, FaUpload } from "react-icons/fa";
 import { jsPDF } from "jspdf";
 import Header from "../components/common/Header";
 // CodeMirror editor
@@ -16,378 +53,32 @@ import { json as jsonLang } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { css as cssLang } from "@codemirror/lang-css";
 
-const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean }>`
-  background: rgba(255,255,255,0.98);
-  border-radius: 1.25rem;
-  box-shadow: 0 10px 320px 0 rgba(31, 38, 135, 0.12);
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 2.5rem 2rem 2rem 2rem;
-  transition: border 0.3s, box-shadow 0.3s;
-  border: 2px solid
-    ${({ isCancelHovered, isSaveHovered }) =>
-      isCancelHovered
-        ? "var(--danger-color)"
-        : isSaveHovered
-        ? "var(--secondary-color)"
-        : "transparent"};
-  @media ${device.mobile} {
-    padding: 1.25rem 0.5rem;
-  }
-`;
-
-const EditorContainer = styled.div`
-  min-height: 100vh;
-  width: 100%;
-  background: transparent; /* align with global background/cursor */
-  padding: 96px 0 2rem; /* offset for fixed header */
-  box-sizing: border-box;
-`;
-
-const Content = styled.main`
-  width: 80%;
-  margin: 0 auto;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 0 1rem;
-  box-sizing: border-box;
-  @media ${device.tablet} { width: 92%; }
-  @media ${device.mobile} { width: 94%; padding: 0 0.5rem; }
-`;
-
-const EditorHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 1rem;
-`;
-
-const EditorTitle = styled.h1`
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--primary-color);
-  font-family: "Roboto", sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  letter-spacing: -1px;
-  transition: transform 0.3s, color 0.3s;
-  svg {
-    font-size: 2.2rem;
-    filter: drop-shadow(0 2px 6px rgba(79,70,229,0.12));
-  }
-`;
-
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1rem;
-`;
-
-// Move Button definition above its usages
-const Button = styled.button`
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  border: none;
-`;
-
-const PrimaryButton = styled(Button)`
-  background-color: var(--primary-color);
-  color: white;
-  &:hover {
-    background-color: var(--primary-hover);
-  }
-  &:disabled {
-    background-color: var(--text-light);
-    cursor: not-allowed;
-  }
-  svg {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  &:hover svg {
-    opacity: 1;
-  }
-`;
-
-const SecondaryButton = styled(Button)`
-  background-color: transparent;
-  color: var(--text-light);
-  border: 1px solid var(--border-color);
-  &:hover {
-    background-color: var(--bg-color);
-  }
-  svg {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  &:hover svg {
-    opacity: 1;
-  }
-`;
-
-// Reverted Form to original styling (removed hover-related styles)
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-`;
-
-const FormGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-`;
-
-const Label = styled.label`
-  font-size: 0.875rem;
-  font-weight: 500;
-`;
-
-const Input = styled.input`
-  padding: 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  font-size: 0.875rem;
-  transition: var(--transition);
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-  }
-`;
-
-const EditorFieldWrap = styled(motion.div)`
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
-  background: var(--bg-light);
-  &:focus-within { 
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-  }
-  .cm-theme, .cm-editor { background: transparent; }
-`;
-
-const TagsInput = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  min-height: 42px;
-  transition: var(--transition);
-
-  &:focus-within {
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
-  }
-`;
-
-const Tag = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  background-color: rgba(79, 70, 229, 0.1);
-  color: var(--primary-color);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-`;
-
-const TagText = styled.span`
-  font-weight: 500;
-`;
-
-const RemoveTagButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.75rem;
-  color: var(--primary-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-
-  &:hover {
-    background-color: rgba(79, 70, 229, 0.2);
-  }
-`;
-
-const TagInput = styled.input`
-  flex: 1;
-  min-width: 100px;
-  border: none;
-  outline: none;
-  font-size: 0.875rem;
-  padding: 0.25rem;
-`;
-
-const FileUploadContainer = styled.div`
-  border: 2px dashed var(--border-color);
-  border-radius: var(--radius);
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: var(--transition);
-
-  &:hover {
-    border-color: var(--primary-color);
-    background-color: rgba(79, 70, 229, 0.05);
-  }
-`;
-
-const FileUploadIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 1rem;
-  color: var(--text-light);
-`;
-
-const FileUploadText = styled.p`
-  color: var(--text-light);
-  margin-bottom: 0.5rem;
-`;
-
-const FileUploadSubtext = styled.p`
-  font-size: 0.75rem;
-  color: var(--text-light);
-`;
-
-const FileInput = styled.input`
-  display: none;
-`;
-
-const FilePreviewContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-`;
-
-const FilePreview = styled.div`
-  position: relative;
-  width: 100px;
-  height: 100px;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow);
-`;
-
-const FilePreviewImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const FilePreviewDocument = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(79, 70, 229, 0.1);
-  color: var(--primary-color);
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-align: center;
-  padding: 0.5rem;
-`;
-
-const RemoveFileButton = styled.button`
-  position: absolute;
-  top: 0.25rem;
-  right: 0.25rem;
-  background-color: rgba(239, 68, 68, 0.8);
-  color: white;
-  border: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: var(--transition);
-
-  &:hover {
-    background-color: var(--danger-color);
-  }
-`;
-
-const ErrorMessage = styled.div`
-  color: var(--danger-color);
-  font-size: 0.75rem;
-  margin-top: 0.25rem;
-`;
-
-const DownloadButton = styled(Button)`
-  background-color: var(--secondary-color);
-  color: white;
-  &:hover {
-    background-color: var(--secondary-hover);
-  }
-  svg {
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-  &:hover svg {
-    opacity: 1;
-  }
-`;
-
-// Links list styles
-const LinksWrap = styled.div`
-  border: 1px dashed var(--border-color);
-  border-radius: 12px;
-  padding: 0.75rem;
-  background: var(--bg-light);
-`;
-
-const LinkRow = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 1.4fr auto;
-  gap: 0.5rem;
-  align-items: center;
-  margin-bottom: 0.5rem;
-`;
-
-const SmallRemove = styled.button`
-  background: var(--danger-color);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 0.4rem 0.6rem;
-  cursor: pointer;
-`;
-
 const NoteEditor: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  // State for opened attachment modal
+  const [openAttachment, setOpenAttachment] = useState<null | { url: string; idx: number }>(null);
+  const location = useLocation();
   const navigate = useNavigate();
+  // If the user navigates to a different route (e.g., /dashboard), unmount NoteEditor
+  useEffect(() => {
+    const path = location.pathname;
+    // Only allow NoteEditor to render on /notes/new or /notes/:id/edit
+    const isEditorRoute =
+      path === '/notes/new' ||
+      (/^\/notes\/[\w-]+\/edit$/.test(path));
+    if (!isEditorRoute) {
+      // Unmount by navigating to the new path (should not render NoteEditor)
+      // This is a guard in case the router fails to remount
+      navigate(path, { replace: true });
+    }
+  }, [location.pathname, navigate]);
+  const { id } = useParams<{ id: string }>();
   const {
     getNote,
     createNote,
     updateNote,
     clearCurrentNote,
     currentNote,
-    error,
+  // error,
   } = useNotes();
 
   const [title, setTitle] = useState("");
@@ -405,37 +96,83 @@ const NoteEditor: React.FC = () => {
   const [isSaveHovered, setIsSaveHovered] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
+  // Dialog state for showing saved note
+  const [showNoteDialog, setShowNoteDialog] = useState<Note | null>(null);
+  // Track if we should show dialog after note creation
+  const [pendingShowDialog, setPendingShowDialog] = useState(false);
+  // Track dialog status for success/error messaging
+  const [dialogStatus, setDialogStatus] = useState<'idle' | 'success' | 'error'>('idle');
   type LinkItem = { title: string; url: string };
   const [links, setLinks] = useState<LinkItem[]>([]);
+  // Helpers for links section in content (moved here so effects can reference them)
+  const LINKS_START = '<!-- LINKS:START -->';
+  const LINKS_END = '<!-- LINKS:END -->';
+  const buildLinksBlock = (items: LinkItem[]) => {
+    if (!items.length) return '';
+    const lines = items.map((it) => `- [${it.title || it.url}](${it.url})`).join('\n');
+    return `\n\n${LINKS_START}\n## Links\n${lines}\n${LINKS_END}\n`;
+  };
+  const stripLinksBlock = (text: string) => {
+    const start = text.indexOf(LINKS_START);
+    const end = text.indexOf(LINKS_END);
+    if (start !== -1 && end !== -1 && end > start) {
+      return text.slice(0, start).trimEnd() + '\n\n' + text.slice(end + LINKS_END.length).trimStart();
+    }
+    return text;
+  };
+  const parseLinksFromContent = React.useCallback((text: string) => {
+    const start = text.indexOf(LINKS_START);
+    const end = text.indexOf(LINKS_END);
+    if (start !== -1 && end !== -1 && end > start) {
+      const between = text.slice(start, end);
+      const found: LinkItem[] = [];
+      // match - [title](https://...)
+      const re = /- \[(.+?)\]\((https?:[^)]+)\)/g;
+      let m: RegExpExecArray | null;
+      while ((m = re.exec(between))) {
+        found.push({ title: m[1], url: m[2] });
+      }
+      return { cleanContent: stripLinksBlock(text), foundLinks: found };
+    }
+    return { cleanContent: text, foundLinks: [] as LinkItem[] };
+  }, [LINKS_START, LINKS_END]);
   const [syntax, setSyntax] = useState<
-    'markdown' | 'plain' | 'javascript' | 'typescript' | 'python' | 'json' | 'html' | 'css'
+    'markdown' | 'plain' | 'javascript' | 'typescript' | 'python' | 'json' | 'html' | 'css' | 'java' | 'react'
   >('markdown');
 
   const isEditMode = !!id;
+
+  
 
   // Load note data if in edit mode
   useEffect(() => {
     if (isEditMode && id) {
       getNote(id);
     }
-
     return () => {
       clearCurrentNote();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditMode, id]);
 
   // Set form data when current note changes
   useEffect(() => {
     if (currentNote) {
-  setTitle(currentNote.title);
-  // Extract links section if present and remove from content for editing
-  const { cleanContent, foundLinks } = parseLinksFromContent(currentNote.content);
-  setContent(cleanContent);
-  setLinks(foundLinks);
+      setTitle(currentNote.title);
+      // Extract links section if present and remove from content for editing
+      const { cleanContent, foundLinks } = parseLinksFromContent(currentNote.content);
+      setContent(cleanContent);
+      setLinks(foundLinks);
       setTags(currentNote.tags || []);
       setFileUrls(currentNote.mediaUrls || []);
+      // Show dialog after new note creation
+      if (pendingShowDialog) {
+        setShowNoteDialog(currentNote);
+        setPendingShowDialog(false);
+      }
     }
-  }, [currentNote]);
+    // parseLinksFromContent is defined in this component; include it to satisfy lint rules
+  }, [currentNote, pendingShowDialog, parseLinksFromContent]);
 
   // Handle tag input
   const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -522,37 +259,6 @@ const NoteEditor: React.FC = () => {
     return Object.keys(errors).length === 0;
   };
 
-  // Helpers for links section in content
-  const LINKS_START = '<!-- LINKS:START -->';
-  const LINKS_END = '<!-- LINKS:END -->';
-  const buildLinksBlock = (items: LinkItem[]) => {
-    if (!items.length) return '';
-    const lines = items.map((it) => `- [${it.title || it.url}](${it.url})`).join('\n');
-    return `\n\n${LINKS_START}\n## Links\n${lines}\n${LINKS_END}\n`;
-  };
-  const stripLinksBlock = (text: string) => {
-    const start = text.indexOf(LINKS_START);
-    const end = text.indexOf(LINKS_END);
-    if (start !== -1 && end !== -1 && end > start) {
-      return text.slice(0, start).trimEnd() + '\n\n' + text.slice(end + LINKS_END.length).trimStart();
-    }
-    return text;
-  };
-  const parseLinksFromContent = (text: string) => {
-    const start = text.indexOf(LINKS_START);
-    const end = text.indexOf(LINKS_END);
-    if (start !== -1 && end !== -1 && end > start) {
-      const between = text.slice(start, end);
-      const found: LinkItem[] = [];
-      const re = /- \[(.+?)\]\((https?:[^\)]+)\)/g;
-      let m: RegExpExecArray | null;
-      while ((m = re.exec(between))) {
-        found.push({ title: m[1], url: m[2] });
-      }
-      return { cleanContent: stripLinksBlock(text), foundLinks: found };
-    }
-    return { cleanContent: text, foundLinks: [] as LinkItem[] };
-  };
 
   const validateUrl = (val: string) => {
     try { const u = new URL(val); return !!u.protocol && !!u.host; } catch { return false; }
@@ -586,13 +292,35 @@ const NoteEditor: React.FC = () => {
 
         if (isEditMode && id) {
           await updateNote(id, noteData);
+          setShowNoteDialog({
+            ...noteData,
+            id: Number(id),
+            userId: 1, // fallback userId
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          } as Note);
+          setDialogStatus('success');
         } else {
-          await createNote(noteData);
+          // Await the backend so the NotesContext gets the created note before we show dialog
+          try {
+            const created = await createNote(noteData);
+            setShowNoteDialog(created);
+            setDialogStatus('success');
+          } catch (err) {
+            // If create fails, still show a simple dialog with temp data and show error
+            console.error('Create note failed:', err);
+            setShowNoteDialog({
+              ...noteData,
+              id: Date.now(), // temp id
+              userId: 1, // fallback userId
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString(),
+            });
+            setDialogStatus('error');
+          }
         }
-
-        navigate("/dashboard");
-      } catch (err) {
-         console.error("Note submission failed:", err);
+    } catch (err: unknown) {
+      console.error("Note submission failed:", err);
       } finally {
         setIsSaving(false);
       }
@@ -602,6 +330,21 @@ const NoteEditor: React.FC = () => {
   // Handle cancel
   const handleCancel = () => {
     navigate(-1);
+  };
+  // Centralized dialog close that clears current note and navigates back
+  // (moved above)
+  const closeDialog = () => {
+    // clear context state to avoid stale UI
+    clearCurrentNote();
+    setShowNoteDialog(null);
+    // If a background location exists (modal pattern), go back in history
+    const state = (location.state ?? null) as { background?: Location } | null;
+    if (state && state.background) {
+      navigate(-1);
+    } else {
+      // otherwise navigate to dashboard and replace to avoid stale history
+      navigate('/dashboard', { replace: true });
+    }
   };
  const handleDownloadPDF = (imageFile : File | null) => {
   const doc = new jsPDF();
@@ -676,9 +419,12 @@ const NoteEditor: React.FC = () => {
         created++;
       }
       setImportMessage(created > 0 ? `Imported ${created} note${created === 1 ? '' : 's'} successfully.` : 'No valid notes found to import.');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Import failed:', err);
-      setImportMessage(err?.message || 'Import failed. Please check the file and try again.');
+      const message = typeof err === 'object' && err !== null && 'message' in err && typeof (err as Record<string, unknown>).message === 'string'
+        ? (err as Record<string, unknown>).message as string
+        : 'Import failed. Please check the file and try again.';
+      setImportMessage(message);
     } finally {
       setIsImporting(false);
       // reset input to allow re-selecting the same file
@@ -691,228 +437,267 @@ const NoteEditor: React.FC = () => {
       <Header />
       <EditorContainer>
         <Content>
-      {/* Pass hover states to EditorCard */}
-      <EditorCard
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        isCancelHovered={isCancelHovered}
-        isSaveHovered={isSaveHovered}
-      >
-        <EditorHeader>
-          <EditorTitle>
-            <FaStickyNote />
-            {isEditMode ? "Edit Note" : "Create New Note"}
-          </EditorTitle>
-          <ButtonGroup>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginRight: 8 }}>
-              <label htmlFor="syntax" style={{ fontSize: 12, color: 'var(--text-light)' }}>Syntax</label>
-              <select
-                id="syntax"
-                value={syntax}
-                onChange={(e) => setSyntax(e.target.value as any)}
-                style={{
-                  padding: '6px 10px',
-                  borderRadius: 10,
-                  border: '1px solid var(--border-color)',
-                  background: 'var(--bg-light)',
-                  color: 'var(--text-color)'
-                }}
-              >
-                <option value="markdown">Markdown</option>
-                <option value="plain">Plain Text</option>
-                <option value="javascript">JavaScript</option>
-                <option value="typescript">TypeScript</option>
-                <option value="python">Python</option>
-                <option value="json">JSON</option>
-                <option value="html">HTML</option>
-                <option value="css">CSS</option>
-              </select>
-            </div>
-            <SecondaryButton
-              type="button"
-              onClick={handleCancel}
-              onMouseEnter={() => setIsCancelHovered(true)}
-              onMouseLeave={() => setIsCancelHovered(false)}
-            >
-              Cancel
-              <FaTimes />
-            </SecondaryButton>
-            <PrimaryButton
-              type="button"
-              onClick={handleSubmit}
-              disabled={isSaving}
-              onMouseEnter={() => setIsSaveHovered(true)}
-              onMouseLeave={() => setIsSaveHovered(false)}
-            >
-              {isSaving ? "Saving..." : "Save Note"}
-              <FaCheck />
-            </PrimaryButton>
-          </ButtonGroup>
-        </EditorHeader>
-
-        {error && (
-          <motion.div
-            className="alert alert-error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {error}
-          </motion.div>
-        )}
-
-        <Form onSubmit={handleSubmit}>
-          <FormGroup>
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Note title"
-            />
-            {formErrors.title && (
-              <ErrorMessage>{formErrors.title}</ErrorMessage>
-            )}
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="content">Content</Label>
-            <EditorFieldWrap
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25 }}
-            >
-              <CodeMirror
-                value={content}
-                height="320px"
-                extensions={codeExtensions}
-                onChange={(val:string) => setContent(val)}
-                basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
-                placeholder={placeholderText}
-              />
-            </EditorFieldWrap>
-            {formErrors.content && (
-              <ErrorMessage>{formErrors.content}</ErrorMessage>
-            )}
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Links (Title + URL)</Label>
-            <LinksWrap>
-              {links.map((l, idx) => (
-                <LinkRow key={idx}>
-                  <Input
-                    type="text"
-                    placeholder="Link title"
-                    value={l.title}
-                    onChange={(e) => updateLinkRow(idx, 'title', e.target.value)}
-                  />
-                  <Input
-                    type="url"
-                    placeholder="https://example.com"
-                    value={l.url}
-                    onChange={(e) => updateLinkRow(idx, 'url', e.target.value)}
-                  />
-                  <SmallRemove type="button" onClick={() => removeLinkRow(idx)}>Remove</SmallRemove>
-                </LinkRow>
-              ))}
-              <SecondaryButton type="button" onClick={addLinkRow}>+ Add Link</SecondaryButton>
-            </LinksWrap>
-          </FormGroup>
-
-          <FormGroup>
-            <Label htmlFor="tags">Tags</Label>
-            <TagsInput>
-              {tags.map((tag, index) => (
-                <Tag key={index}>
-                  <TagText>{tag}</TagText>
-                  <RemoveTagButton type="button" onClick={() => removeTag(tag)}>
-                    ×
-                  </RemoveTagButton>
-                </Tag>
-              ))}
-              <TagInput
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleTagInputKeyDown}
-                onBlur={addTag}
-                placeholder={tags.length === 0 ? "Add tags (press Enter)" : ""}
-              />
-            </TagsInput>
-          </FormGroup>
-
-          <FormGroup>
-            <Label>Attachments</Label>
-            <FileUploadContainer
-              onClick={() => document.getElementById("file-upload")?.click()}
-            >
-              <FileInput
-                id="file-upload"
-                type="file"
-                multiple
-                accept="image/*,application/pdf"
-                onChange={handleFileChange}
-              />
-              <FileUploadIcon>📎</FileUploadIcon>
-              <FileUploadText>Click to upload files</FileUploadText>
-              <FileUploadSubtext>
-                Supports images and PDF documents
-              </FileUploadSubtext>
-            </FileUploadContainer>
-
-            {fileUrls.length > 0 && (
-              <FilePreviewContainer>
-                {fileUrls.map((url, index) => (
-                  <FilePreview key={index}>
-                    {url.startsWith("blob:") ||
-                    url.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                      <FilePreviewImage src={url} alt={`Preview ${index}`} />
-                    ) : (
-                      <FilePreviewDocument>PDF Document</FilePreviewDocument>
-                    )}
-                    <RemoveFileButton
-                      type="button"
-                      onClick={() => removeFile(index)}
-                    >
-                      ×
-                    </RemoveFileButton>
-                  </FilePreview>
-                ))}
-              </FilePreviewContainer>
-            )}
-          </FormGroup>
-
-          <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
-            Download as PDF
-            <FaDownload />
-          </DownloadButton>
-          {/* Import Notes */}
-          <input
-            id="import-notes-input"
-            type="file"
-            accept="application/json"
-            style={{ display: 'none' }}
-            onChange={handleImportNotesChange}
-          />
-          <SecondaryButton
-            type="button"
-            onClick={() => document.getElementById('import-notes-input')?.click()}
-            disabled={isImporting}
-            style={{ marginTop: '0.75rem' }}
-          >
-            {isImporting ? 'Importing…' : 'Inport your Notes safely'}
-            <FaUpload />
-          </SecondaryButton>
-          {importMessage && (
-            <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--text-light)' }}>
-              {importMessage}
-            </div>
+          {/* Show dialog with saved note after creation */}
+          {showNoteDialog && (
+            <DialogOverlay onClick={closeDialog} tabIndex={-1}>
+              <DialogBox onClick={(e) => e.stopPropagation()} tabIndex={0}>
+                <DialogClose onClick={closeDialog}>&times;</DialogClose>
+                {dialogStatus === 'success' && (
+                  <div style={{ color: 'green', marginBottom: 8 }}>This note was created successfully.</div>
+                )}
+                {dialogStatus === 'error' && (
+                  <div style={{ color: 'crimson', marginBottom: 8 }}>There was an error creating the note.</div>
+                )}
+                <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{showNoteDialog.title}</h2>
+                <div style={{ color: '#666', marginBottom: 12 }}>{showNoteDialog.content}</div>
+                {showNoteDialog.tags && showNoteDialog.tags.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <b>Tags:</b> {showNoteDialog.tags.join(', ')}
+                  </div>
+                )}
+                {showNoteDialog.mediaUrls && showNoteDialog.mediaUrls.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <b>Attachments:</b>
+                    <ul style={{ paddingLeft: 18 }}>
+                      {showNoteDialog.mediaUrls.map((url: string, idx: number) => (
+                        <li key={idx}>
+                          <button
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              color: '#4a6cf7',
+                              textDecoration: 'underline',
+                              cursor: 'pointer',
+                              fontSize: 'inherit',
+                              padding: 0,
+                            }}
+                            onClick={() => setOpenAttachment({ url, idx })}
+                          >
+                            Attachment {idx + 1}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </DialogBox>
+            </DialogOverlay>
           )}
-        </Form>
-      </EditorCard>
+          {/* Attachment overlay modal */}
+          {openAttachment && (
+            <DialogOverlay onClick={() => setOpenAttachment(null)} tabIndex={-1}>
+              <DialogBox onClick={e => e.stopPropagation()} tabIndex={0}>
+                <DialogClose onClick={() => setOpenAttachment(null)}>&times;</DialogClose>
+                <div style={{ marginBottom: 16, fontWeight: 600 }}>
+                  Attachment {openAttachment.idx + 1}
+                </div>
+                {openAttachment.url.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                  <img src={openAttachment.url} alt={`Attachment ${openAttachment.idx + 1}`} style={{ maxWidth: 360, maxHeight: 480, borderRadius: 8 }} />
+                ) : (
+                  <iframe src={openAttachment.url} title={`Attachment ${openAttachment.idx + 1}`} style={{ width: 360, height: 480, border: 'none', borderRadius: 8 }} />
+                )}
+              </DialogBox>
+            </DialogOverlay>
+          )}
+          {/* ...existing code... (rest of the editor UI) */}
+          {!showNoteDialog && (
+            <EditorCard
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              isCancelHovered={isCancelHovered}
+              isSaveHovered={isSaveHovered}
+            >
+              <form style={{ display: 'flex', width: '100%', gap: '2.5rem' }} onSubmit={handleSubmit}>
+                <LeftColumn>
+                  <FormGroup>
+                    <Label htmlFor="title">Title</Label>
+                    <Input
+                      id="title"
+                      type="text"
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      placeholder="Note title"
+                    />
+                    {formErrors.title && (
+                      <ErrorMessage>{formErrors.title}</ErrorMessage>
+                    )}
+                  </FormGroup>
+                  <FormGroup>
+                    <Label htmlFor="note-type">Note Type</Label>
+                    <select
+                      id="note-type"
+                      value={syntax}
+                      onChange={e => setSyntax(e.target.value as typeof syntax)}
+                      style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '1rem', marginBottom: 8 }}
+                    >
+                      <option value="plain">Plain Text</option>
+                      <option value="markdown">Markdown</option>
+                      <option value="json">JSON</option>
+                      <option value="javascript">JavaScript</option>
+                      <option value="typescript">TypeScript</option>
+                      <option value="python">Python</option>
+                      <option value="java">Java</option>
+                      <option value="html">HTML</option>
+                      <option value="css">CSS</option>
+                      <option value="react">React JSX</option>
+                    </select>
+                  </FormGroup>
+                  <FormGroup>
+                    <Label htmlFor="content">Content</Label>
+                    <EditorFieldWrap
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <CodeMirror
+                        value={content}
+                        height="320px"
+                        extensions={codeExtensions}
+                        onChange={(val:string) => setContent(val)}
+                        basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+                        placeholder={placeholderText}
+                      />
+                    </EditorFieldWrap>
+                    {formErrors.content && (
+                      <ErrorMessage>{formErrors.content}</ErrorMessage>
+                    )}
+                  </FormGroup>
+                </LeftColumn>
+                <RightColumn>
+                  <FormGroup>
+                    <Label>Tags</Label>
+                    <TagsInput>
+                      {tags.map((tag, index) => (
+                        <Tag key={index}>
+                          <TagText>{tag}</TagText>
+                          <RemoveTagButton type="button" onClick={() => removeTag(tag)}>
+                            ×
+                          </RemoveTagButton>
+                        </Tag>
+                      ))}
+                      <TagInput
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={handleTagInputKeyDown}
+                        onBlur={addTag}
+                        placeholder={tags.length === 0 ? "Add tags (press Enter)" : ""}
+                      />
+                    </TagsInput>
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Links (Title + URL)</Label>
+                    <LinksWrap>
+                      {links.map((l, idx) => (
+                        <LinkRow key={idx}>
+                          <Input
+                            type="text"
+                            placeholder="Link title"
+                            value={l.title}
+                            onChange={(e) => updateLinkRow(idx, 'title', e.target.value)}
+                          />
+                          <Input
+                            type="url"
+                            placeholder="https://example.com"
+                            value={l.url}
+                            onChange={(e) => updateLinkRow(idx, 'url', e.target.value)}
+                          />
+                          <SmallRemove type="button" onClick={() => removeLinkRow(idx)}>Remove</SmallRemove>
+                        </LinkRow>
+                      ))}
+                      <SecondaryButton type="button" onClick={addLinkRow}>+ Add Link</SecondaryButton>
+                    </LinksWrap>
+                  </FormGroup>
+                  <FormGroup>
+                    <Label>Attachments</Label>
+                    <FileUploadContainer
+                      onClick={() => document.getElementById("file-upload")?.click()}
+                    >
+                      <FileInput
+                        id="file-upload"
+                        type="file"
+                        multiple
+                        accept="image/*,application/pdf"
+                        onChange={handleFileChange}
+                      />
+                      <FileUploadIcon>📎</FileUploadIcon>
+                      <FileUploadText>Click to upload files</FileUploadText>
+                      <FileUploadSubtext>
+                        Supports images and PDF documents
+                      </FileUploadSubtext>
+                    </FileUploadContainer>
+                    {fileUrls.length > 0 && (
+                      <FilePreviewContainer>
+                        {fileUrls.map((url, index) => (
+                          <FilePreview key={index}>
+                            {url.startsWith("blob:") ||
+                            url.match(/\.(jpeg|jpg|gif|png)$/i) ? (
+                              <FilePreviewImage src={url} alt={`Preview ${index}`} />
+                            ) : (
+                              <FilePreviewDocument>PDF Document</FilePreviewDocument>
+                            )}
+                            <RemoveFileButton
+                              type="button"
+                              onClick={() => removeFile(index)}
+                            >
+                              ×
+                            </RemoveFileButton>
+                          </FilePreview>
+                        ))}
+                      </FilePreviewContainer>
+                    )}
+                  </FormGroup>
+                  <ButtonGroup>
+                    <SecondaryButton
+                      type="button"
+                      onClick={handleCancel}
+                      onMouseEnter={() => setIsCancelHovered(true)}
+                      onMouseLeave={() => setIsCancelHovered(false)}
+                    >
+                      Cancel
+                      <FaTimes />
+                    </SecondaryButton>
+                    <PrimaryButton
+                      type="submit"
+                      disabled={isSaving}
+                      onMouseEnter={() => setIsSaveHovered(true)}
+                      onMouseLeave={() => setIsSaveHovered(false)}
+                    >
+                      {isSaving ? "Saving..." : "Save Note"}
+                      <FaCheck />
+                    </PrimaryButton>
+                  </ButtonGroup>
+                  <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
+                    Download as PDF
+                    <FaDownload />
+                  </DownloadButton>
+                  {/* Import Notes */}
+                  <input
+                    id="import-notes-input"
+                    type="file"
+                    accept="application/json"
+                    style={{ display: 'none' }}
+                    onChange={handleImportNotesChange}
+                  />
+                  <SecondaryButton
+                    type="button"
+                    onClick={() => document.getElementById('import-notes-input')?.click()}
+                    disabled={isImporting}
+                    style={{ marginTop: '0.75rem' }}
+                  >
+                    {isImporting ? 'Importing…' : 'Inport your Notes safely'}
+                    <FaUpload />
+                  </SecondaryButton>
+                  {importMessage && (
+                    <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--text-light)' }}>
+                      {importMessage}
+                    </div>
+                  )}
+                </RightColumn>
+              </form>
+            </EditorCard>
+          )}
         </Content>
       </EditorContainer>
     </>
