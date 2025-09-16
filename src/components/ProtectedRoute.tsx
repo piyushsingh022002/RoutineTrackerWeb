@@ -9,6 +9,11 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
+  // Debugging: log auth state to help trace routing behavior during navigation
+  // (This can be removed after diagnosing the issue.)
+  // eslint-disable-next-line no-console
+  console.debug('[ProtectedRoute] isLoading=', isLoading, 'isAuthenticated=', isAuthenticated);
+
   if (isLoading) return <div>Loading...</div>;
   if (!isAuthenticated) return <Navigate to="/" replace />;
 
