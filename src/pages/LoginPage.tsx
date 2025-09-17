@@ -12,7 +12,7 @@ const LoginContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 1rem 0.5rem;
-  background-color: var(--bg-color);
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
   box-sizing: border-box;
   @media ${device.tablet} {
     padding: 2rem 1rem;

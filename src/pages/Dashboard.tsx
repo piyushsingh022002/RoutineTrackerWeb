@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNotes } from '../context/NotesContext';
 import Button from '../components/common/Button';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaTrash, FaEdit, FaTimes } from 'react-icons/fa';
 import { ActivityCalendar } from '../components/dashboard';
 import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -55,7 +57,10 @@ function formatDate(dateStr: string | number | Date | undefined) {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { notes, isLoading } = useNotes();
+  const { notes, isLoading, deleteNote, clearCurrentNote } = useNotes();
+  const [openNote, setOpenNote] = useState<Note | null>(null);
+  const [deleting, setDeleting] = useState(false);
+  const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   const gridVariants = {
     hidden: {},
@@ -175,14 +180,92 @@ const Dashboard = () => {
                     variants={itemVariants}
                     whileHover={{ y: -4 }}
                     whileTap={{ scale: 0.98 }}
+                    style={{ position: 'relative' }}
                   >
-                    <NoteCard to={`/notes/${note.id}`}>
+                    <NoteCard to="#" tabIndex={0} style={{ pointerEvents: 'auto' }}>
                       <NoteDate>{formatDate(note.createdAt)}</NoteDate>
                       <NoteTitle>{note.title}</NoteTitle>
+                      {/* Overlay button for accessibility and click */}
+                      <button
+                        type="button"
+                        aria-label={`Open note: ${note.title}`}
+                        onClick={() => setOpenNote(note)}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          opacity: 0,
+                          border: 'none',
+                          background: 'none',
+                          cursor: 'pointer',
+                          zIndex: 2,
+                        }}
+                      />
                     </NoteCard>
                   </motion.div>
                 ))}
               </NotesGrid>
+            )}
+            {/* Note dialog for recent note */}
+            {openNote && (
+              <ModalOverlay onClick={() => setOpenNote(null)}>
+                <ModalBox>
+                  <div onClick={(e) => e.stopPropagation()}>
+                    <ModalClose onClick={() => setOpenNote(null)}><FaTimes /></ModalClose>
+                    <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 8 }}>{openNote.title}</div>
+                    <div style={{ color: '#666', marginBottom: 12, whiteSpace: 'pre-wrap' }}>{openNote.content}</div>
+                    {openNote.tags && openNote.tags.length > 0 && (
+                      <div style={{ marginBottom: 12 }}>
+                        <b>Tags:</b> {openNote.tags.join(', ')}
+                      </div>
+                    )}
+                    {openNote.mediaUrls && openNote.mediaUrls.length > 0 && (
+                      <div style={{ marginBottom: 12 }}>
+                        <b>Attachments:</b>
+                        <ul style={{ paddingLeft: 18 }}>
+                          {openNote.mediaUrls.map((url: string, idx: number) => (
+                            <li key={idx}><a href={url} target="_blank" rel="noopener noreferrer">Attachment {idx + 1}</a></li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
+                      <Button
+                        variant="danger"
+                        size="medium"
+                        shape="pill"
+                        disabled={deleting}
+                        onClick={async () => {
+                          setDeleting(true);
+                          try {
+                            await deleteNote(openNote.id.toString());
+                            setOpenNote(null);
+                          } finally {
+                            setDeleting(false);
+                          }
+                        }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                      >
+                        <FaTrash /> Delete
+                      </Button>
+                      <Button
+                        variant="primary"
+                        size="medium"
+                        shape="pill"
+                        onClick={() => {
+                          clearCurrentNote();
+                          navigate(`/notes/${openNote.id}/edit`);
+                        }}
+                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
+                      >
+                        <FaEdit /> Edit
+                      </Button>
+                    </div>
+                  </div>
+                </ModalBox>
+              </ModalOverlay>
             )}
             {!isLoading && recentNotes.length === 0 && (
               <EmptyNotes>
