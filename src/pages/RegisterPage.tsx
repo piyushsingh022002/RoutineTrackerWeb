@@ -6,12 +6,12 @@ import { useAuth } from '../context/AuthContext';
 
 const RegisterContainer = styled.div`
   min-height: 100vh;
-  width: 1430px;
+  width: 100vw;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--bg-color) 0%, #f0f4f8 100%);
-  padding: 5rem;
+  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+  padding: 5rem 0;
   box-sizing: border-box;
   overflow-y: auto;
 `;
