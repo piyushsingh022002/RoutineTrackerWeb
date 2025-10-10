@@ -243,7 +243,8 @@ const Header: React.FC = () => {
   const navigate = useNavigate();
   const { toggleTheme } = useTheme();
   const { notes } = useNotes();
-  const { unreadCount } = useNotifications();
+  const { notifications } = useNotifications();
+  const unreadCount = notifications ? notifications.filter((n) => !n.isRead).length : 0;
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
