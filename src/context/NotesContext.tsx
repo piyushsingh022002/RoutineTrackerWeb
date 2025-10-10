@@ -151,8 +151,13 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const getNote = async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/${id}`);
-      dispatch({ type: 'GET_NOTE_SUCCESS', payload: res.data.data });
+      // Use the notes endpoint and support APIs that return the resource
+      // either as res.data.data or res.data
+      const res = await axios.get(`${API_URL}/notes/${id}`);
+      const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
+      const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
+      const note: Note = payload as Note;
+      dispatch({ type: 'GET_NOTE_SUCCESS', payload: note });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch note');
       dispatch({ type: 'GET_NOTE_FAILURE', payload: errorMessage });
