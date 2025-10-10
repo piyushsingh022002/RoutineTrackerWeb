@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 // import { motion } from "framer-motion";
 import {
@@ -333,7 +333,7 @@ const NoteEditor: React.FC = () => {
   };
   // Centralized dialog close that clears current note and navigates back
   // (moved above)
-  const closeDialog = () => {
+  const closeDialog = useCallback(() => {
     // clear context state to avoid stale UI
     clearCurrentNote();
     setShowNoteDialog(null);
@@ -345,7 +345,18 @@ const NoteEditor: React.FC = () => {
       // otherwise navigate to dashboard and replace to avoid stale history
       navigate('/dashboard', { replace: true });
     }
-  };
+  }, [clearCurrentNote, navigate, location]);
+
+  // Auto-close the save dialog after 5 seconds if user doesn't close it
+  useEffect(() => {
+    if (!showNoteDialog) return;
+    const timer = setTimeout(() => {
+      // Only close if still open
+      if (showNoteDialog) closeDialog();
+    }, 5000);
+    return () => clearTimeout(timer);
+    // include closeDialog in deps to ensure latest reference is used
+  }, [showNoteDialog, closeDialog]);
  const handleDownloadPDF = (imageFile : File | null) => {
   const doc = new jsPDF();
 

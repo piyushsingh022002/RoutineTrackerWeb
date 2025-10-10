@@ -74,15 +74,26 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
         currentNote: action.payload,
         isLoading: false,
       };
-    case 'UPDATE_NOTE_SUCCESS':
+    case 'UPDATE_NOTE_SUCCESS': {
+      // Defensive: ensure payload is present and has an id
+      // (some APIs may return an unexpected shape; avoid crashing reducer)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedNote = (action as any).payload as Note | undefined;
+      if (!updatedNote || updatedNote.id === undefined) {
+        return {
+          ...state,
+          isLoading: false,
+        };
+      }
       return {
         ...state,
         notes: state.notes.map((note) =>
-          note.id === action.payload.id ? action.payload : note
+          note.id === updatedNote.id ? updatedNote : note
         ),
-        currentNote: action.payload,
+        currentNote: updatedNote,
         isLoading: false,
       };
+    }
     case 'DELETE_NOTE_SUCCESS':
       return {
         ...state,
@@ -185,7 +196,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'UPDATE_NOTE_REQUEST' });
     try {
       const res = await axios.put(`${API_URL}/notes/${id}`, note);
-      dispatch({ type: 'UPDATE_NOTE_SUCCESS', payload: res.data.data });
+      // Normalize response: support APIs that return the updated resource as res.data.data or res.data
+      const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
+      const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
+      const updated: Note = payload as Note;
+      dispatch({ type: 'UPDATE_NOTE_SUCCESS', payload: updated });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to update note');
       dispatch({ type: 'UPDATE_NOTE_FAILURE', payload: errorMessage });
