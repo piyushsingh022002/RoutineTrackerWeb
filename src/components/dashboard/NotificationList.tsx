@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { format, formatDistanceToNow } from 'date-fns';
 import type { Notification } from '../../types';
 import { Card, Button } from '../common';
+import Loader from '../common/Loader';
 
 interface NotificationListProps {
   notifications: Notification[];
@@ -146,7 +147,7 @@ const NotificationList: React.FC<NotificationListProps> = ({
       </Header>
       
       {isLoading ? (
-        <LoadingState>Loading notifications...</LoadingState>
+        <LoadingState><Loader text="Loading notifications..." /></LoadingState>
       ) : notifications.length === 0 ? (
         <EmptyState>No notifications to display</EmptyState>
       ) : (

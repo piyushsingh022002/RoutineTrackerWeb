@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 import { device } from '../../styles/breakpoints';
 const FooterContainer = styled.footer`
@@ -78,18 +79,8 @@ const Footer: React.FC = () => {
 
         <FooterSection>
           <FooterTitle>Quick Links</FooterTitle>
-          <FooterLink 
-            href="/dashboard"
-            whileHover={{ x: 5 }}
-          >
-            Dashboard
-          </FooterLink>
-          <FooterLink 
-            href="/notes/new"
-            whileHover={{ x: 5 }}
-          >
-            Create Note
-          </FooterLink>
+          <FooterLink as={Link} to="/dashboard" whileHover={{ x: 5 }}>Dashboard</FooterLink>
+          <FooterLink as={Link} to="/notes/new" whileHover={{ x: 5 }}>Create Note</FooterLink>
         </FooterSection>
 
         <FooterSection>

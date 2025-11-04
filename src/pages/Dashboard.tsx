@@ -49,6 +49,7 @@ import {
   ModalBox,
   ModalClose,
 } from './Dashboard.styles';
+import Loader from '../components/common/Loader';
 
 function formatDate(dateStr: string | number | Date | undefined) {
   if (!dateStr) return '';
@@ -168,7 +169,7 @@ const Dashboard = () => {
               </motion.div>
             </NotesGrid>
             {isLoading && (
-              <EmptyNotes>Loading...</EmptyNotes>
+              <EmptyNotes><Loader text="Loading notes..." /></EmptyNotes>
             )}
             <h2 className="text-xl font-semibold mb-4" style={{marginTop: '2.5rem'}}>Recent Notes</h2>
             {/* Show recent notes cards below heading */}
