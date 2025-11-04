@@ -2,6 +2,8 @@ import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useNotifications } from "../context/NotificationsContext";
 import { DashboardContainer, Content, StatCard } from './Dashboard.styles';
 import styled, { keyframes } from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const float1 = keyframes`
   0% { transform: translateY(0) translateX(0) scale(1); }
@@ -61,6 +63,8 @@ const NotificationBackground = styled.div`
 export default function NotificationsPage() {
   const { notifications, isLoading, error, getAllPreviousNotifications } = useNotifications();
 
+  const navigate = useNavigate();
+
   return (
     <DashboardContainer>
       <NotificationBackground aria-hidden>
@@ -70,9 +74,29 @@ export default function NotificationsPage() {
       </NotificationBackground>
       <Content style={{ position: 'relative', zIndex: 2 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-          <div>
-            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800 }}>Notifications</h1>
-            <div style={{ color: 'var(--text-light)', marginTop: 6 }}>Real-time updates and history</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button
+              onClick={() => navigate('/dashboard')}
+              aria-label="Back to dashboard"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                border: '1px solid rgba(0,0,0,0.06)',
+                background: 'rgba(255,255,255,0.6)',
+                cursor: 'pointer'
+              }}
+            >
+              <FaArrowLeft />
+            </button>
+
+            <div>
+              <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800 }}>Notifications</h1>
+              <div style={{ color: 'var(--text-light)', marginTop: 6 }}>Real-time updates and history</div>
+            </div>
           </div>
 
           <div style={{ display: 'flex', gap: 10 }}>

@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
 import { Button, Input, Alert } from '../common';
+import { Link } from 'react-router-dom';
 
 const FormContainer = styled(motion.form)`
   display: flex;
@@ -203,7 +204,7 @@ const RegisterForm: React.FC = () => {
       </Button>
       
       <LoginLink>
-        Already have an account? <a href="/login">Login</a>
+        Already have an account? <Link to="/login">Login</Link>
       </LoginLink>
     </FormContainer>
   );

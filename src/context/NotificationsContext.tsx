@@ -5,7 +5,7 @@ import type { Notification } from "../types";
 import { useAuth } from "./AuthContext";
 
 // API base URL (ensure no trailing slash when concatenating paths)
-const API_ROOT = (import.meta.env.VITE_API_URL || "https://studentroutinetrackerapi.onrender.com").replace(/\/$/, "");
+const API_ROOT = (import.meta.env.VITE_API_URL || "https://recotrackapi.onrender.com").replace(/\/$/, "");
 
 interface NotificationsContextType {
   notifications: Notification[];

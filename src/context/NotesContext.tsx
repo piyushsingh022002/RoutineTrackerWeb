@@ -4,7 +4,7 @@ import type { Note } from '../types';
 import { useAuth } from './AuthContext';
 
 // API base URL
-const API_URL = import.meta.env.VITE_API_URL || 'https://studentroutinetrackerapi.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://recotrackapi.onrender.com/api';
 
 // Notes state interface
 interface NotesState {
@@ -144,20 +144,24 @@ const NotesContext = createContext<NotesContextType | undefined>(undefined);
 // Notes provider component
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(notesReducer, initialState);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   const getNotes = React.useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !token) return;
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/Notes`);
-      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data});
+      const res = await axios.get(`${API_URL}/Notes`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, token]);
 
   const getNote = async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
@@ -229,11 +233,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && token) {
       getNotes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isAuthenticated, token]);
 
   return (
     <NotesContext.Provider
