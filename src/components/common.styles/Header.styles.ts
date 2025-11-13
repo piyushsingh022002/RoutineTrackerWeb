@@ -17,7 +17,7 @@ export const HeaderContainer = styled.header`
   top: 0;
   z-index: 1000;
   /* Responsive header height variable */
-  --header-height: 88px;
+  --header-height: 65px;
   height: var(--header-height);
   @media ${device.tablet} {
     padding: 1rem 1rem;
@@ -40,20 +40,44 @@ export const LeftGroup = styled.div`
 `;
 
 export const Logo = styled(Link)`
-  font-size: 2rem;
-  font-weight: 900;
-  color: #2b2d42;
-  text-decoration: none;
+  /* Compact logo wrapper: keep image and optional brand text aligned */
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
+  height: 100%;
+  color: #2b2d42;
+  text-decoration: none;
+  font-weight: 900;
+  font-size: 1rem;
   line-height: 1;
+  padding: 0.15rem 0.25rem;
+  & .brand-text {
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
 `;
 
 export const LogoImg = styled.img`
-  width: 28px;
-  height: 28px;
+  /* Larger logo sizes so the image is clearly visible */
+  --width: 56px;
+  --height: 56px;
+  --max-height: calc(var(--header-height));
+  height: calc(var(--header-height) - 8px);
+  width: auto;
+  max-height: 100%;
   display: inline-block;
   object-fit: contain;
+  vertical-align: middle;
+  margin-right: 0.5rem;
+  @media ${device.tablet} {
+    width: 48px;
+    height: 48px;
+  }
+  @media ${device.mobile} {
+    width: 40px;
+    height: 40px;
+  }
 `;
 
 export const Nav = styled.nav`

@@ -29,9 +29,8 @@ import {
   MenuItem,
 } from '../common.styles/Header.styles';
 
-
-
-
+// Logo image
+import recotrackLogo from '../../../Logos/recotrack.logo.png';
 
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
@@ -110,7 +109,7 @@ const Header: React.FC = () => {
         <LeftGroup>
           <Logo to={isAuthenticated ? '/dashboard' : '/'} aria-label="Home">
             <LogoImg
-              src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f4ca.png"
+              src={recotrackLogo}
               alt="Routine Tracker logo (progress bars)"
               loading="eager"
               decoding="async"
