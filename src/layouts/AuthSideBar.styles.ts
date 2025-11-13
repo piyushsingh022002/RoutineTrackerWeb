@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 import { device } from '../styles/breakpoints';
+import recotrackLogo from '../../Logos/recotrack.logo.png';
 
 export const Sidebar = styled.aside`
 	width: 42%;
@@ -31,12 +32,15 @@ export const Brand = styled(Link)`
 	margin-bottom: 0.75rem;
 `;
 
-export const Illustration = styled.div`
-	width: 220px;
-	height: 220px;
+export const Illustration = styled.img.attrs({
+	src: recotrackLogo,
+	alt: 'Recotrack logo',
+})`
+	display: block;
+	width: auto;
+	height: auto;
+	max-width: 100%;
 	border-radius: 24px;
-	background: radial-gradient(120px 80px at 20% 20%, rgba(79,70,229,0.14), transparent 30%),
-		linear-gradient(135deg, rgba(99,102,241,0.12), rgba(59,130,246,0.06));
 	box-shadow: var(--shadow-md);
 	margin: 1rem 0 0.5rem 0;
 `;

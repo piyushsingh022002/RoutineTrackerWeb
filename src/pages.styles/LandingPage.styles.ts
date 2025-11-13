@@ -25,7 +25,7 @@ const Hero = styled(motion.div)`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: calc(var(--header-height, 88px) + 2rem) 0.5rem 2rem 0.5rem;
+  padding: calc(var(--header-height, 65px) + 2rem) 0.5rem 2rem 0.5rem;
   background: transparent;
   transition: box-shadow 0.3s, background 0.3s;
   border-radius: 24px;
@@ -46,9 +46,9 @@ const Hero = styled(motion.div)`
 `;
 
 const HeroTitle = styled(motion.h1)`
-  font-size: 2.2rem;
+  font-size: 2.1rem;
   font-weight: 800;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   color: var(--text-color);
   @media ${device.tablet} {
     font-size: 3rem;
@@ -62,9 +62,10 @@ const HeroTitle = styled(motion.h1)`
 `;
 
 const HeroSubtitle = styled(motion.p)`
-  font-size: 1rem;
+  font-size: 2rem;
   color: var(--text-light);
   margin-bottom: 2.5rem;
+  margin-top: 0;
   width: 100%;
   @media ${device.tablet} {
     font-size: 1.25rem;

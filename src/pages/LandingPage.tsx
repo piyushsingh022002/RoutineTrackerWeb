@@ -50,7 +50,13 @@ const LandingPage: React.FC = () => {
       {/* Hero Section */}
       <Hero>
         <HeroTitle>
-          Your Notes, Your Way—<span className="highlight">Secure, Shareable, and Smart.</span>
+          Your Notes,Your Way
+        </HeroTitle>
+        {/* <HeroSubtitle>
+          ------------------------------------
+        </HeroSubtitle> */}
+        <HeroTitle>
+        <span className="highlight">Secure, Shareable, and Smart.</span>
         </HeroTitle>
         <HeroSubtitle>
           Enjoy total freedom and control over your notes—write, organize, and share on your terms.
