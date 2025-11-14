@@ -9,7 +9,7 @@ const ROUTE_PATHS = {
     SETTINGS: '/settings',
     PROFILE: '/profile',
     NOTIFICATIONS: '/notifications',
-    NEWNOTE: '/new/notes',
+    NEWNOTE: '/notes/new',
     VIEWNOTE: '/notes/:id',
     NOTEEDIT: '/notes/:id/edit',
     NOTFOUNDPAGE: '*'

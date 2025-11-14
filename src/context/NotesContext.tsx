@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import type { Note } from '../types';
@@ -151,24 +152,29 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/Notes`, {
+      const res = await axios.get(`${API_URL}/notes`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data });
+      // Support APIs that return the list as res.data.data or res.data
+      const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
+      const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
+      const notesList: Note[] = (payload ?? []) as Note[];
+      dispatch({ type: 'GET_NOTES_SUCCESS', payload: notesList });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
   }, [isAuthenticated, token]);
 
-  const getNote = async (id: string) => {
+  const getNote = React.useCallback(async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
     try {
-      // Use the notes endpoint and support APIs that return the resource
-      // either as res.data.data or res.data
-      const res = await axios.get(`${API_URL}/notes/${id}`);
+      const res = await axios.get(`${API_URL}/notes/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      // Support APIs that return the resource as res.data.data or res.data
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
       const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
       const note: Note = payload as Note;
@@ -177,16 +183,18 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const errorMessage = getErrorMessage(err, 'Failed to fetch note');
       dispatch({ type: 'GET_NOTE_FAILURE', payload: errorMessage });
     }
-  };
+  }, [token]);
 
-  const createNote = async (note: Partial<Note>) => {
+  const createNote = React.useCallback(async (note: Partial<Note>) => {
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
-      const res = await axios.post(`${API_URL}/Notes`, note);
+      const res = await axios.post(`${API_URL}/notes`, note, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       // Support APIs that return the created resource as res.data.data or res.data
-  const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
-  const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
-  const created: Note = payload as Note;
+      const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
+      const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
+      const created: Note = payload as Note;
       dispatch({ type: 'CREATE_NOTE_SUCCESS', payload: created });
       return created;
     } catch (err: unknown) {
@@ -194,13 +202,14 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       dispatch({ type: 'CREATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
-  };
+  }, [token]);
 
-  const updateNote = async (id: string, note: Partial<Note>) => {
+  const updateNote = React.useCallback(async (id: string, note: Partial<Note>) => {
     dispatch({ type: 'UPDATE_NOTE_REQUEST' });
     try {
-      const res = await axios.put(`${API_URL}/notes/${id}`, note);
-      // Normalize response: support APIs that return the updated resource as res.data.data or res.data
+      const res = await axios.put(`${API_URL}/notes/${id}`, note, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
       const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
       const updated: Note = payload as Note;
@@ -210,19 +219,21 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       dispatch({ type: 'UPDATE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
-  };
+  }, [token]);
 
-  const deleteNote = async (id: string) => {
+  const deleteNote = React.useCallback(async (id: string) => {
     dispatch({ type: 'DELETE_NOTE_REQUEST' });
     try {
-      await axios.delete(`${API_URL}/notes/${id}`);
+      await axios.delete(`${API_URL}/notes/${id}`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
       dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to delete note');
       dispatch({ type: 'DELETE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);
     }
-  };
+  }, [token]);
 
   const clearCurrentNote = () => {
     dispatch({ type: 'CLEAR_CURRENT_NOTE' });
