@@ -3,8 +3,9 @@ import { useAuth } from '../context/AuthContext';
 import { useNotes } from '../context/NotesContext';
 import Button from '../components/common/Button';
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-// import { FaTrash, FaEdit, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../components/common/Loader';
+import { FaTrash, FaEdit, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ActivityCalendar } from '../components/dashboard';
 import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -45,7 +46,7 @@ import {
 // import Loader from '../components/common/Loader';
 import DashboardSidebar from '../components/layout/DashboardSidebar';
 import StatsCard from '../components/layout/StatsCard';
-import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
 function formatDate(dateStr: string | number | Date | undefined) {
   if (!dateStr) return '';
   return new Date(dateStr).toLocaleDateString();
@@ -90,12 +91,12 @@ const Dashboard = () => {
   const hasMoreThanTwo = sortedNotes.length > 2;
 
   return (
+    <>
+    <Header />
     <DashboardContainer>
-      <Header />
       <Content>
         <MainGrid collapsed={sidebarCollapsed} rightCollapsed={calendarCollapsed}>
           <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((s) => !s)} />
-
           {/* Main center content */}
           <div style={{ width: '100%' }}>
             {/* 1. Greeting and subheading */}
@@ -159,6 +160,7 @@ const Dashboard = () => {
             )}
             <h2 className="text-xl font-semibold mb-4" style={{marginTop: '2.5rem'}}>Recent Notes</h2>
             {/* Show recent notes cards below heading */}
+
             {!isLoading && recentNotes.length > 0 && (
               <NotesGrid variants={gridVariants} initial="hidden" animate="show">
                 {recentNotes.map((note: Note) => (
@@ -188,7 +190,10 @@ const Dashboard = () => {
                           background: 'none',
                           cursor: 'pointer',
                           zIndex: 2,
+                          // transition: 'border 0.2s',
                         }}
+                        onMouseEnter={(e) => (e.currentTarget.style.border = '1px solid black')}
+                        onMouseLeave={(e) => (e.currentTarget.style.border = 'none')}
                       />
                     </NoteCard>
                   </motion.div>
@@ -346,6 +351,7 @@ const Dashboard = () => {
         </MainGrid>
       </Content>
     </DashboardContainer>
+    </>
   );
 };
 

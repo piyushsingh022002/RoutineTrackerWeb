@@ -245,7 +245,7 @@ export const MainGrid = styled.div<{ collapsed?: boolean; rightCollapsed?: boole
 
 export const Sidebar = styled.aside`
   position: sticky;
-  top: 100px; /* below header */
+  --top: 20px; /* below header */
   align-self: start;
   background: var(--bg-light);
   border: 1px solid var(--border-color);
@@ -293,7 +293,7 @@ export const DashboardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1rem;
 `;
 
 
