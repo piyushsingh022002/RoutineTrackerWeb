@@ -3,6 +3,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNotes } from '../context/NotesContext';
 import Button from '../components/common/Button';
 import { useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import { FaTrash, FaEdit, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ActivityCalendar } from '../components/dashboard';
 import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -10,9 +12,6 @@ import type { Note } from '../types';
 
 import {
   DashboardContainer,
-  StatCard,
-  StatTitle,
-  StatValue,
   NotesGrid,
   NoteCard,
   CreateTile,
@@ -24,10 +23,6 @@ import {
   TileCTA,
   Content,
   MainGrid,
-  Sidebar,
-  SidebarSectionTitle,
-  SidebarLink,
-  Divider,
   CalendarWrapper,
   DashboardHeader,
   WelcomeText,
@@ -47,7 +42,10 @@ import {
   ModalBox,
   ModalClose,
 } from './Dashboard.styles';
-
+// import Loader from '../components/common/Loader';
+import DashboardSidebar from '../components/layout/DashboardSidebar';
+import StatsCard from '../components/layout/StatsCard';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 function formatDate(dateStr: string | number | Date | undefined) {
   if (!dateStr) return '';
   return new Date(dateStr).toLocaleDateString();
@@ -57,6 +55,9 @@ const Dashboard = () => {
   const { user } = useAuth();
   const { notes, isLoading } = useNotes();
   const [showAll, setShowAll] = useState(false);
+  // collapse by default per request
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
+  const [calendarCollapsed, setCalendarCollapsed] = useState(true);
   const gridVariants = {
     hidden: {},
     show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },
@@ -89,20 +90,8 @@ const Dashboard = () => {
     <DashboardContainer>
       <Header />
       <Content>
-        <MainGrid>
-          <Sidebar>
-            <SidebarSectionTitle>Create</SidebarSectionTitle>
-            <SidebarLink to="/notes/new">➕ New Note</SidebarLink>
-            <SidebarLink to="/noteplus">🤖 ChatGPT</SidebarLink>
-            <SidebarSectionTitle>Collaboration</SidebarSectionTitle>
-            <SidebarLink to="/teams">👥 Teams</SidebarLink>
-            <Divider />
-            <SidebarSectionTitle>Browse</SidebarSectionTitle>
-            <SidebarLink to="/notes?filter=favorite">⭐ Favourite Notes</SidebarLink>
-            <SidebarLink to="/notes?filter=important">❗ Important Notes</SidebarLink>
-            <SidebarLink to="/notes">🗂️ All Notes</SidebarLink>
-            <SidebarLink to="/notes?filter=deleted">🗑️ Deleted Notes</SidebarLink>
-          </Sidebar>
+        <MainGrid collapsed={sidebarCollapsed} rightCollapsed={calendarCollapsed}>
+          <DashboardSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((s) => !s)} />
 
           {/* Main center content */}
           <div style={{ width: '100%' }}>
@@ -211,22 +200,10 @@ const Dashboard = () => {
 
             {/* 4. StatsGrid (full width, below button) */}
             <StatsGrid>
-              <StatCard>
-                <StatTitle>Total Notes</StatTitle>
-                <StatValue>{sortedNotes.length}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>This Week</StatTitle>
-                <StatValue>{0}</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Current Streak</StatTitle>
-                <StatValue>{0} days</StatValue>
-              </StatCard>
-              <StatCard>
-                <StatTitle>Completion Rate</StatTitle>
-                <StatValue>0%</StatValue>
-              </StatCard>
+              <StatsCard title="Total Notes" value={sortedNotes.length} />
+              <StatsCard title="This Week" value={0} />
+              <StatsCard title="Current Streak" value={`${0} days`} />
+              <StatsCard title="Completion Rate" value={`0%`} />
             </StatsGrid>
 
             {/* 5. Show all notes modal/list if requested */}
@@ -258,9 +235,32 @@ const Dashboard = () => {
             )}
           </div>
 
-          {/* Right calendar */}
+          {/* Right calendar (collapsible) */}
           <CalendarWrapper>
-            <ActivityCalendar activityLogs={activityLogs} month={month} />
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 8 }}>
+              <button
+                onClick={() => setCalendarCollapsed((s) => !s)}
+                aria-label={calendarCollapsed ? 'Expand calendar' : 'Collapse calendar'}
+                style={{
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  padding: 6,
+                  borderRadius: 8,
+                  color: 'var(--text-color)'
+                }}
+              >
+                {calendarCollapsed ? <FaChevronLeft /> : <FaChevronRight />}
+              </button>
+            </div>
+
+            {!calendarCollapsed ? (
+              <ActivityCalendar activityLogs={activityLogs} month={month} />
+            ) : (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: 120 }}>
+                <div style={{ color: 'var(--text-light)', fontSize: 12 }}>Calendar collapsed</div>
+              </div>
+            )}
           </CalendarWrapper>
         </MainGrid>
       </Content>

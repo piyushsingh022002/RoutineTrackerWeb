@@ -218,14 +218,20 @@ export const Content = styled.main`
 `;
 
 // Layout: Sidebar | Main | Calendar
-export const MainGrid = styled.div`
+export const MainGrid = styled.div<{ collapsed?: boolean; rightCollapsed?: boolean }>`
   display: grid;
-  grid-template-columns: 220px 1fr 360px;
+  /* change the left and right column widths when collapsed */
+  grid-template-columns: ${(p) => {
+    const left = p.collapsed ? '72px' : '220px';
+    const right = p.rightCollapsed ? '72px' : '360px';
+    return `${left} 1fr ${right}`;
+  }};
   gap: 1rem;
   padding: 0 0.5rem 1rem;
   align-items: start;
+  transition: grid-template-columns 200ms ease;
   @media ${device.tablet} {
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: ${(p) => (p.collapsed ? (p.rightCollapsed ? '72px 1fr 72px' : '72px 1fr') : (p.rightCollapsed ? '200px 1fr 72px' : '200px 1fr'))};
     grid-auto-rows: min-content;
     grid-template-areas:
       'sidebar main'
