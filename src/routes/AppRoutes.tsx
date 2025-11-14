@@ -52,7 +52,7 @@ const AppRoutes = () => {
         { path: ROUTE_PATHS.NEWNOTE, element: <NoteEditor /> },
         // common alternate path used across the app
         { path: ROUTE_PATHS.VIEWNOTE, element: <ViewNote /> },
-        // { path: ROUTE_PATHS.NOTEEDIT, element: <NoteEditor /> },
+        { path: ROUTE_PATHS.NOTEEDIT, element: <NoteEditor /> },
 
         { path: ROUTE_PATHS.SETTINGS, element: <SettingsPage /> },
         { path: ROUTE_PATHS.PROFILE, element: <ProfilePage /> },

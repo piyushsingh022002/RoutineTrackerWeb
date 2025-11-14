@@ -38,7 +38,7 @@ type NotesAction =
   | { type: 'UPDATE_NOTE_SUCCESS'; payload: Note }
   | { type: 'UPDATE_NOTE_FAILURE'; payload: string }
   | { type: 'DELETE_NOTE_REQUEST' }
-  | { type: 'DELETE_NOTE_SUCCESS'; payload: string }
+  | { type: 'DELETE_NOTE_SUCCESS'; payload: string | number }
   | { type: 'DELETE_NOTE_FAILURE'; payload: string }
   | { type: 'CLEAR_CURRENT_NOTE' }
   | { type: 'CLEAR_ERROR' };
@@ -95,13 +95,19 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
         isLoading: false,
       };
     }
-    case 'DELETE_NOTE_SUCCESS':
+    case 'DELETE_NOTE_SUCCESS': {
+      // Compare ids as strings to support both numeric ids and Mongo ObjectId strings.
+      const payloadStr = String((action as { payload: string | number }).payload);
       return {
         ...state,
-        notes: state.notes.filter((note) => note.id.toString() !== action.payload),
-        currentNote: null,
+        notes: state.notes.filter((note) => String(note.id) !== payloadStr),
+        currentNote:
+          state.currentNote && String(state.currentNote.id) === payloadStr
+            ? null
+            : state.currentNote,
         isLoading: false,
       };
+    }
     case 'GET_NOTES_FAILURE':
     case 'GET_NOTE_FAILURE':
     case 'CREATE_NOTE_FAILURE':
@@ -134,7 +140,7 @@ interface NotesContextType extends NotesState {
   // Return the created note so callers can await and receive the saved resource
   createNote: (note: Partial<Note>) => Promise<Note>;
   updateNote: (id: string, note: Partial<Note>) => Promise<void>;
-  deleteNote: (id: string) => Promise<void>;
+  deleteNote: (id: string | number) => Promise<void>;
   clearCurrentNote: () => void;
   clearError: () => void;
 }
@@ -221,14 +227,21 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [token]);
 
-  const deleteNote = React.useCallback(async (id: string) => {
+  const deleteNote = React.useCallback(async (id: string | number) => {
     dispatch({ type: 'DELETE_NOTE_REQUEST' });
     try {
       await axios.delete(`${API_URL}/notes/${id}`, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
+      // Use the raw id as payload; reducer will stringify for comparison
       dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
     } catch (err: unknown) {
+      // If the backend reports the resource as not found, consider it removed
+      // locally (helps when resource was already deleted server-side).
+      if (axios.isAxiosError(err) && err.response?.status === 404) {
+        dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
+        return;
+      }
       const errorMessage = getErrorMessage(err, 'Failed to delete note');
       dispatch({ type: 'DELETE_NOTE_FAILURE', payload: errorMessage });
       throw new Error(errorMessage);

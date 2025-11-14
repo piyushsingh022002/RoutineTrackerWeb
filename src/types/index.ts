@@ -16,7 +16,7 @@ export interface AuthState {
 }
 
 export interface Note {
-  id: number;
+  id: string | number;
   userId: number;
   title: string;
   content: string;
