@@ -200,6 +200,7 @@ const Dashboard = () => {
                 ))}
               </NotesGrid>
             )}
+            
             {/* Note dialog for recent note */}
             {openNote && (
               <ModalOverlay onClick={() => setOpenNote(null)}>
@@ -232,7 +233,7 @@ const Dashboard = () => {
                         onClick={async () => {
                           setDeleting(true);
                           try {
-                            await deleteNote(openNote.id.toString());
+                            await deleteNote(openNote.id);
                             setOpenNote(null);
                           } finally {
                             setDeleting(false);
@@ -247,8 +248,10 @@ const Dashboard = () => {
                         size="medium"
                         shape="pill"
                         onClick={() => {
+                          // clear any stale current note in context, but pass the note
+                          // object via navigation state so the editor can render immediately
                           clearCurrentNote();
-                          navigate(`/notes/${openNote.id}/edit`);
+                          navigate(`/notes/${openNote.id}/edit`, { state: { note: openNote } });
                         }}
                         style={{ display: 'flex', alignItems: 'center', gap: 6 }}
                       >

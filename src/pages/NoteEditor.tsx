@@ -58,6 +58,8 @@ const NoteEditor: React.FC = () => {
   const [openAttachment, setOpenAttachment] = useState<null | { url: string; idx: number }>(null);
   const location = useLocation();
   const navigate = useNavigate();
+  // If a note object was passed via navigation state, use it to prefill the form
+  const initialNote = (location.state as { note?: Note } | null)?.note;
   // If the user navigates to a different route (e.g., /dashboard), unmount NoteEditor
   useEffect(() => {
     const path = location.pathname;
@@ -80,6 +82,18 @@ const NoteEditor: React.FC = () => {
     currentNote,
   // error,
   } = useNotes();
+
+  // Prefill local editor state from navigation state to avoid blank UI while
+  // the note is fetched in the background. We still call getNote(id) to
+  // refresh the note from the server.
+  useEffect(() => {
+    if (initialNote) {
+      setTitle(initialNote.title || '');
+      setContent(initialNote.content || '');
+      setTags(initialNote.tags || []);
+      setFileUrls(initialNote.mediaUrls || []);
+    }
+  }, [initialNote]);
 
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
