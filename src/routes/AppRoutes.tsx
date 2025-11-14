@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, useRoutes, Outlet } from 'react-router-dom';
 import ROUTE_PATHS from './RoutePaths';
-// import AuthLayout from '../layouts/AuthLayout';
+import AuthLayout from '../layouts/AuthLayout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { PublicRoute } from '../components/PublicRoute';
 
@@ -36,7 +36,7 @@ const AppRoutes = () => {
 
     // Auth pages wrapped in AuthLayout; each auth page is guarded by PublicRoute
     {
-      // element: <AuthLayout />,
+      element: <AuthLayout />,
       children: [
         { path: ROUTE_PATHS.LOGIN, element: <PublicRoute><LoginPage /></PublicRoute> },
         { path: ROUTE_PATHS.REGISTER, element: <PublicRoute><RegisterPage /></PublicRoute> },
@@ -53,6 +53,7 @@ const AppRoutes = () => {
         // common alternate path used across the app
         { path: ROUTE_PATHS.VIEWNOTE, element: <ViewNote /> },
         // { path: ROUTE_PATHS.NOTEEDIT, element: <NoteEditor /> },
+
         { path: ROUTE_PATHS.SETTINGS, element: <SettingsPage /> },
         { path: ROUTE_PATHS.PROFILE, element: <ProfilePage /> },
         { path: ROUTE_PATHS.NOTIFICATIONS, element: <NotificationsPage /> },

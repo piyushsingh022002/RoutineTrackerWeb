@@ -4,7 +4,7 @@ import type { Note } from '../types';
 import { useAuth } from './AuthContext';
 
 // API base URL
-const API_URL = import.meta.env.VITE_API_URL || 'https://studentroutinetrackerapi.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://recotrackapi.onrender.com/api';
 
 // Notes state interface
 interface NotesState {
@@ -74,15 +74,26 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
         currentNote: action.payload,
         isLoading: false,
       };
-    case 'UPDATE_NOTE_SUCCESS':
+    case 'UPDATE_NOTE_SUCCESS': {
+      // Defensive: ensure payload is present and has an id
+      // (some APIs may return an unexpected shape; avoid crashing reducer)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updatedNote = (action as any).payload as Note | undefined;
+      if (!updatedNote || updatedNote.id === undefined) {
+        return {
+          ...state,
+          isLoading: false,
+        };
+      }
       return {
         ...state,
         notes: state.notes.map((note) =>
-          note.id === action.payload.id ? action.payload : note
+          note.id === updatedNote.id ? updatedNote : note
         ),
-        currentNote: action.payload,
+        currentNote: updatedNote,
         isLoading: false,
       };
+    }
     case 'DELETE_NOTE_SUCCESS':
       return {
         ...state,
@@ -133,20 +144,24 @@ const NotesContext = createContext<NotesContextType | undefined>(undefined);
 // Notes provider component
 export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(notesReducer, initialState);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   const getNotes = React.useCallback(async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || !token) return;
 
     dispatch({ type: 'GET_NOTES_REQUEST' });
     try {
-      const res = await axios.get(`${API_URL}/Notes`);
-      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data});
+      const res = await axios.get(`${API_URL}/Notes`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      dispatch({ type: 'GET_NOTES_SUCCESS', payload: res.data });
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, token]);
 
   const getNote = React.useCallback(async (id: string) => {
     dispatch({ type: 'GET_NOTE_REQUEST' });
@@ -196,12 +211,10 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const res = await axios.put(`${API_URL}/notes/${id}`, note, {
         headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       });
-      // Normalize response: support APIs that return the updated resource as res.data.data or res.data
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
       const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
       const updated: Note = payload as Note;
       dispatch({ type: 'UPDATE_NOTE_SUCCESS', payload: updated });
-
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to update note');
       dispatch({ type: 'UPDATE_NOTE_FAILURE', payload: errorMessage });
@@ -232,11 +245,11 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && token) {
       getNotes();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated]);
+  }, [isAuthenticated, token]);
 
   return (
     <NotesContext.Provider

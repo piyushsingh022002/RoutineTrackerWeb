@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { useNotes } from '../context/NotesContext';
+import Loader from '../components/common/Loader';
 
 const ViewNoteContainer = styled.div`
   min-height: 100vh;
@@ -166,14 +167,7 @@ const DocumentIcon = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const LoadingSpinner = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 200px;
-  font-size: 1.5rem;
-  color: var(--text-light);
-`;
+// ...existing code...
 
 const ErrorMessage = styled.div`
   background-color: rgba(239, 68, 68, 0.1);
@@ -254,7 +248,7 @@ const ViewNote: React.FC = () => {
     if (id) {
       getNote(id);
     }
-  }, [id]);
+  }, [id, getNote]);
   
   const handleDelete = async () => {
     if (id) {
@@ -289,7 +283,7 @@ const ViewNote: React.FC = () => {
     return (
       <ViewNoteContainer>
         <NoteCard>
-          <LoadingSpinner>Loading...</LoadingSpinner>
+          <Loader text="Loading note..." />
         </NoteCard>
       </ViewNoteContainer>
     );

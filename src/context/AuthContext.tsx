@@ -2,7 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import type { AuthState, LoginCredentials, RegisterCredentials, User } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://studentroutinetrackerapi.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://recotrackapi.onrender.com/api';
 
 const initialState: AuthState = {
   user: null,
