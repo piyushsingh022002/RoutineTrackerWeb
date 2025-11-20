@@ -19,6 +19,7 @@ import {
   SignInText,
   SignInLink,
 } from '../pages.styles/RegisterPage.styles';
+import ROUTE_PATHS from '../routes/RoutePaths';
 
 
 
@@ -82,7 +83,8 @@ const RegisterPage: React.FC = () => {
       setIsSubmitting(true);
       try {
         await register({ username, email, password, confirmPassword });
-        navigate('/dashboard');
+        // navigate('/dashboard');
+        navigate(ROUTE_PATHS.DASHBOARD, { replace: true });
       } catch (err:unknown) {
         // Error is handled by the auth context
         console.log(err);

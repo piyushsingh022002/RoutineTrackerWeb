@@ -71,8 +71,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     if (state.token) {
+      //if token exist or changes, it will update the header
       axios.defaults.headers.common['Authorization'] = `Bearer ${state.token}`;
     } else {
+      //if there is no token, it will delete the header
       delete axios.defaults.headers.common['Authorization'];
     }
   }, [state.token]);
@@ -104,6 +106,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  //Register User Here 
   const register = async (credentials: RegisterCredentials) => {
     try {
       const res = await axios.post(`${API_URL}/auth/register`, credentials);
@@ -130,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+//Export the useAuth hook
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
