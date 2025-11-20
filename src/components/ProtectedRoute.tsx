@@ -2,6 +2,7 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Loader from './common/Loader';
+import ROUTE_PATHS from '../routes/RoutePaths';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
@@ -15,7 +16,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   console.debug('[ProtectedRoute] isLoading=', isLoading, 'isAuthenticated=', isAuthenticated);
 
   if (isLoading) return <Loader fullPage />;
-  if (!isAuthenticated) return <Navigate to="/" replace />;
+  if (!isAuthenticated) return <Navigate to={ROUTE_PATHS.LOGIN} replace />;
 
   return children;
 };
