@@ -12,7 +12,9 @@ const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 const LandingPage = lazy(() => import('../pages/LandingPage'));
 const AboutIRTPage = lazy(() => import('../pages/AboutIRTPage'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const PrivateNotes = lazy(() => import('../pages/PrivateNotes'));
 const NoteEditor = lazy(() => import('../pages/NoteEditor'));
+const CreatePrivateNote = lazy(() => import('../pages/CreatePrivateNote'));
 const NotePlusPage = lazy(() => import('../pages/NotePlusPage'));
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
@@ -48,6 +50,8 @@ const AppRoutes = () => {
       element: <ProtectedRoute><Outlet /></ProtectedRoute>,
       children: [
         { path: ROUTE_PATHS.DASHBOARD, element: <Dashboard /> },
+        { path: ROUTE_PATHS.PRIVATENOTES, element: <PrivateNotes /> },
+        { path: ROUTE_PATHS.CREATE_NEW, element: <CreatePrivateNote /> },
         { path: ROUTE_PATHS.NOTEPLUS, element: <NotePlusPage /> },
         { path: ROUTE_PATHS.NEWNOTE, element: <NoteEditor /> },
         // common alternate path used across the app

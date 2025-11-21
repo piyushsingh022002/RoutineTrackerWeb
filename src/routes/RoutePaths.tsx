@@ -6,6 +6,8 @@ const ROUTE_PATHS = {
     REGISTER: '/register',
     ABOUTIRT: '/aboutIRT',
     DASHBOARD: '/dashboard',
+    CREATE_NEW: '/create-new-note',
+    PRIVATENOTES: '/private-notes',
     SETTINGS: '/settings',
     PROFILE: '/profile',
     NOTIFICATIONS: '/notifications',
