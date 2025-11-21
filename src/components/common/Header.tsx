@@ -30,6 +30,7 @@ import {
 } from '../common.styles/Header.styles';
 
 import MyListsModal from '../notes/MyListsModal';
+import ROUTE_PATHS from '../../routes/RoutePaths';
 
 // Logo image
 import recotrackLogo from '../../../Logos/recotrack.logo.png';
@@ -183,9 +184,27 @@ const Header: React.FC = () => {
                         setMenuOpen(false);
                       }}
                     >📋<div>My Lists</div></QuickItem>
-                    <QuickItem title="Notebook">📘<div>Notebook</div></QuickItem>
-                    <QuickItem title="Submissions">📝<div>Submissions</div></QuickItem>
-                    <QuickItem title="Progress">🟢<div>Progress</div></QuickItem>
+                    <QuickItem
+                      title="Notebook"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTEBOOK);
+                        setMenuOpen(false);
+                      }}
+                    >📘<div>Notebook</div></QuickItem>
+                    <QuickItem
+                      title="Submissions"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTFOUND);
+                        setMenuOpen(false);
+                      }}
+                    >📝<div>Submissions</div></QuickItem>
+                    <QuickItem
+                      title="Progress"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.PROGRESS);
+                        setMenuOpen(false);
+                      }}
+                    >🟢<div>Progress</div></QuickItem>
                     <QuickItem title="Points">🟡<div>Points</div></QuickItem>
                     <QuickItem title="Try New Features">🧪<div>Try New</div></QuickItem>
                   </QuickGrid>
