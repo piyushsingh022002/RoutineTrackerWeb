@@ -208,7 +208,20 @@ const EditorFieldWrap = styled(motion.div)`
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
-  .cm-theme, .cm-editor { background: transparent; }
+  /* Ensure CodeMirror editor text follows the page text color (useful for dark/semi-dark themes) */
+  .cm-theme,
+  .cm-editor,
+  .cm-editor .cm-scroller,
+  .cm-editor .cm-content,
+  .cm-line {
+    background: transparent;
+    color: var(--text-color, #000);
+    caret-color: var(--text-color, #000);
+  }
+
+  .cm-editor .cm-placeholder {
+    color: rgba(255,255,255,0.65);
+  }
 `;
 
 const TagsInput = styled.div`

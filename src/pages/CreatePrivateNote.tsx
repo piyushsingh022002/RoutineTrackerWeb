@@ -10,6 +10,9 @@ const Wrapper = styled.div`
   justify-content: center;
   padding: 3rem 1rem;
   background: linear-gradient(180deg, rgba(10,12,20,0.6), rgba(6,8,14,0.85));
+  /* page-level text colors for this view */
+  --text-color: #ffffff;
+  --text-light: rgba(255,255,255,0.85);
 `;
 
 const Card = styled.div`
@@ -38,6 +41,28 @@ const EditorArea = styled.div`
   border: 1px solid rgba(255,255,255,0.03);
 `;
 
+const Toolbar = styled.div`
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+`;
+
+const ToolbarButton = styled.button`
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.04);
+  color: var(--text-light);
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  &:hover { background: rgba(255,255,255,0.02); }
+`;
+
 const LinedTextarea = styled.textarea`
   width: 100%;
   min-height: 56vh;
@@ -57,6 +82,16 @@ const LinedTextarea = styled.textarea`
   line-height: 1.6;
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
   background-color: rgba(255,255,255,0.01);
+  caret-color: #ffffff;
+
+  &::placeholder {
+    color: rgba(255,255,255,0.7);
+    opacity: 1;
+  }
+
+  &:focus {
+    color: #ffffff;
+  }
 `;
 
 const Actions = styled.div`
@@ -84,6 +119,93 @@ const CreatePrivateNote: React.FC = () => {
   });
   const [saved, setSaved] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const replaceSelection = (fn: (selected: string, full: string) => { newText: string; selectStart?: number; selectEnd?: number }) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    const full = content;
+    const selected = full.slice(start, end);
+    const res = fn(selected, full);
+    const newContent = full.slice(0, start) + res.newText + full.slice(end);
+    setContent(newContent);
+    // set caret/selection after update
+    requestAnimationFrame(() => {
+      const s = typeof res.selectStart === 'number' ? res.selectStart : start;
+      const e = typeof res.selectEnd === 'number' ? res.selectEnd : (s + res.newText.length);
+      el.focus();
+      el.selectionStart = s;
+      el.selectionEnd = e;
+    });
+  };
+
+  const toggleWrap = (wrapLeft: string, wrapRight?: string) => {
+    replaceSelection((selected) => {
+      const right = wrapRight ?? wrapLeft;
+      if (selected.startsWith(wrapLeft) && selected.endsWith(right)) {
+        // unwrap
+        const inner = selected.slice(wrapLeft.length, selected.length - right.length);
+        return { newText: inner, selectStart: textareaRef.current!.selectionStart - wrapLeft.length, selectEnd: textareaRef.current!.selectionStart - wrapLeft.length + inner.length };
+      }
+      if (selected.length === 0) {
+        const placeholder = '';
+        const newText = `${wrapLeft}${placeholder}${right}`;
+        return { newText, selectStart: textareaRef.current!.selectionStart + wrapLeft.length, selectEnd: textareaRef.current!.selectionStart + wrapLeft.length };
+      }
+      return { newText: `${wrapLeft}${selected}${right}`, selectStart: textareaRef.current!.selectionStart + wrapLeft.length, selectEnd: textareaRef.current!.selectionStart + wrapLeft.length + selected.length };
+    });
+  };
+
+  const applyUpper = () => {
+    replaceSelection((selected) => ({ newText: selected.toUpperCase() }));
+  };
+
+  const applyLower = () => {
+    replaceSelection((selected) => ({ newText: selected.toLowerCase() }));
+  };
+
+  const applyHeading = () => {
+    replaceSelection((selected, full) => {
+      // apply to the whole current line(s)
+      const el = textareaRef.current!;
+      const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
+      const end = full.indexOf('\n', el.selectionEnd);
+      const lineEnd = end === -1 ? full.length : end;
+      const block = full.slice(start, lineEnd);
+      const newBlock = block.split('\n').map(l => (l.startsWith('#') ? l : '# ' + l)).join('\n');
+      return { newText: newBlock, selectStart: start, selectEnd: start + newBlock.length };
+    });
+  };
+
+  const applyList = (ordered = false) => {
+    replaceSelection((selected, full) => {
+      const el = textareaRef.current!;
+      const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
+      const end = full.indexOf('\n', el.selectionEnd);
+      const lineEnd = end === -1 ? full.length : end;
+      const block = full.slice(start, lineEnd);
+      const lines = block.split('\n');
+      const newLines = lines.map((l, i) => {
+        if (ordered) return `${i + 1}. ${l.replace(/^\s*[-*+\d\.]+\s*/, '')}`;
+        return `- ${l.replace(/^\s*[-*+\d\.]+\s*/, '')}`;
+      });
+      const newBlock = newLines.join('\n');
+      return { newText: newBlock, selectStart: start, selectEnd: start + newBlock.length };
+    });
+  };
+
+  const applyQuote = () => {
+    replaceSelection((selected, full) => {
+      const el = textareaRef.current!;
+      const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
+      const end = full.indexOf('\n', el.selectionEnd);
+      const lineEnd = end === -1 ? full.length : end;
+      const block = full.slice(start, lineEnd);
+      const newBlock = block.split('\n').map(l => `> ${l}`).join('\n');
+      return { newText: newBlock, selectStart: start, selectEnd: start + newBlock.length };
+    });
+  };
 
   useEffect(() => {
     document.body.classList.add('semi-dark');
@@ -131,6 +253,20 @@ const CreatePrivateNote: React.FC = () => {
         <div style={{ color: 'var(--text-light)', marginBottom: 12 }}>A private, calm place to write your daily notes. Your notes are stored only for you.</div>
 
         <EditorArea>
+          <Toolbar>
+            <ToolbarButton title="Bold (Ctrl/Cmd+B)" onClick={() => toggleWrap('**')}><strong>B</strong></ToolbarButton>
+            <ToolbarButton title="Italic (Ctrl/Cmd+I)" onClick={() => toggleWrap('*')}><em>I</em></ToolbarButton>
+            <ToolbarButton title="Underline" onClick={() => toggleWrap('<u>', '</u>')}><span style={{textDecoration: 'underline'}}>U</span></ToolbarButton>
+            <ToolbarButton title="Strikethrough" onClick={() => toggleWrap('~~')}><span style={{textDecoration: 'line-through'}}>S</span></ToolbarButton>
+            <ToolbarButton title="Inline code" onClick={() => toggleWrap('`')}><code>{'{}'}</code></ToolbarButton>
+            <ToolbarButton title="Heading" onClick={applyHeading}>H</ToolbarButton>
+            <ToolbarButton title="Quote" onClick={applyQuote}>"</ToolbarButton>
+            <ToolbarButton title="Bulleted list" onClick={() => applyList(false)}>• List</ToolbarButton>
+            <ToolbarButton title="Numbered list" onClick={() => applyList(true)}>1. List</ToolbarButton>
+            <ToolbarButton title="Uppercase" onClick={applyUpper}>Aa↑</ToolbarButton>
+            <ToolbarButton title="Lowercase" onClick={applyLower}>aa↓</ToolbarButton>
+          </Toolbar>
+
           <LinedTextarea
             ref={textareaRef}
             value={content}

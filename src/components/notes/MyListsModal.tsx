@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Modal from '../Modal/Modal';
 import Button from '../common/Button';
+import Input from '../common/Input';
 import { useNotes } from '../../context/NotesContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -41,6 +42,18 @@ const MyListsModal: React.FC<Props> = ({ open, onClose }) => {
   const { notes, isLoading } = useNotes();
   const navigate = useNavigate();
 
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setPassword('');
+      setError('');
+      setIsAuthenticated(false);
+    }
+  }, [open]);
+
   const handleCreateNow = async () => {
     // Navigate to the private notes environment.
     onClose();
@@ -58,12 +71,45 @@ const MyListsModal: React.FC<Props> = ({ open, onClose }) => {
     </div>
   );
 
+  const handleAuthenticate = () => {
+    if (password === '12345') {
+      setIsAuthenticated(true);
+      setError('');
+    } else {
+      setError('Invalid password');
+      setIsAuthenticated(false);
+    }
+  };
+
+  const authFooter = (
+    <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+      <Button variant="outline" size="small" onClick={onClose} shape="pill">
+        Cancel
+      </Button>
+      <Button variant="primary" size="small" onClick={handleAuthenticate} shape="pill">
+        Authenticate
+      </Button>
+    </div>
+  );
+
   return (
-    <Modal open={open} onClose={onClose} title="My Lists (Private Notes)" footer={footer} width="640px">
+    <Modal open={open} onClose={onClose} title="My Lists (Private Notes)" footer={isAuthenticated ? footer : authFooter} width="640px">
       <div style={{ fontSize: 13, color: '#6b7280' }}>These are your private notes. Create a new daily note quickly.</div>
 
       {isLoading ? (
         <Empty>Loading notes…</Empty>
+      ) : !isAuthenticated ? (
+        <div style={{ marginTop: 12 }}>
+          <Input
+            label="Enter password to view lists"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={error}
+            fullWidth
+          />
+          <div style={{ fontSize: 13, color: '#6b7280' }}>This area is protected. Enter the password to continue.</div>
+        </div>
       ) : notes && notes.length > 0 ? (
         <Table>
           <thead>
