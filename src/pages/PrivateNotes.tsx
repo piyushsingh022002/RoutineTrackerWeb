@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
+import ROUTE_PATHS from '../routes/RoutePaths';
 import styled from 'styled-components';
 import { useNotes } from '../context/NotesContext';
 import NotesGrid from '../components/notes/NotesGrid';
@@ -74,8 +75,9 @@ const PrivateNotes: React.FC = () => {
         </Heading>
 
         <Actions>
-          <Button variant="outline" size="small" shape="pill" onClick={() => navigate('/private-notes')}>All</Button>
-          <Button variant="primary" size="small" shape="pill" onClick={() => navigate('/create-new-note')}>+ Create New Note</Button>
+          <Button variant="outline" size="small" shape="pill" leftIcon={'←'} onClick={() => navigate(ROUTE_PATHS.DASHBOARD)}>Dashboard</Button>
+          <Button variant="outline" size="small" shape="pill" onClick={() => navigate(ROUTE_PATHS.PRIVATENOTES)}>All</Button>
+          <Button variant="primary" size="small" shape="pill" onClick={() => navigate(ROUTE_PATHS.CREATE_NEW)}>+ Create New Note</Button>
         </Actions>
       </TopBar>
 
