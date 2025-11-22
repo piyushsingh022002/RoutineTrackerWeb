@@ -167,6 +167,7 @@ const CreatePrivateNote: React.FC = () => {
 
   const applyHeading = () => {
     replaceSelection((selected, full) => {
+      void selected;
       // apply to the whole current line(s)
       const el = textareaRef.current!;
       const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
@@ -180,6 +181,7 @@ const CreatePrivateNote: React.FC = () => {
 
   const applyList = (ordered = false) => {
     replaceSelection((selected, full) => {
+      void selected;
       const el = textareaRef.current!;
       const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
       const end = full.indexOf('\n', el.selectionEnd);
@@ -187,8 +189,8 @@ const CreatePrivateNote: React.FC = () => {
       const block = full.slice(start, lineEnd);
       const lines = block.split('\n');
       const newLines = lines.map((l, i) => {
-        if (ordered) return `${i + 1}. ${l.replace(/^\s*[-*+\d\.]+\s*/, '')}`;
-        return `- ${l.replace(/^\s*[-*+\d\.]+\s*/, '')}`;
+        if (ordered) return `${i + 1}. ${l.replace(/^\s*[-*+\d.]+\s*/, '')}`;
+        return `- ${l.replace(/^\s*[-*+\d.]+\s*/, '')}`;
       });
       const newBlock = newLines.join('\n');
       return { newText: newBlock, selectStart: start, selectEnd: start + newBlock.length };
@@ -197,6 +199,7 @@ const CreatePrivateNote: React.FC = () => {
 
   const applyQuote = () => {
     replaceSelection((selected, full) => {
+      void selected;
       const el = textareaRef.current!;
       const start = full.lastIndexOf('\n', el.selectionStart - 1) + 1;
       const end = full.indexOf('\n', el.selectionEnd);
