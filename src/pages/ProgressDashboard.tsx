@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import styled from 'styled-components';
 import { useNotes } from '../context/NotesContext';
 import { useNavigate } from 'react-router-dom';
+import ROUTE_PATHS from '../routes/RoutePaths';
 
 const Container = styled.div`
   padding: 28px;
@@ -41,6 +42,21 @@ const ActionButton = styled.button`
   box-shadow: 0 6px 18px rgba(79,70,229,0.12);
   transition: transform .12s ease, box-shadow .12s ease;
   &:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(79,70,229,0.14);} 
+`;
+
+const BackButton = styled.button`
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  padding: 6px;
+  border-radius: 8px;
+  color: #374151;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .12s ease, transform .12s ease;
+  &:hover { background: rgba(15,23,42,0.04); transform: translateY(-1px); }
 `;
 
 const ChartsRow = styled.div`
@@ -195,9 +211,12 @@ const ProgressDashboard: React.FC = () => {
   return (
     <Container>
       <Header>
-        <div>
-          <Title>Progress Dashboard</Title>
-          <div style={{color:'#6b7280', marginTop:6}}>Insight into your notes and streaks</div>
+        <div style={{display:'flex', alignItems:'center', gap:12}}>
+          <BackButton onClick={() => navigate(ROUTE_PATHS.DASHBOARD)} aria-label="Back to dashboard">←</BackButton>
+          <div>
+            <Title>Progress Dashboard</Title>
+            <div style={{color:'#6b7280', marginTop:6}}>Insight into your notes and streaks</div>
+          </div>
         </div>
 
         <Actions>
