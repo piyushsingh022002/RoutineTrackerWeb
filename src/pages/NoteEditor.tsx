@@ -53,7 +53,11 @@ import { json as jsonLang } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { css as cssLang } from "@codemirror/lang-css";
 
-const NoteEditor: React.FC = () => {
+interface NoteEditorProps {
+  hideHeader?: boolean;
+}
+
+const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
   // State for opened attachment modal
   const [openAttachment, setOpenAttachment] = useState<null | { url: string; idx: number }>(null);
   const location = useLocation();
@@ -66,6 +70,7 @@ const NoteEditor: React.FC = () => {
     // Only allow NoteEditor to render on /notes/new or /notes/:id/edit
     const isEditorRoute =
       path === '/notes/new' ||
+      path === '/create-new-note' ||
       (/^\/notes\/[\w-]+\/edit$/.test(path));
     if (!isEditorRoute) {
       // Unmount by navigating to the new path (should not render NoteEditor)
@@ -155,6 +160,17 @@ const NoteEditor: React.FC = () => {
   >('markdown');
 
   const isEditMode = !!id;
+
+  // If rendering as the create-new-note path, apply semi-dark theme for editor
+  useEffect(() => {
+    const path = location.pathname;
+    const isCreateNew = path === '/create-new-note' || path === '/notes/new';
+    if (isCreateNew) {
+      document.body.classList.add('semi-dark');
+      return () => document.body.classList.remove('semi-dark');
+    }
+    return undefined;
+  }, [location.pathname]);
 
   
 
@@ -459,9 +475,9 @@ const NoteEditor: React.FC = () => {
 
   return (
     <>
-      <Header />
-      <EditorContainer>
-        <Content>
+      {!hideHeader && <Header />}
+      <EditorContainer $inline={hideHeader}>
+        <Content $inline={hideHeader}>
           {/* Show dialog with saved note after creation */}
           {showNoteDialog && (
             <DialogOverlay onClick={closeDialog} tabIndex={-1}>
@@ -527,6 +543,7 @@ const NoteEditor: React.FC = () => {
           {/* ...existing code... (rest of the editor UI) */}
           {!showNoteDialog && (
             <EditorCard
+              $inline={hideHeader}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}

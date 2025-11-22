@@ -25,6 +25,7 @@ const dummyUser: User = {
   createdAt: '2023-08-20',
   avatarUrl: ''
 };
+import SettingsModal from '../components/Modal/SettingsModal';
 
 const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void }> = ({ checked, onChange }) => (
   <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
@@ -72,6 +73,7 @@ const SettingCard: React.FC<{ title: string; desc?: string; actions?: React.Reac
 
 const SettingPage: React.FC = () => {
   const [user, setUser] = useState<User>(dummyUser);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
@@ -137,17 +139,7 @@ const SettingPage: React.FC = () => {
         </div>
 
         <SignOutWrapper style={{ gap: 12 }}>
-          {!editMode ? (
-            <>
-              <SettingButton onClick={() => setEditMode(true)}>Edit Profile</SettingButton>
-              <SettingButton onClick={handleSignOut}>Sign Out</SettingButton>
-            </>
-          ) : (
-            <>
-              <SettingButton onClick={handleSave}>Save</SettingButton>
-              <SettingButton onClick={() => { setEditMode(false); setName(user.name); setEmail(user.email); }}>Cancel</SettingButton>
-            </>
-          )}
+          <SettingButton onClick={handleSignOut}>Sign Out</SettingButton>
         </SignOutWrapper>
       </LeftSection>
 
@@ -156,7 +148,14 @@ const SettingPage: React.FC = () => {
           <SettingCard
             title="Account"
             desc="Manage your basic account details and connected information."
-            actions={<SettingButton onClick={() => alert('Open account settings')}>Manage</SettingButton>}
+            actions={<SettingButton onClick={() => setShowSettingsModal(true)}>Modify</SettingButton>}
+          />
+
+          <SettingsModal
+            open={showSettingsModal}
+            onClose={() => setShowSettingsModal(false)}
+            user={user}
+            onSave={(u) => setUser((prev) => ({ ...prev, ...(u as Partial<User>) }))}
           />
 
           <SettingCard

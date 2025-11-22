@@ -66,6 +66,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
   background-color: var(--bg-color);
 }
 
+/* Semi-dark theme: darker than light but lighter than full dark */
+.semi-dark {
+  --primary-color: #5b6ef2;
+  --primary-hover: #4a5fe0;
+  --secondary-color: #34d399;
+  --secondary-hover: #6ee7b7;
+  --danger-color: #f87171;
+  --danger-hover: #fca5a5;
+  --text-color: #e6eef8;
+  --text-light: #a6b4c8;
+  --bg-color: #0f1724; /* deep navy */
+  --bg-light: #0b1220;
+  --bg-dark: #09101a;
+  --border-color: #1f2a37;
+}
+
+.semi-dark body {
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
 * {
   margin: 0;
   padding: 0;

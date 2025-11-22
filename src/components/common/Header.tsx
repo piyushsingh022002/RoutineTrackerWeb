@@ -29,6 +29,9 @@ import {
   MenuItem,
 } from '../common.styles/Header.styles';
 
+import MyListsModal from '../notes/MyListsModal';
+import ROUTE_PATHS from '../../routes/RoutePaths';
+
 // Logo image
 import recotrackLogo from '../../../Logos/recotrack.logo.png';
 
@@ -40,7 +43,13 @@ const Header: React.FC = () => {
   const { notifications } = useNotifications();
   const unreadCount = notifications ? notifications.filter((n) => !n.isRead).length : 0;
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showMyLists, setShowMyLists] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+
+  // Ensure profile menu is closed whenever MyLists modal is opened.
+  useEffect(() => {
+    if (showMyLists && menuOpen) setMenuOpen(false);
+  }, [showMyLists, menuOpen]);
 
   const handleLogout = () => {
     logout();
@@ -134,6 +143,7 @@ const Header: React.FC = () => {
         </LeftGroup>
 
         {isAuthenticated && !isLoading ? (
+          <>
           <RightGroup>
             {/* Notifications */}
             <IconButton aria-label="Notifications" onClick={() => navigate('/notifications')}>
@@ -167,10 +177,34 @@ const Header: React.FC = () => {
                     </div>
                   </ProfileHeader>
                   <QuickGrid>
-                    <QuickItem title="My Lists">📋<div>My Lists</div></QuickItem>
-                    <QuickItem title="Notebook">📘<div>Notebook</div></QuickItem>
-                    <QuickItem title="Submissions">📝<div>Submissions</div></QuickItem>
-                    <QuickItem title="Progress">🟢<div>Progress</div></QuickItem>
+                    <QuickItem
+                      title="My Lists"
+                      onClick={() => {
+                        setShowMyLists(true);
+                        setMenuOpen(false);
+                      }}
+                    >📋<div>My Lists</div></QuickItem>
+                    <QuickItem
+                      title="Notebook"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTEBOOK);
+                        setMenuOpen(false);
+                      }}
+                    >📘<div>Notebook</div></QuickItem>
+                    <QuickItem
+                      title="Submissions"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTFOUND);
+                        setMenuOpen(false);
+                      }}
+                    >📝<div>Submissions</div></QuickItem>
+                    <QuickItem
+                      title="Progress"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.PROGRESS);
+                        setMenuOpen(false);
+                      }}
+                    >🟢<div>Progress</div></QuickItem>
                     <QuickItem title="Points">🟡<div>Points</div></QuickItem>
                     <QuickItem title="Try New Features">🧪<div>Try New</div></QuickItem>
                   </QuickGrid>
@@ -183,6 +217,8 @@ const Header: React.FC = () => {
               )}
             </div>
           </RightGroup>
+          <MyListsModal open={showMyLists} onClose={() => setShowMyLists(false)} />
+          </>
         ) : (
           !isLoading && (
             <div style={{ marginLeft: 'auto' }}>

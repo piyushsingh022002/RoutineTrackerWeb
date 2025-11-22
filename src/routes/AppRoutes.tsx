@@ -12,8 +12,12 @@ const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 const LandingPage = lazy(() => import('../pages/LandingPage'));
 const AboutIRTPage = lazy(() => import('../pages/AboutIRTPage'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const PrivateNotes = lazy(() => import('../pages/PrivateNotes'));
 const NoteEditor = lazy(() => import('../pages/NoteEditor'));
+const CreatePrivateNote = lazy(() => import('../pages/CreatePrivateNote'));
 const NotePlusPage = lazy(() => import('../pages/NotePlusPage'));
+const FindStoryBooks = lazy(() => import('../pages/FindStoryBooks'));
+const ProgressDashboard = lazy(() => import('../pages/ProgressDashboard'));
 const SettingsPage = lazy(() => import('../pages/SettingsPage'));
 const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
@@ -48,8 +52,12 @@ const AppRoutes = () => {
       element: <ProtectedRoute><Outlet /></ProtectedRoute>,
       children: [
         { path: ROUTE_PATHS.DASHBOARD, element: <Dashboard /> },
+        { path: ROUTE_PATHS.PRIVATENOTES, element: <PrivateNotes /> },
+        { path: ROUTE_PATHS.CREATE_NEW, element: <CreatePrivateNote /> },
         { path: ROUTE_PATHS.NOTEPLUS, element: <NotePlusPage /> },
         { path: ROUTE_PATHS.NEWNOTE, element: <NoteEditor /> },
+        { path: ROUTE_PATHS.NOTEBOOK, element: <FindStoryBooks /> },
+        { path: ROUTE_PATHS.PROGRESS, element: <ProgressDashboard /> },
         // common alternate path used across the app
         { path: ROUTE_PATHS.VIEWNOTE, element: <ViewNote /> },
         { path: ROUTE_PATHS.NOTEEDIT, element: <NoteEditor /> },
@@ -60,7 +68,8 @@ const AppRoutes = () => {
       ],
     },
 
-    // Fallback / Not found
+    // Explicit notfound route (navigable) and wildcard fallback
+    { path: ROUTE_PATHS.NOTFOUND, element: <NotFound /> },
     { path: ROUTE_PATHS.NOTFOUNDPAGE, element: <NotFound /> },
   ]);
 

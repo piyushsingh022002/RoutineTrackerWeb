@@ -39,41 +39,30 @@ const DialogClose = styled.button`
   cursor: pointer;
 `;
 
-const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean }>`
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%) fixed, radial-gradient(ellipse 80% 60% at 60% 0%, #e0e7ff33 0%, #f8fafc00 100%) fixed;
-  border-radius: 0;
+const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean; $inline?: boolean }>`
+  background: ${(p) => (p.$inline ? 'transparent' : 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%) fixed, radial-gradient(ellipse 80% 60% at 60% 0%, #e0e7ff33 0%, #f8fafc00 100%) fixed')};
+  border-radius: ${(p) => (p.$inline ? '0' : '0')};
   box-shadow: none;
-  width: 100vw;
-  height: 100%;
+  width: ${(p) => (p.$inline ? '100%' : '100vw')};
+  height: ${(p) => (p.$inline ? 'auto' : '100%')};
   margin: 0;
-  padding: 0;
+  padding: ${(p) => (p.$inline ? '0' : '0')};
   transition: border 0.3s, box-shadow 0.3s;
   border: none;
   @media ${device.mobile} {
-    padding: 1.25rem 0.5rem;
+    padding: ${(p) => (p.$inline ? '0' : '1.25rem 0.5rem')};
   }
 `;
 
-const EditorContainer = styled.div`
-  position: absolute;
-  top: var(--header-height, 88px);
-  left: 0;
-  width: 100vw;
-  height: calc(100vh - var(--header-height, 88px));
-  min-height: 0;
-  min-width: 100vw;
-  background: transparent; /* align with global background/cursor */
-  box-sizing: border-box;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  position: fixed;
-  align-items: stretch;
-  justify-content: stretch;
+const EditorContainer = styled.div<{ $inline?: boolean }>`
+  ${(p) =>
+    p.$inline
+      ? `position: relative; top: auto; left: auto; width: 100%; height: auto; min-width: 0; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; justify-content: stretch;`
+      : `position: fixed; top: var(--header-height, 88px); left: 0; width: 100vw; height: calc(100vh - var(--header-height, 88px)); min-height: 0; min-width: 100vw; background: transparent; box-sizing: border-box; z-index: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: stretch;`}
 `;
 
-const Content = styled.main`
-  width: 100vw;
+const Content = styled.main<{ $inline?: boolean }>`
+  width: ${(p) => (p.$inline ? '100%' : '100vw')};
   margin: 0;
   display: flex;
   flex-direction: row;
@@ -85,10 +74,10 @@ const Content = styled.main`
   @media ${device.tablet} {
     flex-direction: column;
     gap: 1.5rem;
-    width: 100vw;
+    width: ${(p) => (p.$inline ? '100%' : '100vw')};
     padding: 0;
   }
-  height: 100%;
+  height: ${(p) => (p.$inline ? 'auto' : '100%')};
   align-items: stretch;
   justify-content: center;
   padding: 0;
@@ -219,7 +208,20 @@ const EditorFieldWrap = styled(motion.div)`
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
-  .cm-theme, .cm-editor { background: transparent; }
+  /* Ensure CodeMirror editor text follows the page text color (useful for dark/semi-dark themes) */
+  .cm-theme,
+  .cm-editor,
+  .cm-editor .cm-scroller,
+  .cm-editor .cm-content,
+  .cm-line {
+    background: transparent;
+    color: var(--text-color, #000);
+    caret-color: var(--text-color, #000);
+  }
+
+  .cm-editor .cm-placeholder {
+    color: rgba(255,255,255,0.65);
+  }
 `;
 
 const TagsInput = styled.div`
