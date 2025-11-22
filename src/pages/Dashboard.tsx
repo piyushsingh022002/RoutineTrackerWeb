@@ -43,6 +43,7 @@ import {
   ModalBox,
   ModalClose,
 } from './Dashboard.styles';
+import ViewModal from '../components/Modal/ViewModal';
 // import Loader from '../components/common/Loader';
 import DashboardSidebar from '../components/layout/DashboardSidebar';
 import StatsCard from '../components/layout/StatsCard';
@@ -203,64 +204,20 @@ const Dashboard = () => {
             
             {/* Note dialog for recent note */}
             {openNote && (
-              <ModalOverlay onClick={() => setOpenNote(null)}>
-                <ModalBox>
-                  <div onClick={(e) => e.stopPropagation()}>
-                    <ModalClose onClick={() => setOpenNote(null)}><FaTimes /></ModalClose>
-                    <div style={{ fontWeight: 700, fontSize: 22, marginBottom: 8 }}>{openNote.title}</div>
-                    <div style={{ color: '#666', marginBottom: 12, whiteSpace: 'pre-wrap' }}>{openNote.content}</div>
-                    {openNote.tags && openNote.tags.length > 0 && (
-                      <div style={{ marginBottom: 12 }}>
-                        <b>Tags:</b> {openNote.tags.join(', ')}
-                      </div>
-                    )}
-                    {openNote.mediaUrls && openNote.mediaUrls.length > 0 && (
-                      <div style={{ marginBottom: 12 }}>
-                        <b>Attachments:</b>
-                        <ul style={{ paddingLeft: 18 }}>
-                          {openNote.mediaUrls.map((url: string, idx: number) => (
-                            <li key={idx}><a href={url} target="_blank" rel="noopener noreferrer">Attachment {idx + 1}</a></li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                    <div style={{ display: 'flex', gap: 12, marginTop: 18 }}>
-                      <Button
-                        variant="danger"
-                        size="medium"
-                        shape="pill"
-                        disabled={deleting}
-                        onClick={async () => {
-                          setDeleting(true);
-                          try {
-                            await deleteNote(openNote.id);
-                            setOpenNote(null);
-                          } finally {
-                            setDeleting(false);
-                          }
-                        }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-                      >
-                        <FaTrash /> Delete
-                      </Button>
-                      <Button
-                        variant="primary"
-                        size="medium"
-                        shape="pill"
-                        onClick={() => {
-                          // clear any stale current note in context, but pass the note
-                          // object via navigation state so the editor can render immediately
-                          clearCurrentNote();
-                          navigate(`/notes/${openNote.id}/edit`, { state: { note: openNote } });
-                        }}
-                        style={{ display: 'flex', alignItems: 'center', gap: 6 }}
-                      >
-                        <FaEdit /> Edit
-                      </Button>
-                    </div>
-                  </div>
-                </ModalBox>
-              </ModalOverlay>
+              <ViewModal
+                open={!!openNote}
+                note={openNote}
+                onClose={() => setOpenNote(null)}
+                onBack={() => {
+                  // reopen the full notes dialog and close the single-note view
+                  setShowAll(true);
+                  setOpenNote(null);
+                }}
+                onEdit={(n) => {
+                  clearCurrentNote();
+                  navigate(`/notes/${n?.id}/edit`, { state: { note: n } });
+                }}
+              />
             )}
             {!isLoading && recentNotes.length === 0 && (
               <EmptyNotes>
@@ -306,14 +263,18 @@ const Dashboard = () => {
                   ) : (
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       {sortedNotes.map((note: Note) => (
-                        <li key={note.id} style={{
-                          padding: '0.7rem 0.5rem',
-                          borderBottom: '1px solid #e5e7eb',
-                          fontSize: 16,
-                          color: '#222',
-                          cursor: 'pointer',
-                          transition: 'background 0.18s',
-                        }}>
+                        <li
+                          key={note.id}
+                          onClick={() => { setOpenNote(note); setShowAll(false); }}
+                          style={{
+                            padding: '0.7rem 0.5rem',
+                            borderBottom: '1px solid #e5e7eb',
+                            fontSize: 16,
+                            color: '#222',
+                            cursor: 'pointer',
+                            transition: 'background 0.18s',
+                          }}
+                        >
                           {note.title}
                         </li>
                       ))}
