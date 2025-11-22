@@ -133,12 +133,17 @@ const SettingPage: React.FC = () => {
                 <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
                 <label style={{ display: 'block', marginTop: 8, fontSize: 12, color: '#444' }}>Phone</label>
                 <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Optional" style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
+                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                  <SettingButton onClick={handleSave}>Save</SettingButton>
+                  <SettingButton onClick={() => { setEditMode(false); setName(user.name); setEmail(user.email); }}>Cancel</SettingButton>
+                </div>
               </div>
             )}
           </ProfileWrapper>
         </div>
 
         <SignOutWrapper style={{ gap: 12 }}>
+          <SettingButton onClick={() => setEditMode(true)}>Edit Profile</SettingButton>
           <SettingButton onClick={handleSignOut}>Sign Out</SettingButton>
         </SignOutWrapper>
       </LeftSection>
