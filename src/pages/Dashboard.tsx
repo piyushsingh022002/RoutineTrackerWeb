@@ -5,7 +5,7 @@ import Button from '../components/common/Button';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/common/Loader';
-import { FaTrash, FaEdit, FaTimes, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ActivityCalendar } from '../components/dashboard';
 import { eachDayOfInterval, endOfMonth, format, startOfMonth } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -55,9 +55,8 @@ function formatDate(dateStr: string | number | Date | undefined) {
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { notes, isLoading, deleteNote, clearCurrentNote } = useNotes();
+  const { notes, isLoading, clearCurrentNote } = useNotes();
   const [openNote, setOpenNote] = useState<Note | null>(null);
-  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   // collapse by default per request
