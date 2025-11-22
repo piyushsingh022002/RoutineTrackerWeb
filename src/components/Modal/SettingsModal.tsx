@@ -57,11 +57,7 @@ const Button = styled.button<{ variant?: 'primary' | 'danger' | 'ghost' }>`
   border: ${(p) => (p.variant === 'ghost' ? '1px solid #e6e9ef' : 'none')};
 `;
 
-const DangerRow = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
+// removed unused styled component
 
 interface Props {
   open: boolean;
@@ -75,7 +71,7 @@ const SettingsModal: React.FC<Props> = ({ open, onClose, user, onSave }) => {
   const [email, setEmail] = useState(user.email || '');
   const [workEmail, setWorkEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [avatarRemoved, setAvatarRemoved] = useState(false);
+  const [, setAvatarRemoved] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
