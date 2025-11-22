@@ -205,8 +205,20 @@ const Header: React.FC = () => {
                         setMenuOpen(false);
                       }}
                     >🟢<div>Progress</div></QuickItem>
-                    <QuickItem title="Points">🟡<div>Points</div></QuickItem>
-                    <QuickItem title="Try New Features">🧪<div>Try New</div></QuickItem>
+                    <QuickItem
+                      title="Points"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTFOUND);
+                        setMenuOpen(false);
+                      }}
+                    >🟡<div>Points</div></QuickItem>
+                    <QuickItem
+                      title="Try New Features"
+                      onClick={() => {
+                        navigate(ROUTE_PATHS.NOTFOUND);
+                        setMenuOpen(false);
+                      }}
+                    >🧪<div>Try New</div></QuickItem>
                   </QuickGrid>
                   <Menu>
                     <MenuItem onClick={() => navigate('/settings')}>⚙️ Settings</MenuItem>
