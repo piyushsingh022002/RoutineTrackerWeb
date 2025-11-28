@@ -42,7 +42,7 @@ import {
   ModalOverlay,
   ModalBox,
   ModalClose,
-} from './Dashboard.styles';
+} from '../pages.styles/Dashboard.styles';
 import ViewModal from '../components/Modal/ViewModal';
 // import Loader from '../components/common/Loader';
 import DashboardSidebar from '../components/layout/DashboardSidebar';

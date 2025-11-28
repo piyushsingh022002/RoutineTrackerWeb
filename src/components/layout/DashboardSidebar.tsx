@@ -4,7 +4,7 @@ import {
   SidebarSectionTitle,
   SidebarLink,
   Divider,
-} from '../../pages/Dashboard.styles';
+} from '../../pages.styles/Dashboard.styles';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
 interface Props {

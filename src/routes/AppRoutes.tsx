@@ -10,6 +10,7 @@ import { PublicRoute } from '../components/PublicRoute';
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/RegisterPage'));
 const LandingPage = lazy(() => import('../pages/LandingPage'));
+const PublicNoteEditor = lazy(() => import('../pages/PublicNoteEditor'));
 const AboutIRTPage = lazy(() => import('../pages/AboutIRTPage'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const PrivateNotes = lazy(() => import('../pages/PrivateNotes'));
@@ -36,6 +37,7 @@ const AppRoutes = () => {
 
     // Public pages
     { path: ROUTE_PATHS.LANDINGPAGE, element: <LandingPage /> },
+    { path: ROUTE_PATHS.PUBLIC_NOTE, element: <PublicNoteEditor /> },
     { path: ROUTE_PATHS.ABOUTIRT, element: <AboutIRTPage /> },
 
     // Auth pages wrapped in AuthLayout; each auth page is guarded by PublicRoute
