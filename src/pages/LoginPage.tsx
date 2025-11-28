@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
@@ -17,16 +17,59 @@ import {
   SignUpLink,
 } from '../pages.styles/LoginPage.styles';
 
+//state type definition
+type LoginState = {
+  email: string;
+  password: string;
+  formErrors: { email?: string; password?: string };
+  isSubmitting: boolean;
+};
+
+//action type definitions
+type LoginActions = 
+| { type: 'SET_EMAIL'; payload: string }
+| { type: 'SET_PASSWORD'; payload: string }
+| { type: 'SET_FORM_ERRORS'; payload: { email?: string; password?: string } }
+| { type: 'SET_IS_SUBMITTING'; payload: boolean };
+
+//Initial State for the form 
+const initialState: LoginState = {
+  email: '',
+  password: '',
+  formErrors: {} as { email?: string; password?: string },
+  isSubmitting: false,
+};
+//Reducer function implementation
+const reducer = (state : LoginState, action: LoginActions) =>{
+  switch(action.type){
+    case 'SET_EMAIL':
+      return {...state, email: action.payload };
+    case 'SET_PASSWORD':
+      return {...state, password: action.payload };
+    case 'SET_FORM_ERRORS':
+      return {...state, formErrors: action.payload };
+    case 'SET_IS_SUBMITTING':
+      return {...state, isSubmitting: action.payload };
+    default:
+      return state;
+  }
+};
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
+  // const [email, setEmail] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+
+  //initialize the reducer state here
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { email, password, formErrors, isSubmitting } = state;
+
   const { login, error, clearError } = useAuth();
   const navigate = useNavigate();
 
+  //validate the form inputs
   const validateForm = () => {
     const errors: { email?: string; password?: string } = {};
     
@@ -42,7 +85,9 @@ const LoginPage: React.FC = () => {
       errors.password = 'Password must be at least 6 characters';
     }
     
-    setFormErrors(errors);
+    // setFormErrors(errors);
+    dispatch({ type: 'SET_FORM_ERRORS', payload: errors });
+
     return Object.keys(errors).length === 0;
   };
 
@@ -51,7 +96,8 @@ const LoginPage: React.FC = () => {
     clearError();
     
     if (validateForm()) {
-      setIsSubmitting(true);
+      // setIsSubmitting(true);
+      dispatch({ type: 'SET_IS_SUBMITTING', payload: true });
       try {
         await login({ email, password });
         navigate('/dashboard');
@@ -59,7 +105,8 @@ const LoginPage: React.FC = () => {
         // Error is handled by the auth context
         console.error('Login failed:', err);
       } finally {
-        setIsSubmitting(false);
+        // setIsSubmitting(false);
+        dispatch({ type: 'SET_IS_SUBMITTING', payload: false });
       }
     }
   };
@@ -92,7 +139,8 @@ const LoginPage: React.FC = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              // onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => dispatch({ type: 'SET_EMAIL', payload: e.target.value })}
               placeholder="you@example.com"
             />
             {formErrors.email && <ErrorMessage>{formErrors.email}</ErrorMessage>}
@@ -104,7 +152,8 @@ const LoginPage: React.FC = () => {
               id="password"
               type="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              // onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => dispatch({ type: 'SET_PASSWORD', payload: e.target.value })}
               placeholder="••••••••"
             />
             {formErrors.password && <ErrorMessage>{formErrors.password}</ErrorMessage>}

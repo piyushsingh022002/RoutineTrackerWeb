@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -21,21 +21,62 @@ import {
 } from '../pages.styles/RegisterPage.styles';
 import ROUTE_PATHS from '../routes/RoutePaths';
 
+//states to manage the form
+type RegisterState = {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  formErrors: { username?: string; email?: string; password?: string; confirmPassword?: string };
+  isSubmitting: boolean;
+};
 
+//action types for the reducer function
+type RegisterActions = 
+| { type: 'SET_USERNAME'; payload: string }
+| { type: 'SET_EMAIL'; payload: string }
+| { type: 'SET_PASSWORD'; payload: string }
+| { type: 'SET_CONFIRM_PASSWORD'; payload: string }
+| { type: 'SET_FORM_ERRORS'; payload: { username?: string; email?: string; password?: string; confirmPassword?: string } }
+| { type: 'SET_IS_SUBMITTING'; payload: boolean };
+
+//initial state for the form
+const initialState : RegisterState = {
+  username: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+  formErrors: {} as { username?: string; email?: string; password?: string; confirmPassword?: string },
+  isSubmitting: false,
+};
+
+//Reducer function implementation
+const reducer = (state : RegisterState, actions: RegisterActions) =>{
+  switch(actions.type){
+    case 'SET_USERNAME':
+      return {...state, username: actions.payload };
+    case 'SET_EMAIL':
+      return {...state, email: actions.payload };
+    case 'SET_PASSWORD':
+      return {...state, password: actions.payload };
+    case 'SET_CONFIRM_PASSWORD':
+      return {...state, confirmPassword: actions.payload };
+    case 'SET_FORM_ERRORS':
+      return {...state, formErrors: actions.payload };
+    case 'SET_IS_SUBMITTING':
+      return {...state, isSubmitting: actions.payload };
+    default:
+      return state;
+  }
+}
 
 const RegisterPage: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [formErrors, setFormErrors] = useState<{
-    username?: string;
-    email?: string;
-    password?: string;
-    confirmPassword?: string;
-  }>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   
+  //useReducer implementation
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const { username, email, password, confirmPassword } = state;
+  const { formErrors, isSubmitting } = state;
+
   const { register, error, clearError } = useAuth();
   const navigate = useNavigate();
 
@@ -71,7 +112,8 @@ const RegisterPage: React.FC = () => {
       errors.confirmPassword = 'Passwords do not match';
     }
     
-    setFormErrors(errors);
+    // setFormErrors(errors);
+    dispatch({ type: 'SET_FORM_ERRORS', payload: errors });
     return Object.keys(errors).length === 0;
   };
 
@@ -80,7 +122,8 @@ const RegisterPage: React.FC = () => {
     clearError();
     
     if (validateForm()) {
-      setIsSubmitting(true);
+      // setIsSubmitting(true);
+      dispatch({ type: 'SET_IS_SUBMITTING', payload: true });
       try {
         await register({ username, email, password, confirmPassword });
         // navigate('/dashboard');
@@ -89,7 +132,8 @@ const RegisterPage: React.FC = () => {
         // Error is handled by the auth context
         console.log(err);
       } finally {
-        setIsSubmitting(false);
+        // setIsSubmitting(false);
+        dispatch({ type: 'SET_IS_SUBMITTING', payload: false });
       }
     }
   };
@@ -124,7 +168,8 @@ const RegisterPage: React.FC = () => {
               id="username"
               type="text"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              // onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => dispatch({ type: 'SET_USERNAME', payload: e.target.value })}
               placeholder="Enter your username"
             />
             {formErrors.username && <ErrorMessage>{formErrors.username}</ErrorMessage>}
@@ -136,7 +181,8 @@ const RegisterPage: React.FC = () => {
               id="email"
               type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              // onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => dispatch({ type: 'SET_EMAIL', payload: e.target.value })}
               placeholder="you@example.com"
             />
             {formErrors.email && <ErrorMessage>{formErrors.email}</ErrorMessage>}
@@ -149,7 +195,8 @@ const RegisterPage: React.FC = () => {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                // onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => dispatch({ type: 'SET_PASSWORD', payload: e.target.value })}
                 placeholder="••••••••"
               />
               {formErrors.password && <ErrorMessage>{formErrors.password}</ErrorMessage>}
@@ -161,7 +208,8 @@ const RegisterPage: React.FC = () => {
                 id="confirmPassword"
                 type="password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                // onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => dispatch({ type: 'SET_CONFIRM_PASSWORD', payload: e.target.value })}
                 placeholder="••••••••"
               />
               {formErrors.confirmPassword && <ErrorMessage>{formErrors.confirmPassword}</ErrorMessage>}
