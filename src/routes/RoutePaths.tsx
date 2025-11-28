@@ -14,6 +14,7 @@ const ROUTE_PATHS = {
     SETTINGS: '/settings',
     PROFILE: '/profile',
     NOTIFICATIONS: '/notifications',
+    PUBLIC_NOTE: '/public-note',
     NEWNOTE: '/notes/new',
     VIEWNOTE: '/notes/:id',
     NOTEEDIT: '/notes/:id/edit',

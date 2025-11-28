@@ -1,6 +1,6 @@
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { useNotifications } from "../context/NotificationsContext";
-import { DashboardContainer, Content, StatCard } from './Dashboard.styles';
+import { DashboardContainer, Content, StatCard } from '../pages.styles/Dashboard.styles';
 import styled, { keyframes } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowLeft } from 'react-icons/fa';

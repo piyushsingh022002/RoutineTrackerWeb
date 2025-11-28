@@ -38,7 +38,7 @@ import {
   LinksWrap,
   LinkRow,
   SmallRemove,
-} from './NoteEditor.style';
+} from '../pages.styles/NoteEditor.style';
 import type { Note } from '../types';
 import { useNotes } from "../context/NotesContext";
 import { FaDownload, FaTimes, FaCheck, FaUpload } from "react-icons/fa";

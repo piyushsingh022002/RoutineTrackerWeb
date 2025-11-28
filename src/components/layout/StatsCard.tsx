@@ -1,5 +1,5 @@
 import React from 'react';
-import { StatCard, StatTitle, StatValue } from '../../pages/Dashboard.styles';
+import { StatCard, StatTitle, StatValue } from '../../pages.styles/Dashboard.styles';
 
 interface Props {
   title: string;

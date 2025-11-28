@@ -300,7 +300,7 @@ const LandingPage: React.FC = () => {
           Try the app without logging in!
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.2rem' }}>
-          <Button variant="outline" size="medium">
+          <Button variant="outline" size="medium" onClick={() => navigate('/public-note')}>
             Try Without Login
           </Button>
         </div>
