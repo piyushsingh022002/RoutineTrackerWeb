@@ -86,7 +86,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        const res = await axios.get(`${API_URL}/auth/user`);
+        const res = await axios.get(`${API_URL}/auth/user`, {
+          headers: {
+            'X-Client-Id': 'web-ui-v1.0',
+          },
+        });
         dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data });
       } catch {
         dispatch({ type: 'LOAD_USER_FAIL' });
@@ -97,7 +101,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (credentials: LoginCredentials) => {
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, credentials);
+      const res = await axios.post(`${API_URL}/auth/login`, credentials, {
+        headers: {
+          'X-Client-Id': 'web-ui-v1.0',
+        },
+      });
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Login failed';
@@ -109,7 +117,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   //Register User Here 
   const register = async (credentials: RegisterCredentials) => {
     try {
-      const res = await axios.post(`${API_URL}/auth/register`, credentials);
+      const res = await axios.post(`${API_URL}/auth/register`, credentials, {
+        headers: {
+          'X-Client-Id': 'web-ui-v1.0',
+        },
+      });
       dispatch({ type: 'REGISTER_SUCCESS', payload: res.data});
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Registration failed';

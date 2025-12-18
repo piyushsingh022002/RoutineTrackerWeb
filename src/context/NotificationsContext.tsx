@@ -28,7 +28,11 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
     setError(null);
     try {
       // Try primary expected endpoint
-  const res = await axios.get(`${API_ROOT}/api/notification`);
+  const res = await axios.get(`${API_ROOT}/api/notification`, {
+    headers: {
+      'X-Client-Id': 'web-ui-v1.0',
+    },
+  });
   let data = res.data?.data ?? res.data ?? [];
 
       // If no data returned, try some common alternative endpoints (fallbacks)
@@ -40,7 +44,11 @@ export const NotificationsProvider: React.FC<{ children: React.ReactNode }> = ({
         ];
         for (const alt of alternatives) {
           try {
-            const r = await axios.get(alt);
+            const r = await axios.get(alt, {
+              headers: {
+                'X-Client-Id': 'web-ui-v1.0',
+              },
+            });
             const d = r.data?.data ?? r.data ?? [];
             if (Array.isArray(d) && d.length > 0) {
               data = d;
