@@ -161,6 +161,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const res = await axios.get(`${API_URL}/notes`, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'X-Client-Id': 'web-ui-v1.0',
         },
       });
       // Support APIs that return the list as res.data.data or res.data
@@ -178,7 +179,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'GET_NOTE_REQUEST' });
     try {
       const res = await axios.get(`${API_URL}/notes/${id}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: token ? { Authorization: `Bearer ${token}`, 'X-Client-Id': 'web-ui-v1.0' } : { 'X-Client-Id': 'web-ui-v1.0' },
       });
       // Support APIs that return the resource as res.data.data or res.data
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
@@ -195,7 +196,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
       const res = await axios.post(`${API_URL}/notes`, note, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: token ? { Authorization: `Bearer ${token}`, 'X-Client-Id': 'web-ui-v1.0' } : { 'X-Client-Id': 'web-ui-v1.0' },
       });
       // Support APIs that return the created resource as res.data.data or res.data
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
@@ -214,7 +215,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'UPDATE_NOTE_REQUEST' });
     try {
       const res = await axios.put(`${API_URL}/notes/${id}`, note, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: token ? { Authorization: `Bearer ${token}`, 'X-Client-Id': 'web-ui-v1.0' } : { 'X-Client-Id': 'web-ui-v1.0' },
       });
       const resData = (res && ((res as unknown) as Record<string, unknown>).data) as unknown;
       const payload = (resData && (resData as Record<string, unknown>).data) ?? resData;
@@ -231,7 +232,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'DELETE_NOTE_REQUEST' });
     try {
       await axios.delete(`${API_URL}/notes/${id}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        headers: token ? { Authorization: `Bearer ${token}`, 'X-Client-Id': 'web-ui-v1.0' } : { 'X-Client-Id': 'web-ui-v1.0' },
       });
       // Use the raw id as payload; reducer will stringify for comparison
       dispatch({ type: 'DELETE_NOTE_SUCCESS', payload: id });
