@@ -7,7 +7,6 @@ import Loader from '../components/common/Loader';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { ActivityCalendar } from '../components/dashboard';
 import { eachDayOfInterval, endOfMonth, format, formatDistanceToNow, startOfMonth, subDays } from 'date-fns';
-import { motion } from 'framer-motion';
 import type { Note } from '../types';
 
 import {
