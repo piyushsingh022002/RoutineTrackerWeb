@@ -8,15 +8,23 @@ import {
   EditorCard,
   EditorContainer,
   Content,
-  LeftColumn,
-  RightColumn,
+  FormGrid,
+  PrimaryColumn,
+  SidebarColumn,
+  SectionCard,
+  SectionHeader,
+  SectionTitle,
+  SectionDescription,
+  PreviewDialog,
+  PreviewHeading,
+  PreviewBody,
   ButtonGroup,
   PrimaryButton,
   SecondaryButton,
-  // Form,
   FormGroup,
   Label,
   Input,
+  SelectControl,
   EditorFieldWrap,
   TagsInput,
   Tag,
@@ -38,10 +46,11 @@ import {
   LinksWrap,
   LinkRow,
   SmallRemove,
+  ImportMessage,
 } from '../pages.styles/NoteEditor.style';
 import type { Note } from '../types';
 import { useNotes } from "../context/NotesContext";
-import { FaDownload, FaTimes, FaCheck, FaUpload } from "react-icons/fa";
+import { FaDownload, FaTimes, FaCheck, FaUpload, FaEye } from "react-icons/fa";
 import { jsPDF } from "jspdf";
 import Header from "../components/common/Header";
 // CodeMirror editor
@@ -111,10 +120,9 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
     content?: string;
   }>({});
   const [isSaving, setIsSaving] = useState(false);
-  const [isCancelHovered, setIsCancelHovered] = useState(false);
-  const [isSaveHovered, setIsSaveHovered] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
   // Dialog state for showing saved note
   const [showNoteDialog, setShowNoteDialog] = useState<Note | null>(null);
   // Track if we should show dialog after note creation
@@ -524,6 +532,22 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
               </DialogBox>
             </DialogOverlay>
           )}
+          {isPreviewOpen && (
+            <DialogOverlay onClick={() => setIsPreviewOpen(false)} tabIndex={-1}>
+              <PreviewDialog onClick={(e) => e.stopPropagation()} tabIndex={0}>
+                <DialogClose onClick={() => setIsPreviewOpen(false)}>&times;</DialogClose>
+                <PreviewHeading>{title || 'Untitled note'}</PreviewHeading>
+                <PreviewBody>
+                  {content.trim() ? content : 'Start typing your note to see a live preview.'}
+                </PreviewBody>
+                {tags.length > 0 && (
+                  <div style={{ marginTop: '0.75rem', color: 'var(--text-light)', fontSize: '0.85rem' }}>
+                    Tags: {tags.join(', ')}
+                  </div>
+                )}
+              </PreviewDialog>
+            </DialogOverlay>
+          )}
           {/* Attachment overlay modal */}
           {openAttachment && (
             <DialogOverlay onClick={() => setOpenAttachment(null)} tabIndex={-1}>
@@ -547,89 +571,80 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              isCancelHovered={isCancelHovered}
-              isSaveHovered={isSaveHovered}
             >
-              <form style={{ display: 'flex', width: '100%', gap: '2.5rem' }} onSubmit={handleSubmit}>
-                <LeftColumn>
-                  <FormGroup>
-                    <Label htmlFor="title">Title</Label>
-                    <Input
-                      id="title"
-                      type="text"
-                      value={title}
-                      onChange={(e) => setTitle(e.target.value)}
-                      placeholder="Note title"
-                    />
-                    {formErrors.title && (
-                      <ErrorMessage>{formErrors.title}</ErrorMessage>
-                    )}
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="note-type">Note Type</Label>
-                    <select
-                      id="note-type"
-                      value={syntax}
-                      onChange={e => setSyntax(e.target.value as typeof syntax)}
-                      style={{ padding: '0.5rem', borderRadius: 6, border: '1px solid #e5e7eb', fontSize: '1rem', marginBottom: 8 }}
-                    >
-                      <option value="plain">Plain Text</option>
-                      <option value="markdown">Markdown</option>
-                      <option value="json">JSON</option>
-                      <option value="javascript">JavaScript</option>
-                      <option value="typescript">TypeScript</option>
-                      <option value="python">Python</option>
-                      <option value="java">Java</option>
-                      <option value="html">HTML</option>
-                      <option value="css">CSS</option>
-                      <option value="react">React JSX</option>
-                    </select>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label htmlFor="content">Content</Label>
-                    <EditorFieldWrap
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.25 }}
-                    >
-                      <CodeMirror
-                        value={content}
-                        height="320px"
-                        extensions={codeExtensions}
-                        onChange={(val:string) => setContent(val)}
-                        basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
-                        placeholder={placeholderText}
-                      />
-                    </EditorFieldWrap>
-                    {formErrors.content && (
-                      <ErrorMessage>{formErrors.content}</ErrorMessage>
-                    )}
-                  </FormGroup>
-                </LeftColumn>
-                <RightColumn>
-                  <FormGroup>
-                    <Label>Tags</Label>
-                    <TagsInput>
-                      {tags.map((tag, index) => (
-                        <Tag key={index}>
-                          <TagText>{tag}</TagText>
-                          <RemoveTagButton type="button" onClick={() => removeTag(tag)}>
-                            ×
-                          </RemoveTagButton>
-                        </Tag>
-                      ))}
-                      <TagInput
+              <FormGrid onSubmit={handleSubmit}>
+                <PrimaryColumn>
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Note Basics</SectionTitle>
+                      <SectionDescription>Give your note a concise title and choose the format that fits best.</SectionDescription>
+                    </SectionHeader>
+                    <FormGroup>
+                      <Label htmlFor="title">Title</Label>
+                      <Input
+                        id="title"
                         type="text"
-                        value={tagInput}
-                        onChange={(e) => setTagInput(e.target.value)}
-                        onKeyDown={handleTagInputKeyDown}
-                        onBlur={addTag}
-                        placeholder={tags.length === 0 ? "Add tags (press Enter)" : ""}
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="Note title"
                       />
-                    </TagsInput>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Links (Title + URL)</Label>
+                      {formErrors.title && (
+                        <ErrorMessage>{formErrors.title}</ErrorMessage>
+                      )}
+                    </FormGroup>
+                    <FormGroup>
+                      <Label htmlFor="note-type">Note Type</Label>
+                      <SelectControl
+                        id="note-type"
+                        value={syntax}
+                        onChange={e => setSyntax(e.target.value as typeof syntax)}
+                      >
+                        <option value="plain">Plain Text</option>
+                        <option value="markdown">Markdown</option>
+                        <option value="json">JSON</option>
+                        <option value="javascript">JavaScript</option>
+                        <option value="typescript">TypeScript</option>
+                        <option value="python">Python</option>
+                        <option value="java">Java</option>
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="react">React JSX</option>
+                      </SelectControl>
+                    </FormGroup>
+                  </SectionCard>
+
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Content</SectionTitle>
+                      <SectionDescription>Draft your ideas with Markdown or code-friendly syntax highlighting.</SectionDescription>
+                    </SectionHeader>
+                    <FormGroup>
+                      <Label htmlFor="content">Body</Label>
+                      <EditorFieldWrap
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.25 }}
+                      >
+                        <CodeMirror
+                          value={content}
+                          height="360px"
+                          extensions={codeExtensions}
+                          onChange={(val:string) => setContent(val)}
+                          basicSetup={{ lineNumbers: true, foldGutter: true, highlightActiveLine: true }}
+                          placeholder={placeholderText}
+                        />
+                      </EditorFieldWrap>
+                      {formErrors.content && (
+                        <ErrorMessage>{formErrors.content}</ErrorMessage>
+                      )}
+                    </FormGroup>
+                  </SectionCard>
+
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Quick Links</SectionTitle>
+                      <SectionDescription>Collect reference URLs that pair with this note.</SectionDescription>
+                    </SectionHeader>
                     <LinksWrap>
                       {links.map((l, idx) => (
                         <LinkRow key={idx}>
@@ -648,11 +663,99 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
                           <SmallRemove type="button" onClick={() => removeLinkRow(idx)}>Remove</SmallRemove>
                         </LinkRow>
                       ))}
-                      <SecondaryButton type="button" onClick={addLinkRow}>+ Add Link</SecondaryButton>
+                      <SecondaryButton
+                        type="button"
+                        onClick={addLinkRow}
+                        style={{ width: '100%', justifyContent: 'center' }}
+                      >
+                        + Add Link
+                      </SecondaryButton>
                     </LinksWrap>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label>Attachments</Label>
+                  </SectionCard>
+
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Actions</SectionTitle>
+                      <SectionDescription>Save progress, download a PDF, or import existing notes.</SectionDescription>
+                    </SectionHeader>
+                    <ButtonGroup>
+                      <SecondaryButton
+                        type="button"
+                        onClick={() => setIsPreviewOpen(true)}
+                      >
+                        Preview
+                        <FaEye />
+                      </SecondaryButton>
+                      <SecondaryButton
+                        type="button"
+                        onClick={handleCancel}
+                      >
+                        Cancel
+                        <FaTimes />
+                      </SecondaryButton>
+                      <PrimaryButton
+                        type="submit"
+                        disabled={isSaving}
+                      >
+                        {isSaving ? "Saving..." : "Save Note"}
+                        <FaCheck />
+                      </PrimaryButton>
+                    </ButtonGroup>
+                    <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
+                      Download as PDF
+                      <FaDownload />
+                    </DownloadButton>
+                    <input
+                      id="import-notes-input"
+                      type="file"
+                      accept="application/json"
+                      style={{ display: 'none' }}
+                      onChange={handleImportNotesChange}
+                    />
+                    <SecondaryButton
+                      type="button"
+                      onClick={() => document.getElementById('import-notes-input')?.click()}
+                      disabled={isImporting}
+                      style={{ width: '100%', justifyContent: 'center' }}
+                    >
+                      {isImporting ? 'Importing…' : 'Import your notes safely'}
+                      <FaUpload />
+                    </SecondaryButton>
+                    {importMessage && <ImportMessage>{importMessage}</ImportMessage>}
+                  </SectionCard>
+                </PrimaryColumn>
+
+                <SidebarColumn>
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Tags</SectionTitle>
+                      <SectionDescription>Add short labels to keep related notes together.</SectionDescription>
+                    </SectionHeader>
+                    <TagsInput>
+                      {tags.map((tag, index) => (
+                        <Tag key={index}>
+                          <TagText>{tag}</TagText>
+                          <RemoveTagButton type="button" onClick={() => removeTag(tag)}>
+                            ×
+                          </RemoveTagButton>
+                        </Tag>
+                      ))}
+                      <TagInput
+                        type="text"
+                        value={tagInput}
+                        onChange={(e) => setTagInput(e.target.value)}
+                        onKeyDown={handleTagInputKeyDown}
+                        onBlur={addTag}
+                        placeholder={tags.length === 0 ? "Add tags (press Enter)" : ""}
+                      />
+                    </TagsInput>
+                  </SectionCard>
+
+                  <SectionCard>
+                    <SectionHeader>
+                      <SectionTitle>Attachments</SectionTitle>
+                      <SectionDescription>Drop supporting screenshots or PDFs to keep everything together.</SectionDescription>
+                    </SectionHeader>
                     <FileUploadContainer
                       onClick={() => document.getElementById("file-upload")?.click()}
                     >
@@ -689,55 +792,9 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
                         ))}
                       </FilePreviewContainer>
                     )}
-                  </FormGroup>
-                  <ButtonGroup>
-                    <SecondaryButton
-                      type="button"
-                      onClick={handleCancel}
-                      onMouseEnter={() => setIsCancelHovered(true)}
-                      onMouseLeave={() => setIsCancelHovered(false)}
-                    >
-                      Cancel
-                      <FaTimes />
-                    </SecondaryButton>
-                    <PrimaryButton
-                      type="submit"
-                      disabled={isSaving}
-                      onMouseEnter={() => setIsSaveHovered(true)}
-                      onMouseLeave={() => setIsSaveHovered(false)}
-                    >
-                      {isSaving ? "Saving..." : "Save Note"}
-                      <FaCheck />
-                    </PrimaryButton>
-                  </ButtonGroup>
-                  <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
-                    Download as PDF
-                    <FaDownload />
-                  </DownloadButton>
-                  {/* Import Notes */}
-                  <input
-                    id="import-notes-input"
-                    type="file"
-                    accept="application/json"
-                    style={{ display: 'none' }}
-                    onChange={handleImportNotesChange}
-                  />
-                  <SecondaryButton
-                    type="button"
-                    onClick={() => document.getElementById('import-notes-input')?.click()}
-                    disabled={isImporting}
-                    style={{ marginTop: '0.75rem' }}
-                  >
-                    {isImporting ? 'Importing…' : 'Inport your Notes safely'}
-                    <FaUpload />
-                  </SecondaryButton>
-                  {importMessage && (
-                    <div style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: 'var(--text-light)' }}>
-                      {importMessage}
-                    </div>
-                  )}
-                </RightColumn>
-              </form>
+                  </SectionCard>
+                </SidebarColumn>
+              </FormGrid>
             </EditorCard>
           )}
         </Content>

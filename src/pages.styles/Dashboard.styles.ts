@@ -97,6 +97,256 @@ export const NoteCard = styled(Link)`
   }
 `;
 
+export const HeroGrid = styled(motion.div)`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  margin: 1rem 0 2rem;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  align-content: stretch;
+`;
+
+export const HeroLeftStack = styled(motion.div)`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  height: 100%;
+`;
+
+const sparkPulse = keyframes`
+  0% { opacity: 0.45; transform: translateX(-10%); }
+  50% { opacity: 1; transform: translateX(10%); }
+  100% { opacity: 0.45; transform: translateX(40%); }
+`;
+
+export const MomentumCard = styled(motion.div)`
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.15), transparent 60%),
+    radial-gradient(circle at 80% 0%, rgba(255, 255, 255, 0.08), transparent 65%),
+    linear-gradient(120deg, var(--dashboard-overlay-1), var(--dashboard-overlay-3));
+  border: 1px solid var(--dashboard-hero-border);
+  box-shadow: var(--dashboard-hero-shadow);
+  color: var(--dashboard-hero-text);
+  isolation: isolate;
+
+  &:after {
+    content: '';
+    position: absolute;
+    inset: 12%;
+    border-radius: 24px;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent 75%);
+    mix-blend-mode: screen;
+    z-index: -1;
+  }
+
+  .eyebrow {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.18em;
+    opacity: 0.85;
+  }
+
+  h3 {
+    margin: 0.35rem 0 0.2rem;
+    font-size: 1.35rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0 0 1rem;
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  small {
+    display: inline-block;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.85);
+  }
+`;
+
+export const MomentumBadge = styled.span`
+  padding: 0.2rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.14);
+  color: var(--dashboard-hero-text);
+  white-space: nowrap;
+
+  &[data-tone='ahead'] {
+    background: rgba(74, 222, 128, 0.25);
+    border-color: rgba(74, 222, 128, 0.65);
+  }
+
+  &[data-tone='steady'] {
+    background: rgba(248, 250, 252, 0.18);
+  }
+
+  &[data-tone='behind'] {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: rgba(248, 113, 113, 0.5);
+  }
+`;
+
+export const MomentumSparkline = styled.div`
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.12), transparent 65%),
+    rgba(255, 255, 255, 0.08);
+  margin: 0.35rem 0 0.75rem;
+  overflow: hidden;
+
+  .sparkline__pulse {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #fde68a, #f0abfc, #93c5fd);
+    box-shadow: 0 0 35px rgba(251, 191, 36, 0.35);
+    animation: ${sparkPulse} 6s ease-in-out infinite;
+  }
+`;
+
+export const MetricStack = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1.1rem;
+`;
+
+export const MetricLabel = styled.span`
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.75;
+`;
+
+export const MetricValue = styled.span`
+  display: block;
+  font-size: 1.4rem;
+  font-weight: 700;
+`;
+
+export const MetricDelta = styled.span`
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
+
+  &[data-positive='true'] {
+    color: #bbf7d0;
+  }
+`;
+
+export const MomentumMeta = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+  margin: 1rem 0;
+
+  div {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.08);
+  }
+`;
+
+export const ProgressTrack = styled.div`
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  overflow: hidden;
+  margin-bottom: 0.35rem;
+`;
+
+export const ProgressFill = styled.div`
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f9d976, #f39f86);
+  transition: width 0.3s ease;
+`;
+
+export const QuickInsights = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+`;
+
+export const GoalRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: auto;
+`;
+
+export const GoalChip = styled.span`
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--dashboard-hero-text);
+  border: 1px dashed rgba(255, 255, 255, 0.35);
+  background: rgba(255, 255, 255, 0.1);
+`; 
+
+export const InsightCard = styled(motion.div)`
+  background: var(--bg-light);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 14px;
+  padding: 0.9rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: var(--shadow);
+`;
+
+export const InsightIcon = styled.span`
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: var(--sidebar-active-bg);
+`;
+
+export const InsightCopy = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const InsightLabel = styled.span`
+  font-size: 0.8rem;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+`;
+
+export const InsightValue = styled.span`
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+`;
+
 // Animated "Create Note" hero tile
 export const CreateTile = styled(Link)`
   position: relative;
@@ -109,6 +359,7 @@ export const CreateTile = styled(Link)`
   text-decoration: none;
   overflow: hidden;
   min-height: 200px;
+  height: 100%;
   box-shadow: var(--dashboard-hero-shadow);
   border: 1px solid var(--dashboard-hero-border);
   background: var(--dashboard-hero-gradient);
@@ -134,6 +385,16 @@ export const CreateTile = styled(Link)`
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+  }
+`;
+
+export const HeroTileWrapper = styled(motion.div)`
+  flex: 1;
+  display: flex;
+  width: 100%;
+
+  ${CreateTile} {
+    flex: 1;
   }
 `;
 
@@ -238,12 +499,12 @@ export const Content = styled.main`
 `;
 
 // Layout: Sidebar | Main | Calendar
-export const MainGrid = styled.div<{ collapsed?: boolean; rightCollapsed?: boolean }>`
+export const MainGrid = styled.div<{ $collapsed?: boolean; $rightCollapsed?: boolean }>`
   display: grid;
   /* change the left and right column widths when collapsed */
   grid-template-columns: ${(p) => {
-    const left = p.collapsed ? '72px' : '220px';
-    const right = p.rightCollapsed ? '72px' : '360px';
+    const left = p.$collapsed ? '72px' : '220px';
+    const right = p.$rightCollapsed ? '72px' : '360px';
     return `${left} 1fr ${right}`;
   }};
   gap: 1rem;
@@ -251,7 +512,7 @@ export const MainGrid = styled.div<{ collapsed?: boolean; rightCollapsed?: boole
   align-items: start;
   transition: grid-template-columns 200ms ease;
   @media ${device.tablet} {
-    grid-template-columns: ${(p) => (p.collapsed ? (p.rightCollapsed ? '72px 1fr 72px' : '72px 1fr') : (p.rightCollapsed ? '200px 1fr 72px' : '200px 1fr'))};
+    grid-template-columns: ${(p) => (p.$collapsed ? (p.$rightCollapsed ? '72px 1fr 72px' : '72px 1fr') : (p.$rightCollapsed ? '200px 1fr 72px' : '200px 1fr'))};
     grid-auto-rows: min-content;
     grid-template-areas:
       'sidebar main'
@@ -403,6 +664,98 @@ export const StatsGrid = styled.div`
   @media (min-width: 1024px) {
     grid-template-columns: repeat(4, 1fr);
   }
+`;
+
+export const TimelineCard = styled(motion.div)`
+  background: var(--bg-light);
+  border-radius: 18px;
+  border: 1px solid var(--card-border-strong);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+`;
+
+export const TimelineHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .eyebrow {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--text-light);
+    margin-bottom: 0.3rem;
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+`;
+
+export const TimelineAction = styled.button`
+  border: 1px solid var(--card-border-strong);
+  background: transparent;
+  color: var(--text-color);
+  padding: 0.45rem 1.15rem;
+  border-radius: 999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+
+  &:hover {
+    background: var(--sidebar-active-bg);
+    transform: translateY(-1px);
+  }
+`;
+
+export const TimelineList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+export const TimelineItem = styled.li`
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: flex-start;
+`;
+
+export const TimelineBullet = styled.span`
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary-color);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+  margin-top: 6px;
+`;
+
+export const TimelineContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  .title {
+    font-weight: 600;
+    color: var(--text-color);
+  }
+
+  .preview {
+    font-size: 0.9rem;
+    color: var(--text-light);
+  }
+`;
+
+export const TimelineTime = styled.span`
+  font-size: 0.8rem;
+  color: var(--text-light);
 `;
 
 
