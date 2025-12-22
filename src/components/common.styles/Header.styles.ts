@@ -10,7 +10,7 @@ export const HeaderContainer = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  background: linear-gradient(120deg, rgba(248,250,252,0.92) 0%, rgba(224,231,255,0.92) 100%);
+  background: var(--header-gradient);
   backdrop-filter: saturate(140%) blur(6px);
   font-family: 'Montserrat', 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
   position: fixed;
@@ -90,14 +90,14 @@ export const Nav = styled.nav`
 `;
 
 export const ExternalLink = styled.a`
-  color: #4a6cf7;
+  color: var(--header-link);
   text-decoration: none;
   font-weight: 600;
   font-size: 1rem;
   margin-right: 0.5rem;
   transition: color 0.2s;
   &:hover {
-    color: #1d4ed8;
+    color: var(--header-link-hover);
     text-decoration: underline;
   }
 `;
@@ -110,13 +110,13 @@ export const StyledNavLink = styled(RouterNavLink)`
   border-radius: 6px;
   transition: color 160ms var(--easing-out), transform 160ms var(--easing-out), background-color 160ms var(--easing-out);
   &.active {
-    color: #4a6cf7;
+    color: var(--primary-color);
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
     transform: translateY(-1px);
   }
-  &:hover { color: #4a6cf7; background: rgba(74,108,247,0.08); }
+  &:hover { color: var(--primary-color); background: var(--calendar-chip-hover); }
 `;
 
 // Right-side utilities
@@ -137,14 +137,15 @@ export const IconButton = styled.button`
   line-height: 1;
   position: relative;
   transition: background-color 160ms var(--easing-out), transform 160ms var(--easing-out);
-  &:hover { background: rgba(74,108,247,0.12); transform: translateY(-1px); }
+  color: inherit;
+  &:hover { background: var(--calendar-chip-hover); transform: translateY(-1px); }
 `;
 
 export const Badge = styled.span`
   position: absolute;
   top: -2px;
   right: -2px;
-  background: #ef4444;
+  background: var(--badge-bg);
   color: #fff;
   font-size: 0.65rem;
   min-width: 18px;
@@ -161,9 +162,9 @@ export const StreakPill = styled.div`
   align-items: center;
   gap: 6px;
   font-weight: 700;
-  color: #f97316; /* orange */
-  background: #fff7ed;
-  border: 1px solid #fed7aa;
+  color: var(--streak-pill-color);
+  background: var(--streak-pill-bg);
+  border: 1px solid var(--streak-pill-border);
   padding: 6px 10px;
   border-radius: 999px;
   margin: 0 6px;
@@ -195,11 +196,13 @@ export const ProfileDropdown = styled.div`
   top: calc(var(--header-height) - 8px);
   right: 16px;
   width: 320px;
-  background: #fff;
+  background: var(--dropdown-bg);
   border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(2,6,23,0.15);
+  box-shadow: var(--dropdown-shadow);
+  border: 1px solid var(--card-border-strong);
   padding: 16px 14px 12px 14px;
   z-index: 1200;
+  color: var(--text-color);
 `;
 
 export const ProfileHeader = styled.div`
@@ -211,7 +214,7 @@ export const ProfileHeader = styled.div`
 
 export const ProfileName = styled.div`
   font-weight: 700;
-  color: #111827;
+  color: var(--text-color);
 `;
 
 export const QuickGrid = styled.div`
@@ -222,8 +225,8 @@ export const QuickGrid = styled.div`
 `;
 
 export const QuickItem = styled.div`
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+  background: var(--quick-item-bg);
+  border: 1px solid var(--quick-item-border);
   border-radius: 12px;
   padding: 10px 8px;
   display: flex;
@@ -231,7 +234,7 @@ export const QuickItem = styled.div`
   align-items: center;
   gap: 6px;
   font-size: 0.8rem;
-  color: #374151;
+  color: var(--quick-item-color);
 `;
 
 export const Menu = styled.div`
@@ -247,9 +250,9 @@ export const MenuItem = styled.button`
   padding: 10px 10px;
   border-radius: 8px;
   cursor: pointer;
-  color: #111827;
+  color: var(--text-color);
   display: flex;
   align-items: center;
   gap: 10px;
-  &:hover { background: #f3f4f6; }
+  &:hover { background: var(--menu-hover-bg); }
 `;

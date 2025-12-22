@@ -9,7 +9,7 @@ const DialogOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.18);
+  background: var(--overlay-scrim);
   z-index: 3000;
   display: flex;
   align-items: center;
@@ -18,14 +18,16 @@ const DialogOverlay = styled.div`
 `;
 
 const DialogBox = styled.div`
-  background: #fff;
+  background: var(--modal-surface);
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(74,108,247,0.13);
+  box-shadow: var(--modal-shadow);
+  border: 1px solid var(--card-border-strong);
   padding: 32px;
   min-width: 320px;
   max-width: 420px;
   width: 100%;
   position: relative;
+  color: var(--text-color);
 `;
 
 const DialogClose = styled.button`
@@ -35,12 +37,12 @@ const DialogClose = styled.button`
   background: none;
   border: none;
   font-size: 24px;
-  color: #4a6cf7;
+  color: var(--primary-color);
   cursor: pointer;
 `;
 
 const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean; $inline?: boolean }>`
-  background: ${(p) => (p.$inline ? 'transparent' : 'linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%) fixed, radial-gradient(ellipse 80% 60% at 60% 0%, #e0e7ff33 0%, #f8fafc00 100%) fixed')};
+  background: ${(p) => (p.$inline ? 'transparent' : 'linear-gradient(120deg, var(--bg-color) 0%, var(--bg-light) 100%)')};
   border-radius: ${(p) => (p.$inline ? '0' : '0')};
   box-shadow: none;
   width: ${(p) => (p.$inline ? '100%' : '100vw')};
@@ -220,7 +222,8 @@ const EditorFieldWrap = styled(motion.div)`
   }
 
   .cm-editor .cm-placeholder {
-    color: rgba(255,255,255,0.65);
+    color: rgba(79,70,229,0.4);
+    color: color-mix(in srgb, var(--text-light) 65%, transparent);
   }
 `;
 
@@ -245,7 +248,8 @@ const Tag = styled.div`
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.5rem;
-  background-color: rgba(79, 70, 229, 0.1);
+  background-color: rgba(79, 70, 229, 0.12);
+  background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
   color: var(--primary-color);
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
@@ -270,6 +274,7 @@ const RemoveTagButton = styled.button`
 
   &:hover {
     background-color: rgba(79, 70, 229, 0.2);
+    background-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
   }
 `;
 
@@ -292,7 +297,8 @@ const FileUploadContainer = styled.div`
 
   &:hover {
     border-color: var(--primary-color);
-    background-color: rgba(79, 70, 229, 0.05);
+    background-color: rgba(79, 70, 229, 0.08);
+    background-color: color-mix(in srgb, var(--primary-color) 12%, transparent);
   }
 `;
 
@@ -344,7 +350,8 @@ const FilePreviewDocument = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(79, 70, 229, 0.1);
+  background-color: rgba(79, 70, 229, 0.12);
+  background-color: color-mix(in srgb, var(--primary-color) 18%, transparent);
   color: var(--primary-color);
   font-size: 0.75rem;
   font-weight: 500;
@@ -356,7 +363,8 @@ const RemoveFileButton = styled.button`
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
-  background-color: rgba(239, 68, 68, 0.8);
+  background-color: rgba(239, 68, 68, 0.85);
+  background-color: color-mix(in srgb, var(--danger-color) 80%, transparent);
   color: white;
   border: none;
   width: 20px;
