@@ -15,6 +15,8 @@ const CalendarContainer = styled(Card)`
   padding: 1rem 1rem 1.25rem 1rem;
   box-sizing: border-box;
   overflow: hidden; /* keep all inner visuals inside the card */
+  background-color: var(--bg-light);
+  color: var(--text-color);
 `;
 
 const CalendarHeader = styled.div`
@@ -27,7 +29,7 @@ const CalendarHeader = styled.div`
 const MonthTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-color);
   margin: 0;
 `;
 
@@ -42,7 +44,7 @@ const Weekday = styled.div`
   text-align: center;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #6c757d;
+  color: var(--text-light);
 `;
 
 const DaysGrid = styled.div`
@@ -61,23 +63,17 @@ const DayCell = styled(motion.div)<{ $isCurrentMonth: boolean; $isToday: boolean
   font-size: 0.875rem;
   font-weight: ${(props) => (props.$isToday ? '600' : '400')};
   color: ${(props) => {
-    if (!props.$isCurrentMonth) return '#adb5bd';
+    if (!props.$isCurrentMonth) return 'var(--text-light)';
     if (props.$isToday) return '#fff';
-    return '#495057';
+    return 'var(--text-color)';
   }};
-  background-color: ${(props) => {
-    if (props.$isToday) return '#4a6cf7';
-    return 'transparent';
-  }};
-  border: ${(props) => (props.$isToday ? 'none' : '1px solid #dee2e6')};
+  background-color: ${(props) => (props.$isToday ? 'var(--primary-color)' : 'transparent')};
+  border: ${(props) => (props.$isToday ? 'none' : '1px solid var(--border-color)')};
   cursor: pointer;
   transition: all 0.2s ease;
   
   &:hover {
-    background-color: ${(props) => {
-      if (props.$isToday) return '#3a5ce5';
-      return '#f8f9fa';
-    }};
+    background-color: ${(props) => (props.$isToday ? 'var(--primary-hover)' : 'var(--calendar-chip-hover)')};
   }
 `;
 
@@ -89,9 +85,9 @@ const StreakIndicator = styled.div<{ $streakCount: number }>`
   height: 1.25rem;
   border-radius: 50%;
   background-color: ${(props) => {
-    if (props.$streakCount >= 7) return '#28a745';
-    if (props.$streakCount >= 3) return '#ffc107';
-    return '#6c757d';
+    if (props.$streakCount >= 7) return 'var(--secondary-color)';
+    if (props.$streakCount >= 3) return 'var(--primary-color)';
+    return 'var(--text-light)';
   }};
   color: #fff;
   font-size: 0.625rem;
@@ -114,6 +110,7 @@ const Dot = styled.div<{ $color: string }>`
   height: 8px;
   border-radius: 50%;
   background-color: ${(p) => p.$color};
+  box-shadow: 0 0 0 1px var(--bg-light);
 `;
 
 const Legend = styled.div`
@@ -130,7 +127,7 @@ const LegendItem = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.75rem;
-  color: #6c757d;
+  color: var(--text-light);
 `;
 
 const LegendColor = styled.div<{ $color: string }>`
@@ -138,6 +135,7 @@ const LegendColor = styled.div<{ $color: string }>`
   height: 1rem;
   border-radius: 50%;
   background-color: ${(props) => props.$color};
+  border: 1px solid var(--border-color);
 `;
 
 const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
@@ -216,8 +214,8 @@ const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
               >
                 {format(day, 'd')}
               </DayCell>
-              {hasActivity && <Dot $color="#22c55e" />} {/* green dot */}
-              {!hasActivity && isPast && !isToday && <Dot $color="#ef4444" />} {/* red dot for past no note */}
+              {hasActivity && <Dot $color="var(--secondary-color)" />}
+              {!hasActivity && isPast && !isToday && <Dot $color="var(--danger-color)" />}
               {activity && activity.streakCount > 1 && (
                 <StreakIndicator $streakCount={activity.streakCount}>
                   {activity.streakCount}
@@ -230,23 +228,23 @@ const ActivityCalendar: React.FC<ActivityCalendarProps> = ({
       
       <Legend>
         <LegendItem>
-          <LegendColor $color="#22c55e" />
+          <LegendColor $color="var(--secondary-color)" />
           <span>Note Added</span>
         </LegendItem>
         <LegendItem>
-          <LegendColor $color="#4a6cf7" />
+          <LegendColor $color="var(--primary-color)" />
           <span>Today</span>
         </LegendItem>
         <LegendItem>
-          <LegendColor $color="#ef4444" />
+          <LegendColor $color="var(--danger-color)" />
           <span>No Note (past)</span>
         </LegendItem>
         <LegendItem>
-          <LegendColor $color="#28a745" />
+          <LegendColor $color="var(--secondary-color)" />
           <span>Streak (7+ days)</span>
         </LegendItem>
         <LegendItem>
-          <LegendColor $color="#ffc107" />
+          <LegendColor $color="var(--primary-color)" />
           <span>Streak (3-6 days)</span>
         </LegendItem>
       </Legend>

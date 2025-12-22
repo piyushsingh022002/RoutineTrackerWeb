@@ -192,7 +192,7 @@ const Dashboard = () => {
                           zIndex: 2,
                           // transition: 'border 0.2s',
                         }}
-                        onMouseEnter={(e) => (e.currentTarget.style.border = '1px solid black')}
+                        onMouseEnter={(e) => (e.currentTarget.style.border = '1px solid var(--primary-color)')}
                         onMouseLeave={(e) => (e.currentTarget.style.border = 'none')}
                       />
                     </NoteCard>
@@ -256,9 +256,9 @@ const Dashboard = () => {
               <ModalOverlay>
                 <ModalBox elevation="high" borderRadius="large" fullWidth>
                   <ModalClose onClick={() => setShowAll(false)}>&times;</ModalClose>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#4a6cf7', marginBottom: 18 }}>All Notes</h3>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--primary-color)', marginBottom: 18 }}>All Notes</h3>
                   {sortedNotes.length === 0 ? (
-                    <div style={{ color: '#888', textAlign: 'center' }}>No notes found.</div>
+                    <div style={{ color: 'var(--text-light)', textAlign: 'center' }}>No notes found.</div>
                   ) : (
                     <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                       {sortedNotes.map((note: Note) => (
@@ -267,9 +267,9 @@ const Dashboard = () => {
                           onClick={() => { setOpenNote(note); setShowAll(false); }}
                           style={{
                             padding: '0.7rem 0.5rem',
-                            borderBottom: '1px solid #e5e7eb',
+                            borderBottom: '1px solid var(--border-color)',
                             fontSize: 16,
-                            color: '#222',
+                            color: 'var(--text-color)',
                             cursor: 'pointer',
                             transition: 'background 0.18s',
                           }}

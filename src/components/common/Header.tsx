@@ -38,7 +38,7 @@ import recotrackLogo from '../../../Logos/recotrack.logo.png';
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { toggleTheme } = useTheme();
+  const { theme, toggleTheme } = useTheme();
   const { notes } = useNotes();
   const { notifications } = useNotifications();
   const unreadCount = notifications ? notifications.filter((n) => !n.isRead).length : 0;
@@ -145,6 +145,17 @@ const Header: React.FC = () => {
         {isAuthenticated && !isLoading ? (
           <>
           <RightGroup>
+            {/* Theme toggle */}
+            <IconButton
+              type="button"
+              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+              aria-pressed={theme === 'dark'}
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              onClick={toggleTheme}
+            >
+              {theme === 'dark' ? '🌙' : '☀️'}
+            </IconButton>
+
             {/* Notifications */}
             <IconButton aria-label="Notifications" onClick={() => navigate('/notifications')}>
               <span role="img" aria-label="bell">🔔</span>
@@ -173,7 +184,7 @@ const Header: React.FC = () => {
                     <Avatar $src={user?.avatarUrl} />
                     <div>
                       <ProfileName>{user?.name || 'User'}</ProfileName>
-                      <div style={{ fontSize: 12, color: '#6b7280' }}>{user?.email}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-light)' }}>{user?.email}</div>
                     </div>
                   </ProfileHeader>
                   <QuickGrid>
