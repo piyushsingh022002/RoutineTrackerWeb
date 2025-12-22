@@ -41,82 +41,143 @@ const DialogClose = styled.button`
   cursor: pointer;
 `;
 
-const EditorCard = styled(motion.div)<{ isCancelHovered: boolean; isSaveHovered: boolean; $inline?: boolean }>`
-  background: ${(p) => (p.$inline ? 'transparent' : 'linear-gradient(120deg, var(--bg-color) 0%, var(--bg-light) 100%)')};
-  border-radius: ${(p) => (p.$inline ? '0' : '0')};
-  box-shadow: none;
-  width: ${(p) => (p.$inline ? '100%' : '100vw')};
-  height: ${(p) => (p.$inline ? 'auto' : '100%')};
+const EditorCard = styled(motion.div)<{ $inline?: boolean }>`
+  width: min(1200px, 100%);
+  margin: ${(p) => (p.$inline ? '0 auto' : '0 auto 2.5rem')};
+  padding: ${(p) => (p.$inline ? '0' : '1.5rem 1rem 2rem')};
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+`;
+
+const FormGrid = styled.form`
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  gap: 1.25rem;
+  width: 100%;
+  align-items: start;
+  @media ${device.tablet} {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const PrimaryColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+`;
+
+const SidebarColumn = styled.aside`
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: sticky;
+  top: calc(var(--header-height, 72px) + 1rem);
+  @media ${device.tablet} {
+    position: static;
+  }
+`;
+
+const SectionCard = styled.section`
+  background: var(--bg-light);
+  border: 1px solid var(--card-border-strong);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const SectionHeader = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+`;
+
+const SectionTitle = styled.h3`
+  font-size: 1.1rem;
   margin: 0;
-  padding: ${(p) => (p.$inline ? '0' : '0')};
-  transition: border 0.3s, box-shadow 0.3s;
-  border: none;
-  @media ${device.mobile} {
-    padding: ${(p) => (p.$inline ? '0' : '1.25rem 0.5rem')};
+  font-weight: 700;
+  color: var(--text-color);
+`;
+
+const SectionDescription = styled.p`
+  font-size: 0.9rem;
+  color: var(--text-light);
+  margin: 0;
+`;
+
+const PreviewDialog = styled(DialogBox)`
+  max-width: 640px;
+  width: min(640px, 90vw);
+`;
+
+const PreviewHeading = styled.h2`
+  font-size: 1.4rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-color);
+`;
+
+const PreviewBody = styled.div`
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  background: var(--bg-light);
+  padding: 1rem;
+  max-height: 60vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: var(--text-color);
+`;
+
+const SelectControl = styled.select`
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: var(--transition);
+  &:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
   }
 `;
 
 const EditorContainer = styled.div<{ $inline?: boolean }>`
-  ${(p) =>
-    p.$inline
-      ? `position: relative; top: auto; left: auto; width: 100%; height: auto; min-width: 0; background: transparent; box-sizing: border-box; display: flex; flex-direction: column; align-items: stretch; justify-content: stretch;`
-      : `position: fixed; top: var(--header-height, 88px); left: 0; width: 100vw; height: calc(100vh - var(--header-height, 88px)); min-height: 0; min-width: 100vw; background: transparent; box-sizing: border-box; z-index: 1; display: flex; flex-direction: column; align-items: stretch; justify-content: stretch;`}
+  width: 100%;
+  min-height: ${(p) => (p.$inline ? 'auto' : '100vh')};
+  padding: ${(p) => (p.$inline ? '0' : 'calc(var(--header-height, 88px) + 1.5rem) 1.25rem 3rem')};
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background:
+    radial-gradient(900px 600px at 10% -5%, rgba(99,102,241,0.08), transparent 45%),
+    radial-gradient(900px 600px at 90% -5%, rgba(14,165,233,0.08), transparent 50%),
+    var(--bg-color);
 `;
 
 const Content = styled.main<{ $inline?: boolean }>`
-  width: ${(p) => (p.$inline ? '100%' : '100vw')};
-  margin: 0;
+  width: 100%;
+  max-width: 1240px;
+  margin: 0 auto;
   display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 2.5rem;
-  padding: 0 0 0 0;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: ${(p) => (p.$inline ? '1.5rem 1rem 2rem' : '0 0 2rem')};
   box-sizing: border-box;
-  @media ${device.tablet} {
-    flex-direction: column;
-    gap: 1.5rem;
-    width: ${(p) => (p.$inline ? '100%' : '100vw')};
-    padding: 0;
-  }
-  height: ${(p) => (p.$inline ? 'auto' : '100%')};
-  align-items: stretch;
-  justify-content: center;
-  padding: 0;
 `;
-
-export const LeftColumn = styled.div`
-  flex: 2 1 0;
-  min-width: 0;
-  padding: 2.5rem 2rem 2rem 2rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  @media ${device.tablet} {
-    padding: 1.25rem 0.5rem;
-  }
-`;
-
-export const RightColumn = styled.div`
-  flex: 1 1 320px;
-  min-width: 320px;
-  max-width: 420px;
-  padding: 2.5rem 2rem 2rem 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  @media ${device.tablet} {
-    max-width: 100vw;
-    min-width: 0;
-    padding: 1.25rem 0.5rem;
-  }
-`;
-
-
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: flex-end;
 `;
 
 // Move Button definition above its usages
@@ -391,6 +452,8 @@ const ErrorMessage = styled.div`
 const DownloadButton = styled(Button)`
   background-color: var(--secondary-color);
   color: white;
+  justify-content: center;
+  width: 100%;
   &:hover {
     background-color: var(--secondary-hover);
   }
@@ -401,6 +464,12 @@ const DownloadButton = styled(Button)`
   &:hover svg {
     opacity: 1;
   }
+`;
+
+const ImportMessage = styled.p`
+  margin: 0.25rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-light);
 `;
 
 // Links list styles
@@ -435,6 +504,16 @@ export {
   EditorCard,
   EditorContainer,
   Content,
+  FormGrid,
+  PrimaryColumn,
+  SidebarColumn,
+  SectionCard,
+  SectionHeader,
+  SectionTitle,
+  SectionDescription,
+  PreviewDialog,
+  PreviewHeading,
+  PreviewBody,
   ButtonGroup,
   Button,
   PrimaryButton,
@@ -443,6 +522,7 @@ export {
   FormGroup,
   Label,
   Input,
+  SelectControl,
   EditorFieldWrap,
   TagsInput,
   Tag,
@@ -461,6 +541,7 @@ export {
   RemoveFileButton,
   ErrorMessage,
   DownloadButton,
+  ImportMessage,
   LinksWrap,
   LinkRow,
   SmallRemove,
