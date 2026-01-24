@@ -14,6 +14,12 @@ export const RegisterContainer = styled.div`
   padding: 4rem 0.75rem;
   box-sizing: border-box;
   overflow-y: auto;
+  
+  .dark & {
+    background: radial-gradient(circle at 18% 12%, rgba(99,102,241,0.15), transparent 35%),
+      radial-gradient(circle at 82% 8%, rgba(79,70,229,0.12), transparent 40%),
+      #0f172a;
+  }
 `;
 
 export const RegisterCard = styled(motion.div)`
@@ -28,6 +34,12 @@ export const RegisterCard = styled(motion.div)`
   position: relative;
   overflow: visible;
   margin: 2rem 0;
+
+  .dark & {
+    background-color: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
 
   &::before {
     content: '';
@@ -65,12 +77,20 @@ export const Title = styled.h1`
   color: #0f172a;
   margin: 0.5rem 0 0.9rem;
   letter-spacing: -0.01em;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 export const Subtitle = styled.p`
   font-size: 0.95rem;
   color: #475569;
   margin-bottom: 0.9rem;
+  
+  .dark & {
+    color: #cbd5e1;
+  }
 `;
 
 export const Form = styled.form`

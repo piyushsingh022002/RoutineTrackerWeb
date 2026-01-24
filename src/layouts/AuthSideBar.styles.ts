@@ -20,12 +20,22 @@ export const Sidebar = styled.aside`
 	overflow-y: auto;
 	overflow-x: hidden;
 	position: relative;
+	
+	.dark & {
+		background: linear-gradient(165deg, rgba(30,41,59,0.4) 0%, rgba(79,70,229,0.15) 40%, rgba(30,41,59,0.3) 100%);
+		box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+	}
+	
 	&::-webkit-scrollbar {
 		width: 6px;
 	}
 
 	&::-webkit-scrollbar-track {
 		background: rgba(0, 0, 0, 0.05);
+	}
+	
+	.dark &::-webkit-scrollbar-track {
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	&::-webkit-scrollbar-thumb {
@@ -73,6 +83,13 @@ export const Brand = styled(Link)`
 	top: 1rem;
 	z-index: 5;
 
+	.dark & {
+		background: rgba(30, 41, 59, 0.7);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+		color: #f1f5f9;
+	}
+
 	&::before {
 		content: '';
 		display: inline-block;
@@ -86,6 +103,10 @@ export const Brand = styled(Link)`
 	&:hover {
 		transform: translateY(-1px);
 		box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
+	}
+	
+	.dark &:hover {
+		box-shadow: 0 14px 32px rgba(0, 0, 0, 0.5);
 	}
 `;
 
@@ -106,7 +127,7 @@ export const Title = styled.h2`
 	margin: 0.5rem 0 0.5rem 0;
 	font-size: 1.75rem;
 	font-weight: 700;
-	color: var(--text-color);
+	color: #111827;
 	text-align: center;
 	line-height: 1.3;
 	letter-spacing: -0.02em;
@@ -114,15 +135,26 @@ export const Title = styled.h2`
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
+	
+	.dark & {
+		background: linear-gradient(135deg, #f1f5f9 0%, #818cf8 70%, #a78bfa 100%);
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
 `;
 
 export const Subtitle = styled.p`
 	margin: 0 0 0.5rem 0;
-	color: var(--text-light);
+	color: #64748b;
 	text-align: center;
 	max-width: 380px;
 	line-height: 1.6;
 	font-size: 0.9375rem;
+	
+	.dark & {
+		color: #cbd5e1;
+	}
 `;
 
 export const Nav = styled.nav`
@@ -181,6 +213,11 @@ export const StatsSection = styled.div`
 	border-radius: 12px;
 	backdrop-filter: blur(10px);
 	border: 1px solid rgba(15,23,42,0.08);
+	
+	.dark & {
+		background: rgba(30, 41, 59, 0.5);
+		border: 1px solid rgba(255,255,255,0.1);
+	}
 `;
 
 export const Stat = styled.div`
@@ -195,6 +232,10 @@ export const StatNumber = styled.span`
 	font-weight: 700;
 	color: #1f2937;
 	line-height: 1;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const StatLabel = styled.span`
@@ -202,6 +243,10 @@ export const StatLabel = styled.span`
 	color: rgba(55,65,81,0.75);
 	font-weight: 500;
 	text-align: center;
+	
+	.dark & {
+		color: rgba(203,213,225,0.8);
+	}
 `;
 
 export const FeaturesSection = styled.div`
@@ -223,10 +268,20 @@ export const Feature = styled.div`
 	border: 1px solid rgba(15,23,42,0.06);
 	transition: all 0.2s ease;
 
+	.dark & {
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(255,255,255,0.08);
+	}
+
 	&:hover {
 		background: rgba(255, 255, 255, 0.95);
 		border-color: rgba(15,23,42,0.12);
 		transform: translateX(4px);
+	}
+	
+	.dark &:hover {
+		background: rgba(30, 41, 59, 0.6);
+		border-color: rgba(255,255,255,0.15);
 	}
 `;
 
@@ -238,7 +293,11 @@ export const FeatureIcon = styled.span`
 export const FeatureText = styled.span`
 	font-size: 0.9375rem;
 	font-weight: 600;
-	color: var(--text-color);
+	color: #0f172a;
+	
+	.dark & {
+		color: #e2e8f0;
+	}
 `;
 
 export const Testimonial = styled.div`
@@ -251,6 +310,10 @@ export const Testimonial = styled.div`
 	border-left: 3px solid var(--primary-color);
 	margin: 0.75rem 0;
 	max-width: 360px;
+	
+	.dark & {
+		background: linear-gradient(135deg, rgba(30,41,59,0.4), rgba(79,70,229,0.2));
+	}
 `;
 
 export const TestimonialText = styled.p`
@@ -259,12 +322,20 @@ export const TestimonialText = styled.p`
 	font-style: italic;
 	color: #1f2937;
 	line-height: 1.5;
+	
+	.dark & {
+		color: #e2e8f0;
+	}
 `;
 
 export const TestimonialAuthor = styled.span`
 	font-size: 0.8125rem;
 	font-weight: 700;
 	color: #111827;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const TrustBadges = styled.div`
@@ -284,6 +355,12 @@ export const Badge = styled.span`
 	border-radius: 18px;
 	font-weight: 600;
 	border: 1px solid rgba(17, 24, 39, 0.08);
+	
+	.dark & {
+		background: rgba(71, 85, 105, 0.3);
+		color: #e2e8f0;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+	}
 `;
 
  

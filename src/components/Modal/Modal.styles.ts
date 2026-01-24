@@ -22,6 +22,11 @@ export const ModalContainer = styled.div<ModalContainerProps>`
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   animation: fadeIn 0.22s ease-out;
+  
+  .dark & {
+    background: #1e293b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
 
   @keyframes fadeIn {
     from {
@@ -39,6 +44,11 @@ export const ModalHeader = styled.div`
   font-size: 18px;
   font-weight: 700;
   margin-bottom: 1rem;
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 export const ModalFooter = styled.div`

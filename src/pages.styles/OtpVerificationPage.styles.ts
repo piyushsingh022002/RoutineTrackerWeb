@@ -13,6 +13,13 @@ export const OtpVerificationContainer = styled.div`
 		radial-gradient(circle at 80% 0%, rgba(17,24,39,0.05), transparent 40%),
 		rgba(248, 250, 252, 1);
 	box-sizing: border-box;
+	
+	.dark & {
+		background: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.15), transparent 35%),
+			radial-gradient(circle at 80% 0%, rgba(79,70,229,0.12), transparent 40%),
+			rgba(15, 23, 42, 1);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem 1rem;
 	}
@@ -34,6 +41,13 @@ export const OtpVerificationCard = styled(motion.div)`
 	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 	backdrop-filter: blur(4px);
 	padding: 1.75rem;
+	
+	.dark & {
+		background-color: #1e293b;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem;
 	}
@@ -60,6 +74,10 @@ export const Title = styled.h1`
 	text-align: center;
 	margin-bottom: 0.5rem;
 	letter-spacing: -0.01em;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const Subtitle = styled.p`
@@ -68,6 +86,10 @@ export const Subtitle = styled.p`
 	text-align: center;
 	margin-bottom: 2rem;
 	line-height: 1.5;
+	
+	.dark & {
+		color: #cbd5e1;
+	}
 `;
 
 export const Form = styled.form`
@@ -102,6 +124,13 @@ export const OtpInput = styled.input`
 	background: #f8fafc;
 	color: #0f172a;
 	caret-color: #4f46e5;
+	
+	.dark & {
+		border: 2px solid rgba(255, 255, 255, 0.15);
+		background: rgba(30, 41, 59, 0.5);
+		color: #f1f5f9;
+		caret-color: #6366f1;
+	}
 
 	&:focus {
 		outline: none;
@@ -110,10 +139,20 @@ export const OtpInput = styled.input`
 		background: #ffffff;
 		transform: scale(1.05);
 	}
+	
+	.dark &:focus {
+		border-color: #6366f1;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+		background: rgba(30, 41, 59, 0.8);
+	}
 
 	&:disabled {
 		background: #e2e8f0;
 		cursor: not-allowed;
+	}
+	
+	.dark &:disabled {
+		background: #334155;
 	}
 
 	/* Remove number input arrows */
@@ -182,6 +221,10 @@ export const ResendText = styled.p`
 	font-size: 0.9rem;
 	color: #64748b;
 	margin: 0;
+	
+	.dark & {
+		color: #cbd5e1;
+	}
 `;
 
 export const ResendButton = styled.button`
@@ -194,21 +237,38 @@ export const ResendButton = styled.button`
 	padding: 0.35rem 0.75rem;
 	border-radius: 8px;
 	transition: all 0.2s ease;
+	
+	.dark & {
+		color: #6366f1;
+	}
 
 	&:hover {
 		background: rgba(67, 56, 202, 0.08);
 		color: #312e81;
+	}
+	
+	.dark &:hover {
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
 	}
 
 	&:disabled {
 		color: #cbd5e0;
 		cursor: not-allowed;
 	}
+	
+	.dark &:disabled {
+		color: #64748b;
+	}
 `;
 
 export const Timer = styled.span`
 	color: #4f46e5;
 	font-weight: 700;
+	
+	.dark & {
+		color: #6366f1;
+	}
 `;
 
 export const BackLink = styled.a`
@@ -221,10 +281,19 @@ export const BackLink = styled.a`
 	padding: 0.35rem;
 	border-radius: 8px;
 	transition: color 0.2s ease, background-color 0.2s ease;
+	
+	.dark & {
+		color: #6366f1;
+	}
 
 	&:hover {
 		color: #312e81;
 		background: rgba(67, 56, 202, 0.08);
+	}
+	
+	.dark &:hover {
+		color: #a5b4fc;
+		background: rgba(99, 102, 241, 0.15);
 	}
 `;
 

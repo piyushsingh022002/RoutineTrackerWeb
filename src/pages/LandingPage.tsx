@@ -1,6 +1,7 @@
 
 import { Button, Header } from "../components/common";
 import { motion } from "framer-motion";
+import { useTheme } from "../context/ThemeContext";
 import {
   NotesIconsRow,
   Hero,
@@ -29,6 +30,7 @@ const notesIcons = [
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   // const [isRegisterHovered, setIsRegisterHovered] = useState(false);
   // const [isLoginHovered, setIsLoginHovered] = useState(false);
   // const [isSaving, setIsSaving] = useState(false);
@@ -47,6 +49,30 @@ const LandingPage: React.FC = () => {
   return (
     <>
       <Header />
+      {/* Theme Toggle Button - Fixed position below header */}
+      <motion.button
+        onClick={toggleTheme}
+        style={{
+          position: 'fixed',
+          top: 'calc(var(--header-height, 88px) + 1rem)',
+          right: '1.5rem',
+          background: theme === 'dark' ? '#1e293b' : '#ffffff',
+          border: theme === 'dark' ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(15,23,42,0.1)',
+          borderRadius: '12px',
+          padding: '0.75rem',
+          cursor: 'pointer',
+          fontSize: '1.5rem',
+          boxShadow: theme === 'dark' ? '0 4px 12px rgba(0,0,0,0.4)' : '0 4px 12px rgba(15,23,42,0.1)',
+          transition: 'all 0.2s ease',
+          zIndex: 100,
+        }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      >
+        {theme === 'dark' ? '☀️' : '🌙'}
+      </motion.button>
+      
       {/* Hero Section */}
       <Hero>
         <HeroTitle>
@@ -293,10 +319,10 @@ const LandingPage: React.FC = () => {
       </Section>
 
       <Section style={{ flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '0.5rem' }}>
-        <h2 style={{ fontSize: '2rem', fontWeight: 700, color: '#4a6cf7', marginBottom: 0 }}>
+        <h2 style={{ fontSize: '2rem', fontWeight: 700, color: theme === 'dark' ? '#818cf8' : '#4a6cf7', marginBottom: 0 }}>
           Ready to get started?
         </h2>
-        <div style={{ color: '#222', fontSize: '1.1rem', marginBottom: 0, maxWidth: 520 }}>
+        <div style={{ color: theme === 'dark' ? '#cbd5e1' : '#222', fontSize: '1.1rem', marginBottom: 0, maxWidth: 520 }}>
           Try the app without logging in!
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '1.2rem' }}>

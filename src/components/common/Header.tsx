@@ -40,7 +40,7 @@ import recotrackLogo from '../../../Logos/recotrack.logo.png';
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, resetTheme } = useTheme();
   const { notes } = useNotes();
   const { notifications } = useNotifications();
   const unreadCount = notifications ? notifications.filter((n) => !n.isRead).length : 0;
@@ -55,6 +55,7 @@ const Header: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    resetTheme();
     navigate('/login');
   };
 

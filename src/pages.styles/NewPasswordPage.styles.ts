@@ -13,6 +13,13 @@ export const NewPasswordContainer = styled.div`
 		radial-gradient(circle at 80% 0%, rgba(17,24,39,0.05), transparent 40%),
 		rgba(248, 250, 252, 1);
 	box-sizing: border-box;
+	
+	.dark & {
+		background: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.15), transparent 35%),
+			radial-gradient(circle at 80% 0%, rgba(79,70,229,0.12), transparent 40%),
+			rgba(15, 23, 42, 1);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem 1rem;
 	}
@@ -34,6 +41,13 @@ export const NewPasswordCard = styled(motion.div)`
 	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 	backdrop-filter: blur(4px);
 	padding: 1.75rem;
+	
+	.dark & {
+		background-color: #1e293b;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem;
 	}
@@ -60,6 +74,10 @@ export const Title = styled.h1`
 	text-align: center;
 	margin-bottom: 0.5rem;
 	letter-spacing: -0.01em;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const Subtitle = styled.p`
@@ -68,6 +86,10 @@ export const Subtitle = styled.p`
 	text-align: center;
 	margin-bottom: 1.5rem;
 	line-height: 1.5;
+	
+	.dark & {
+		color: #cbd5e1;
+	}
 `;
 
 export const Form = styled.form`
@@ -87,6 +109,10 @@ export const Label = styled.label`
 	font-size: 0.9rem;
 	font-weight: 600;
 	color: #1f2937;
+	
+	.dark & {
+		color: #e2e8f0;
+	}
 `;
 
 export const Input = styled.input`
@@ -98,11 +124,23 @@ export const Input = styled.input`
 	background: #f8fafc;
 	color: #0f172a;
 
+	.dark & {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(30, 41, 59, 0.5);
+		color: #f1f5f9;
+	}
+
 	&:focus {
 		outline: none;
 		border-color: #4f46e5;
 		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
 		background: #ffffff;
+	}
+	
+	.dark &:focus {
+		border-color: #6366f1;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+		background: rgba(30, 41, 59, 0.8);
 	}
 
 	&:disabled {
@@ -110,9 +148,18 @@ export const Input = styled.input`
 		color: #64748b;
 		cursor: not-allowed;
 	}
+	
+	.dark &:disabled {
+		background: #334155;
+		color: #94a3b8;
+	}
 
 	&::placeholder {
 		color: #94a3b8;
+	}
+	
+	.dark &::placeholder {
+		color: #64748b;
 	}
 `;
 
@@ -123,11 +170,22 @@ export const SuccessCodeInput = styled(Input)`
 	letter-spacing: 0.15em;
 	text-align: center;
 	font-size: 1.1rem;
+	
+	.dark & {
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(34, 197, 94, 0.1));
+		border-color: #059669;
+	}
 
 	&:focus {
 		border-color: #059669;
 		box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
 		background: rgba(16, 185, 129, 0.1);
+	}
+	
+	.dark &:focus {
+		border-color: #10b981;
+		box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+		background: rgba(16, 185, 129, 0.15);
 	}
 `;
 
@@ -138,6 +196,10 @@ export const PasswordStrengthBar = styled.div<{ strength: number }>`
 	border-radius: 3px;
 	overflow: hidden;
 	margin-top: 0.25rem;
+	
+	.dark & {
+		background: rgba(255, 255, 255, 0.1);
+	}
 
 	&::after {
 		content: '';
@@ -173,6 +235,19 @@ export const PasswordStrengthText = styled.span<{ strength: number }>`
 			: props.strength === 4
 			? '#10b981'
 			: '#64748b'};
+	
+	.dark & {
+		color: ${(props) =>
+			props.strength === 1
+				? '#fca5a5'
+				: props.strength === 2
+				? '#fcd34d'
+				: props.strength === 3
+				? '#60a5fa'
+				: props.strength === 4
+				? '#6ee7b7'
+				: '#cbd5e1'};
+	}
 `;
 
 export const ErrorMessage = styled.div`
@@ -180,6 +255,10 @@ export const ErrorMessage = styled.div`
 	font-size: 0.8rem;
 	margin-top: 0.25rem;
 	font-weight: 500;
+	
+	.dark & {
+		color: #fca5a5;
+	}
 `;
 
 export const SuccessMessage = styled.div`
@@ -194,6 +273,12 @@ export const SuccessMessage = styled.div`
 	display: flex;
 	align-items: center;
 	gap: 0.5rem;
+	
+	.dark & {
+		background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(34, 197, 94, 0.12));
+		border-left-color: #10b981;
+		color: #6ee7b7;
+	}
 
 	&::before {
 		content: '✓';

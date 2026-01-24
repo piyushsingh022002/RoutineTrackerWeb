@@ -13,6 +13,13 @@ export const OtpContainer = styled.div`
 		radial-gradient(circle at 80% 0%, rgba(17,24,39,0.05), transparent 40%),
 		rgba(248, 250, 252, 1);
 	box-sizing: border-box;
+	
+	.dark & {
+		background: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.15), transparent 35%),
+			radial-gradient(circle at 80% 0%, rgba(79,70,229,0.12), transparent 40%),
+			rgba(15, 23, 42, 1);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem 1rem;
 	}
@@ -34,6 +41,13 @@ export const OtpCard = styled(motion.div)`
 	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 	backdrop-filter: blur(4px);
 	padding: 1.75rem;
+	
+	.dark & {
+		background-color: #1e293b;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem;
 	}
@@ -60,6 +74,10 @@ export const Title = styled.h1`
 	text-align: center;
 	margin-bottom: 0.5rem;
 	letter-spacing: -0.01em;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const Subtitle = styled.p`
@@ -68,6 +86,10 @@ export const Subtitle = styled.p`
 	text-align: center;
 	margin-bottom: 1.5rem;
 	line-height: 1.5;
+	
+	.dark & {
+		color: #cbd5e1;
+	}
 `;
 
 export const Form = styled.form`
@@ -88,6 +110,10 @@ export const Label = styled.label`
 	font-weight: 600;
 	color: #1f2937;
 	margin-bottom: 0.25rem;
+	
+	.dark & {
+		color: #e2e8f0;
+	}
 `;
 
 export const RadioGroup = styled.div`

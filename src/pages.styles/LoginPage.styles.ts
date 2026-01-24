@@ -15,6 +15,13 @@ export const LoginContainer = styled.div`
 		radial-gradient(circle at 80% 0%, rgba(17,24,39,0.05), transparent 40%),
 		rgba(248, 250, 252, 1);
 	box-sizing: border-box;
+	
+	.dark & {
+		background: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.15), transparent 35%),
+			radial-gradient(circle at 80% 0%, rgba(79,70,229,0.12), transparent 40%),
+			rgba(15, 23, 42, 1);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem 1rem;
 	}
@@ -36,6 +43,13 @@ export const LoginCard = styled(motion.div)`
 	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 	backdrop-filter: blur(4px);
 	padding: 1.75rem;
+	
+	.dark & {
+		background-color: #1e293b;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+	}
+	
 	@media ${device.tablet} {
 		padding: 2rem;
 	}
@@ -62,6 +76,10 @@ export const Title = styled.h1`
 	text-align: center;
 	margin-bottom: 1.25rem;
 	letter-spacing: -0.01em;
+	
+	.dark & {
+		color: #f1f5f9;
+	}
 `;
 
 export const Form = styled.form`
@@ -80,6 +98,10 @@ export const Label = styled.label`
 	font-size: 0.875rem;
 	font-weight: 600;
 	color: #1f2937;
+	
+	.dark & {
+		color: #e2e8f0;
+	}
 `;
 
 export const Input = styled.input`
@@ -91,11 +113,22 @@ export const Input = styled.input`
 	background: #f8fafc;
 	color: #0f172a;
 
+	.dark & {
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		background: rgba(30, 41, 59, 0.5);
+		color: #f1f5f9;
+	}
+
 	&:focus {
 		outline: none;
 		border-color: #4f46e5;
 		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
 		background: #ffffff;
+	}
+	
+	.dark &:focus {
+		background: rgba(30, 41, 59, 0.8);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
 	}
 `;
 
