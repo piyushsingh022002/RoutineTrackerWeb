@@ -1,10 +1,8 @@
-
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
 import { device } from '../styles/breakpoints';
 
-export const LoginContainer = styled.div`
+export const OtpContainer = styled.div`
 	min-height: 100vh;
 	width: 100%;
 	display: flex;
@@ -23,9 +21,9 @@ export const LoginContainer = styled.div`
 	}
 `;
 
-export const LoginCard = styled(motion.div)`
+export const OtpCard = styled(motion.div)`
 	width: 100%;
-	max-width: 440px;
+	max-width: 460px;
 	justify-content: center;
 	display: flex;
 	align-items: center;
@@ -48,7 +46,7 @@ export const Logo = styled.div`
 	font-size: 1.65rem;
 	font-weight: 800;
 	text-align: center;
-	margin-bottom: 1.5rem;
+	margin-bottom: 1rem;
 	background: linear-gradient(120deg, #111827 0%, #4338ca 45%, #7c3aed 100%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -60,26 +58,79 @@ export const Title = styled.h1`
 	font-weight: 700;
 	color: #0f172a;
 	text-align: center;
-	margin-bottom: 1.25rem;
+	margin-bottom: 0.5rem;
 	letter-spacing: -0.01em;
+`;
+
+export const Subtitle = styled.p`
+	font-size: 0.95rem;
+	color: #475569;
+	text-align: center;
+	margin-bottom: 1.5rem;
+	line-height: 1.5;
 `;
 
 export const Form = styled.form`
 	display: flex;
 	flex-direction: column;
-	gap: 1.5rem;
+	gap: 1.25rem;
+	width: 100%;
 `;
 
 export const FormGroup = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 0.4rem;
+	gap: 0.5rem;
 `;
 
 export const Label = styled.label`
-	font-size: 0.875rem;
+	font-size: 0.9rem;
 	font-weight: 600;
 	color: #1f2937;
+	margin-bottom: 0.25rem;
+`;
+
+export const RadioGroup = styled.div`
+	display: flex;
+	gap: 1rem;
+	flex-wrap: wrap;
+`;
+
+export const RadioOption = styled.label`
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.75rem 1rem;
+	border: 2px solid #e2e8f0;
+	border-radius: 12px;
+	background: #f8fafc;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	flex: 1;
+	min-width: 140px;
+
+	&:hover {
+		border-color: #4f46e5;
+		background: #ffffff;
+	}
+
+	input[type="radio"] {
+		width: 18px;
+		height: 18px;
+		cursor: pointer;
+		accent-color: #4f46e5;
+	}
+
+	&:has(input:checked) {
+		border-color: #4f46e5;
+		background: rgba(79, 70, 229, 0.08);
+	}
+
+	span {
+		font-size: 0.95rem;
+		font-weight: 600;
+		color: #1f2937;
+	}
 `;
 
 export const Input = styled.input`
@@ -97,16 +148,53 @@ export const Input = styled.input`
 		box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.18);
 		background: #ffffff;
 	}
+
+	&::placeholder {
+		color: #94a3b8;
+	}
+`;
+
+export const CheckboxWrapper = styled.label`
+	display: flex;
+	align-items: flex-start;
+	gap: 0.6rem;
+	cursor: pointer;
+	padding: 0.5rem 0;
+
+	input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+		margin-top: 0.15rem;
+		cursor: pointer;
+		accent-color: #4f46e5;
+		flex-shrink: 0;
+	}
+
+	span {
+		font-size: 0.9rem;
+		color: #475569;
+		line-height: 1.5;
+
+		a {
+			color: #4f46e5;
+			font-weight: 700;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
 `;
 
 export const ErrorMessage = styled.div`
 	color: var(--danger-color);
-	font-size: 0.75rem;
+	font-size: 0.8rem;
 	margin-top: 0.25rem;
 `;
 
 export const SubmitButton = styled(motion.button)`
-	padding: 0.85rem;
+	padding: 0.9rem;
 	background: linear-gradient(120deg, #4f46e5 0%, #4338ca 50%, #312e81 100%);
 	color: #f8fafc;
 	border: none;
@@ -117,6 +205,7 @@ export const SubmitButton = styled(motion.button)`
 	cursor: pointer;
 	transition: all 0.2s ease;
 	box-shadow: 0 12px 30px rgba(79, 70, 229, 0.25);
+	margin-top: 0.5rem;
 
 	&:hover {
 		transform: translateY(-1px);
@@ -131,44 +220,20 @@ export const SubmitButton = styled(motion.button)`
 	}
 `;
 
-export const ForgotRow = styled.div`
-	display: flex;
-	justify-content: flex-end;
-	width: 100%;
-	margin-top: -0.35rem;
-	margin-bottom: 0.2rem;
-`;
-
-export const ForgotLink = styled(Link)`
+export const BackLink = styled.a`
+	text-align: center;
 	font-size: 0.9rem;
-	font-weight: 700;
 	color: #4338ca;
+	font-weight: 700;
 	text-decoration: none;
-	padding: 0.15rem 0.25rem;
+	margin-top: 1rem;
+	padding: 0.35rem;
 	border-radius: 8px;
-	transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+	transition: color 0.2s ease, background-color 0.2s ease;
 
 	&:hover {
 		color: #312e81;
 		background: rgba(67, 56, 202, 0.08);
-		transform: translateY(-1px);
-	}
-`;
-
-export const SignUpText = styled.div`
-	text-align: center;
-	font-size: 0.9rem;
-	margin-top: 1.5rem;
-	color: #4b5563;
-`;
-
-export const SignUpLink = styled(Link)`
-	color: #4f46e5;
-	font-weight: 700;
-	margin-left: 0.25rem;
-
-	&:hover {
-		text-decoration: underline;
 	}
 `;
 

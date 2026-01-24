@@ -2,6 +2,8 @@ import React, { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
+import ROUTE_PATHS from '../routes/RoutePaths';
+import Button from '../components/common/Button';
 import {
   LoginContainer,
   LoginCard,
@@ -13,8 +15,11 @@ import {
   Input,
   ErrorMessage,
   SubmitButton,
+  ForgotRow,
+  ForgotLink,
   SignUpText,
   SignUpLink,
+  TopRightAction,
 } from '../pages.styles/LoginPage.styles';
 
 //state type definition
@@ -113,7 +118,19 @@ const LoginPage: React.FC = () => {
 
   return (
     <LoginContainer>
+      <TopRightAction data-cursor-block>
+        <Button
+          variant="outline"
+          size="medium"
+          shape="pill"
+          type="button"
+          onClick={() => navigate(ROUTE_PATHS.ROOT)}
+        >
+          Home
+        </Button>
+      </TopRightAction>
       <LoginCard
+        data-cursor-block
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -158,6 +175,10 @@ const LoginPage: React.FC = () => {
             />
             {formErrors.password && <ErrorMessage>{formErrors.password}</ErrorMessage>}
           </FormGroup>
+
+          <ForgotRow>
+            <ForgotLink to="/forgot-password">Forgot password?</ForgotLink>
+          </ForgotRow>
           
           <SubmitButton
             type="submit"
@@ -173,6 +194,7 @@ const LoginPage: React.FC = () => {
           Don't have an account?
           <SignUpLink to="/register">Sign up</SignUpLink>
         </SignUpText>
+
       </LoginCard>
     </LoginContainer>
   );

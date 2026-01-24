@@ -25,17 +25,23 @@ const Hero = styled(motion.div)`
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: calc(var(--header-height, 65px) + 2rem) 0.5rem 2rem 0.5rem;
-  background: transparent;
+  padding: calc(var(--header-height, 65px) + 2.25rem) 0.75rem 2.25rem 0.75rem;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(79,70,229,0.07), transparent 40%),
+    radial-gradient(circle at 82% 8%, rgba(16,185,129,0.06), transparent 38%),
+    #f8fafc;
   transition: box-shadow 0.3s, background 0.3s;
   border-radius: 24px;
   box-shadow: none;
   margin-top: 1rem;
   box-sizing: border-box;
   &:hover {
-    background: rgba(230, 242, 255, 0.5);
-    box-shadow: 0 8px 32px rgba(74,108,247,0.13);
-    transform: scale(1.01);
+    background:
+      radial-gradient(circle at 18% 20%, rgba(79,70,229,0.08), transparent 42%),
+      radial-gradient(circle at 82% 8%, rgba(16,185,129,0.08), transparent 40%),
+      #f9fafb;
+    box-shadow: 0 16px 48px rgba(15,23,42,0.12);
+    transform: translateY(-4px);
   }
   @media ${device.tablet} {
     padding: calc(var(--header-height, 72px) + 2rem) 1rem 2rem 1rem;
@@ -57,15 +63,18 @@ const HeroTitle = styled(motion.h1)`
     font-size: 4rem;
   }
   .highlight {
-    color: rgb(64, 175, 230);
+    background: linear-gradient(120deg, #0ea5e9 0%, #22c55e 50%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 `;
 
 const HeroSubtitle = styled(motion.p)`
-  font-size: 2rem;
-  color: var(--text-light);
-  margin-bottom: 2.5rem;
-  margin-top: 0;
+  font-size: 1.15rem;
+  color: #475569;
+  margin-bottom: 2.25rem;
+  margin-top: 0.25rem;
   width: 100%;
   @media ${device.tablet} {
     font-size: 1.25rem;
@@ -85,23 +94,25 @@ const ButtonGroup = styled(motion.div)`
 `;
 
 const PrimaryButton = styled(Button)`
-  padding: 0.75rem 1.5rem;
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: var(--radius);
-  font-weight: 500;
-  transition: all 0.3s ease;
+  padding: 0.85rem 1.6rem;
+  background: linear-gradient(120deg, #4f46e5 0%, #4338ca 45%, #0ea5e9 100%);
+  color: #f8fafc;
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  transition: all 0.25s ease;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   overflow: hidden;
   position: relative;
+  border: 1px solid rgba(15, 23, 42, 0.06);
 
   &:hover {
-    background-color: white;
-    color: var(--primary-color);
+    background: #ffffff;
+    color: #111827;
     transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
   }
 
   span.icon {
@@ -146,9 +157,10 @@ const Section = styled(motion.section)`
   gap: 2.5rem;
   margin: 3rem 2rem;
   padding: 1.5rem;
-  background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
-  border-radius: 24px;
-  box-shadow: 0 4px 24px rgba(74,108,247,0.13);
+  background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f9fafb 100%);
+  border-radius: 26px;
+  box-shadow: 0 16px 40px rgba(15,23,42,0.08);
+  border: 1px solid rgba(15,23,42,0.06);
   overflow: hidden;
   transition: box-shadow 0.3s, background 0.3s, transform 0.3s;
   position: relative;
@@ -159,9 +171,9 @@ const Section = styled(motion.section)`
     margin: 2rem 0;
   }
   &:hover {
-    box-shadow: 0 12px 36px rgba(74,108,247,0.22);
-    background: linear-gradient(120deg, #e0e7ff 0%, #f8fafc 100%);
-    transform: scale(1.015);
+    box-shadow: 0 22px 54px rgba(15,23,42,0.14);
+    background: linear-gradient(135deg, #eef2ff 0%, #f9fafb 100%);
+    transform: translateY(-4px);
   }
 `;
 
@@ -177,6 +189,7 @@ const SectionText = styled(motion.div)`
   font-size: 1.2rem;
   font-weight: 600;
   font-family: 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
+  color: #0f172a;
 `;
 
 const SectionImage = styled(motion.img)`
@@ -184,7 +197,7 @@ const SectionImage = styled(motion.img)`
   max-width: 340px;
   width: 100%;
   border-radius: 18px;
-  box-shadow: 0 4px 24px rgba(74,108,247,0.13);
+  box-shadow: 0 12px 30px rgba(15,23,42,0.12);
   object-fit: cover;
   transition: opacity 0.7s, transform 0.7s, box-shadow 0.3s;
   z-index: 1;
@@ -197,14 +210,15 @@ const SectionImage = styled(motion.img)`
 
 const SectionTitle = styled.h2`
   font-size: 2rem;
-  font-weight: 700;
-  color: #4a6cf7;
+  font-weight: 800;
+  color: #0f172a;
   margin-bottom: 1rem;
+  letter-spacing: -0.01em;
 `;
 
 const SectionSubtitle = styled.p`
-  font-size: 1.1rem;
-  color: #222;
+  font-size: 1rem;
+  color: #475569;
   margin-bottom: 1.2rem;
 `;
 
@@ -218,8 +232,8 @@ const FeatureList = styled.ul`
 `;
 
 const FeatureItem = styled.li`
-  font-size: 1.08rem;
-  color: #222;
+  font-size: 1.02rem;
+  color: #1f2937;
   display: flex;
   align-items: center;
   gap: 0.7rem;

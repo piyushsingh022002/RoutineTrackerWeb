@@ -4,6 +4,7 @@ const CustomCursor: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const mouse = useRef({ x: -9999, y: -9999 }); // off-screen initially
   const particles = useRef<{ x: number; y: number }[]>([]);
+  const blockers = useRef<HTMLElement[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -11,8 +12,19 @@ const CustomCursor: React.FC = () => {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const setSize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    setSize();
+
+    const refreshBlockers = () => {
+      blockers.current = Array.from(
+        document.querySelectorAll<HTMLElement>('[data-cursor-block]')
+      );
+    };
+    refreshBlockers();
+    setTimeout(refreshBlockers, 150);
 
     // Create static particles
     const numParticles = 80;
@@ -30,11 +42,11 @@ const CustomCursor: React.FC = () => {
     };
 
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      setSize();
+      refreshBlockers();
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     window.addEventListener("resize", handleResize);
 
 
@@ -70,6 +82,18 @@ const CustomCursor: React.FC = () => {
       ctx.fillStyle = "#c188f7ff";
       ctx.fill();
 
+      // Clear the effect over blocked areas (e.g., auth sidebar and cards)
+      const padding = 12;
+      blockers.current.forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        ctx.clearRect(
+          rect.x - padding,
+          rect.y - padding,
+          rect.width + padding * 2,
+          rect.height + padding * 2
+        );
+      });
+
       requestAnimationFrame(draw);
     };
 
@@ -89,7 +113,7 @@ const CustomCursor: React.FC = () => {
         top: 0,
         left: 0,
         pointerEvents: "none",
-        zIndex: 9999,
+        zIndex: 0,
       }}
     />
   );

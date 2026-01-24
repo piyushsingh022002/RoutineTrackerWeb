@@ -9,6 +9,9 @@ import { PublicRoute } from '../components/PublicRoute';
 // Lazy-load pages for better performance
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/RegisterPage'));
+const OtpPage = lazy(() => import('../pages/OtpPage'));
+const OtpVerificationPage = lazy(() => import('../pages/OtpVerificationPage'));
+const NewPasswordPage = lazy(() => import('../pages/NewPasswordPage'));
 const LandingPage = lazy(() => import('../pages/LandingPage'));
 const PublicNoteEditor = lazy(() => import('../pages/PublicNoteEditor'));
 const AboutIRTPage = lazy(() => import('../pages/AboutIRTPage'));
@@ -46,6 +49,9 @@ const AppRoutes = () => {
       children: [
         { path: ROUTE_PATHS.LOGIN, element: <PublicRoute><LoginPage /></PublicRoute> },
         { path: ROUTE_PATHS.REGISTER, element: <PublicRoute><RegisterPage /></PublicRoute> },
+        { path: ROUTE_PATHS.FORGOT_PASSWORD, element: <PublicRoute><OtpPage /></PublicRoute> },
+        { path: ROUTE_PATHS.OTP_VERIFICATION, element: <PublicRoute><OtpVerificationPage /></PublicRoute> },
+        { path: ROUTE_PATHS.NEW_PASSWORD, element: <PublicRoute><NewPasswordPage /></PublicRoute> },
       ],
     },
 

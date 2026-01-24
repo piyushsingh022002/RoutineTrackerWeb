@@ -16,13 +16,13 @@ function isObject(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null;
 }
 
-function isAxiosErrorWithMessage(err: unknown): err is { response: { data: { message: string } } } {
+function isAxiosErrorWithMessage(err: unknown): err is { response: { status: number; data: { message: string } } } {
   if (!isObject(err)) return false;
   const response = err.response;
   if (!isObject(response)) return false;
   const data = response.data;
   if (!isObject(data)) return false;
-  return typeof data.message === 'string';
+  return typeof data.message === 'string' && typeof response.status === 'number';
 }
 
 type AuthAction =
@@ -106,9 +106,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'X-Client-Id': 'web-ui-v1.0',
         },
       });
+      
+      if (res.status !== 200) {
+        const errorMessage = 'Email not found, please register first to login';
+        dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
+        throw new Error(errorMessage);
+      }
+      
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
     } catch (err: unknown) {
-      const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Login failed';
+      let errorMessage = 'Login failed';
+      
+      // Check for 401 Unauthorized
+      if (isAxiosErrorWithMessage(err) && err.response.status === 401) {
+        errorMessage = 'Email not found, please register first to login';
+      } else if (isAxiosErrorWithMessage(err)) {
+        errorMessage = err.response.data.message;
+      }
+      
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
       throw new Error(errorMessage);
     }

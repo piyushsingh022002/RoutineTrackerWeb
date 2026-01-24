@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
@@ -55,8 +55,19 @@ const RegisterForm: React.FC = () => {
     confirmPassword: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [showEmailNotFoundMessage, setShowEmailNotFoundMessage] = useState(false);
   const { register, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check if coming from failed login attempt
+  useEffect(() => {
+    const state = location.state as { showMessage?: boolean; email?: string } | null;
+    if (state?.showMessage && state.email) {
+      setShowEmailNotFoundMessage(true);
+      setCredentials((prev) => ({ ...prev, email: state.email as string }));
+    }
+  }, [location.state]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -126,6 +137,16 @@ const RegisterForm: React.FC = () => {
       onSubmit={handleSubmit}
     >
       <Title>Create Account</Title>
+      
+      {showEmailNotFoundMessage && (
+        <Alert 
+          variant="info" 
+          message="Email not found, please register first to login" 
+          onClose={() => setShowEmailNotFoundMessage(false)}
+          autoClose={true}
+          autoCloseTime={5000}
+        />
+      )}
       
       {(error || formError) && (
         <Alert 
