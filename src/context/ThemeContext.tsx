@@ -21,13 +21,6 @@ const readStoredTheme = (): Theme | null => {
   return stored === 'light' || stored === 'dark' ? stored : null;
 };
 
-const getSystemTheme = (): Theme => {
-  if (!isBrowser() || typeof window.matchMedia !== 'function') {
-    return 'light';
-  }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-};
-
 const resolveInitialTheme = (): Theme => {
   // Always default to light theme
   return 'light';
