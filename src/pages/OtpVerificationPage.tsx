@@ -184,7 +184,7 @@ const OtpVerificationPage: React.FC = () => {
             {otp.map((digit, index) => (
               <OtpInput
                 key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
+                ref={(el) => { inputRefs.current[index] = el; }}
                 type="number"
                 inputMode="numeric"
                 maxLength={1}

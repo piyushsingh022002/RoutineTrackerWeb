@@ -31,24 +31,7 @@ const OtpPage: React.FC = () => {
   const [errors, setErrors] = useState<{ contact?: string; terms?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const validateForm = () => {
-    const newErrors: { contact?: string; terms?: string } = {};
-
-    if (!contactValue.trim()) {
-      newErrors.contact = `${contactMethod === 'email' ? 'Email' : 'Phone number'} is required`;
-    } else if (contactMethod === 'email' && !/\S+@\S+\.\S+/.test(contactValue)) {
-      newErrors.contact = 'Please enter a valid email address';
-    } else if (contactMethod === 'phone' && !/^\+?[\d\s\-()]{10,}$/.test(contactValue)) {
-      newErrors.contact = 'Please enter a valid phone number';
-    }
-
-    if (!agreedToTerms) {
-      newErrors.terms = 'You must agree to the terms to continue';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  // Validation temporarily removed for testing flow
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
