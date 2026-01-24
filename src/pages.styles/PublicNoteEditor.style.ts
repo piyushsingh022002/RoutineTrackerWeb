@@ -6,6 +6,10 @@ const Page = styled.div`
 	padding: 1.5rem;
 	box-sizing: border-box;
 	background: linear-gradient(180deg, #fafbff 0%, #ffffff 100%);
+	
+	.dark & {
+		background: linear-gradient(180deg, #0f172a 0%, #1a1f35 100%);
+	}
 `;
 
 const pulse = keyframes`
@@ -25,6 +29,11 @@ const LoadingOverlay = styled.div`
 	z-index: 9999;
 	gap: 14px;
 	color: #0b1a3a;
+	
+	.dark & {
+		background: linear-gradient(180deg, rgba(15,23,42,0.95), rgba(26,31,53,0.9));
+		color: #f1f5f9;
+	}
 `;
 
 const Loader = styled.div`
@@ -59,6 +68,11 @@ const Toolbar = styled.div`
 	margin-bottom: 14px;
 	position: relative; /* avoid overlapping with header */
 	z-index: 10;
+	
+	.dark & {
+		background: #1e293b;
+		box-shadow: 0 8px 22px rgba(0,0,0,0.3);
+	}
 
 	& > div:first-child {
 		display: flex;
@@ -76,6 +90,10 @@ const Toolbar = styled.div`
 			transition: all 160ms ease;
 			font-size: 0.95rem;
 			line-height: 1;
+			
+			.dark & {
+				color: #e2e8f0;
+			}
 		}
 
 		button:hover {

@@ -88,6 +88,12 @@ const SectionCard = styled.section`
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  
+  .dark & {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
 `;
 
 const SectionHeader = styled.div`
@@ -160,6 +166,13 @@ const EditorContainer = styled.div<{ $inline?: boolean }>`
     radial-gradient(900px 600px at 10% -5%, rgba(99,102,241,0.08), transparent 45%),
     radial-gradient(900px 600px at 90% -5%, rgba(14,165,233,0.08), transparent 50%),
     var(--bg-color);
+  
+  .dark & {
+    background:
+      radial-gradient(900px 600px at 10% -5%, rgba(79,70,229,0.08), transparent 45%),
+      radial-gradient(900px 600px at 90% -5%, rgba(59,130,246,0.06), transparent 50%),
+      var(--bg-color);
+  }
 `;
 
 const Content = styled.main<{ $inline?: boolean }>`
@@ -217,9 +230,21 @@ const SecondaryButton = styled(Button)`
   background-color: transparent;
   color: var(--text-light);
   border: 1px solid var(--border-color);
+  
+  .dark & {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #cbd5e1;
+  }
+  
   &:hover {
     background-color: var(--bg-color);
   }
+  
+  .dark &:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  
   svg {
     opacity: 0;
     transition: opacity 0.3s ease;
@@ -245,6 +270,11 @@ const FormGroup = styled.div`
 const Label = styled.label`
   font-size: 0.875rem;
   font-weight: 500;
+  color: var(--text-color);
+  
+  .dark & {
+    color: #e2e8f0;
+  }
 `;
 
 const Input = styled.input`
@@ -253,6 +283,14 @@ const Input = styled.input`
   border-radius: var(--radius);
   font-size: 0.875rem;
   transition: var(--transition);
+  background: var(--bg-light);
+  color: var(--text-color);
+  
+  .dark & {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.15);
+    color: #f1f5f9;
+  }
 
   &:focus {
     outline: none;
@@ -297,6 +335,12 @@ const TagsInput = styled.div`
   border-radius: var(--radius);
   min-height: 42px;
   transition: var(--transition);
+  background: var(--bg-light);
+  
+  .dark & {
+    background: #1e293b;
+    border-color: rgba(255, 255, 255, 0.15);
+  }
 
   &:focus-within {
     border-color: var(--primary-color);
@@ -314,6 +358,11 @@ const Tag = styled.div`
   color: var(--primary-color);
   border-radius: var(--radius-sm);
   font-size: 0.75rem;
+  
+  .dark & {
+    background-color: rgba(99, 102, 241, 0.25);
+    color: #a5b4fc;
+  }
 `;
 
 const TagText = styled.span`
@@ -332,10 +381,17 @@ const RemoveTagButton = styled.button`
   width: 16px;
   height: 16px;
   border-radius: 50%;
+  
+  .dark & {
+    color: #a5b4fc;
+  }
 
   &:hover {
-    background-color: rgba(79, 70, 229, 0.2);
-    background-color: color-mix(in srgb, var(--primary-color) 28%, transparent);
+    background-color: rgba(79, 70, 229, 0.1);
+  }
+  
+  .dark &:hover {
+    background-color: rgba(99, 102, 241, 0.2);
   }
 `;
 

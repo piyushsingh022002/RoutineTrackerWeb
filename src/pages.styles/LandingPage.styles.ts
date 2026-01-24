@@ -35,6 +35,14 @@ const Hero = styled(motion.div)`
   box-shadow: none;
   margin-top: 1rem;
   box-sizing: border-box;
+  
+  .dark & {
+    background:
+      radial-gradient(circle at 18% 20%, rgba(99,102,241,0.15), transparent 40%),
+      radial-gradient(circle at 82% 8%, rgba(16,185,129,0.12), transparent 38%),
+      #1a1d2e;
+  }
+  
   &:hover {
     background:
       radial-gradient(circle at 18% 20%, rgba(79,70,229,0.08), transparent 42%),
@@ -42,6 +50,14 @@ const Hero = styled(motion.div)`
       #f9fafb;
     box-shadow: 0 16px 48px rgba(15,23,42,0.12);
     transform: translateY(-4px);
+    
+    .dark & {
+      background:
+        radial-gradient(circle at 18% 20%, rgba(99,102,241,0.18), transparent 42%),
+        radial-gradient(circle at 82% 8%, rgba(16,185,129,0.15), transparent 40%),
+        #1f2337;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    }
   }
   @media ${device.tablet} {
     padding: calc(var(--header-height, 72px) + 2rem) 1rem 2rem 1rem;
@@ -55,7 +71,12 @@ const HeroTitle = styled(motion.h1)`
   font-size: 2.1rem;
   font-weight: 800;
   margin-bottom: 1rem;
-  color: var(--text-color);
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
+  
   @media ${device.tablet} {
     font-size: 3rem;
   }
@@ -67,6 +88,13 @@ const HeroTitle = styled(motion.h1)`
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    
+    .dark & {
+      background: linear-gradient(120deg, #38bdf8 0%, #4ade80 50%, #818cf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
   }
 `;
 
@@ -76,6 +104,11 @@ const HeroSubtitle = styled(motion.p)`
   margin-bottom: 2.25rem;
   margin-top: 0.25rem;
   width: 100%;
+  
+  .dark & {
+    color: #cbd5e1;
+  }
+  
   @media ${device.tablet} {
     font-size: 1.25rem;
   }
@@ -108,11 +141,23 @@ const PrimaryButton = styled(Button)`
   position: relative;
   border: 1px solid rgba(15, 23, 42, 0.06);
 
+  .dark & {
+    background: linear-gradient(120deg, #6366f1 0%, #4f46e5 45%, #0ea5e9 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+  }
+
   &:hover {
     background: #ffffff;
     color: #111827;
     transform: translateY(-2px);
     box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    
+    .dark & {
+      background: #1e293b;
+      color: #f1f5f9;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+    }
   }
 
   span.icon {
@@ -134,6 +179,13 @@ const Footer = styled.footer`
   border-top: 1px solid var(--border-color);
   color: var(--text-light);
   font-size: 0.875rem;
+  
+  .dark & {
+    background-color: #1e293b;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #94a3b8;
+  }
+  
   @media ${device.tablet} {
     padding: 2rem 1rem;
   }
@@ -165,6 +217,13 @@ const Section = styled(motion.section)`
   transition: box-shadow 0.3s, background 0.3s, transform 0.3s;
   position: relative;
   min-height: 320px;
+  
+  .dark & {
+    background: linear-gradient(135deg, #1e293b 0%, #1a2332 50%, #1e293b 100%);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  
   @media ${device.tablet} {
     flex-direction: column;
     gap: 1.5rem;
@@ -174,6 +233,11 @@ const Section = styled(motion.section)`
     box-shadow: 0 22px 54px rgba(15,23,42,0.14);
     background: linear-gradient(135deg, #eef2ff 0%, #f9fafb 100%);
     transform: translateY(-4px);
+    
+    .dark & {
+      box-shadow: 0 22px 54px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, #1f2937 0%, #1e293b 100%);
+    }
   }
 `;
 
@@ -190,6 +254,10 @@ const SectionText = styled(motion.div)`
   font-weight: 600;
   font-family: 'Poppins', 'Inter', 'Nunito', Arial, sans-serif;
   color: #0f172a;
+  
+  .dark & {
+    color: #e2e8f0;
+  }
 `;
 
 const SectionImage = styled(motion.img)`
@@ -214,12 +282,20 @@ const SectionTitle = styled.h2`
   color: #0f172a;
   margin-bottom: 1rem;
   letter-spacing: -0.01em;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 const SectionSubtitle = styled.p`
   font-size: 1rem;
   color: #475569;
   margin-bottom: 1.2rem;
+  
+  .dark & {
+    color: #cbd5e1;
+  }
 `;
 
 const FeatureList = styled.ul`
@@ -238,6 +314,10 @@ const FeatureItem = styled.li`
   align-items: center;
   gap: 0.7rem;
   font-weight: 500;
+  
+  .dark & {
+    color: #e2e8f0;
+  }
 `;
 
 export {

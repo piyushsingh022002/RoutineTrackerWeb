@@ -6,6 +6,7 @@ export type Theme = 'light' | 'dark';
 interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
+  resetTheme: () => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -20,16 +21,9 @@ const readStoredTheme = (): Theme | null => {
   return stored === 'light' || stored === 'dark' ? stored : null;
 };
 
-const getSystemTheme = (): Theme => {
-  if (!isBrowser() || typeof window.matchMedia !== 'function') {
-    return 'light';
-  }
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-};
-
 const resolveInitialTheme = (): Theme => {
-  const stored = readStoredTheme();
-  return stored ?? getSystemTheme();
+  // Always default to light theme
+  return 'light';
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
@@ -83,8 +77,16 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setHasUserPreference(true);
   };
 
+  const resetTheme = () => {
+    setTheme('light');
+    setHasUserPreference(false);
+    if (isBrowser()) {
+      window.localStorage.removeItem(THEME_STORAGE_KEY);
+    }
+  };
+
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, resetTheme }}>
       {children}
     </ThemeContext.Provider>
   );

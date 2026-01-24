@@ -61,8 +61,12 @@ export const StatCard = styled.div`
 
 export const StatTitle = styled.div`
   font-size: 1rem;
-  color: var(--text-light);
+  color: #64748b;
   margin-bottom: 0.5rem;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 export const StatValue = styled.div`
@@ -88,8 +92,12 @@ export const NoteCard = styled(Link)`
   display: flex;
   flex-direction: column;
   text-decoration: none;
-  color: var(--text-color);
+  color: #0f172a;
   transition: box-shadow 0.2s ease, transform 0.2s ease;
+
+  .dark & {
+    color: #e2e8f0;
+  }
 
   &:hover {
     box-shadow: var(--shadow-md);
@@ -153,22 +161,40 @@ export const MomentumCard = styled(motion.div)`
     font-size: 0.75rem;
     letter-spacing: 0.18em;
     opacity: 0.85;
+    color: #0f172a;
+  }
+  
+  .dark & .eyebrow {
+    color: rgba(255, 255, 255, 0.9);
   }
 
   h3 {
     margin: 0.35rem 0 0.2rem;
     font-size: 1.35rem;
     font-weight: 700;
+    color: #0f172a;
+  }
+  
+  .dark & h3 {
+    color: #ffffff;
   }
 
   p {
     margin: 0 0 1rem;
+    color: #1f2937;
+  }
+  
+  .dark & p {
     color: rgba(255, 255, 255, 0.9);
   }
 
   small {
     display: inline-block;
     font-weight: 600;
+    color: #374151;
+  }
+  
+  .dark & small {
     color: rgba(255, 255, 255, 0.85);
   }
 `;
@@ -179,23 +205,48 @@ export const MomentumBadge = styled.span`
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.14);
-  color: var(--dashboard-hero-text);
+  border: 1px solid rgba(15, 23, 42, 0.2);
+  background: rgba(15, 23, 42, 0.1);
+  color: #0f172a;
   white-space: nowrap;
 
+  .dark & {
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.14);
+    color: var(--dashboard-hero-text);
+  }
+
   &[data-tone='ahead'] {
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.4);
+    color: #15803d;
+  }
+  
+  .dark &[data-tone='ahead'] {
     background: rgba(74, 222, 128, 0.25);
     border-color: rgba(74, 222, 128, 0.65);
+    color: #86efac;
   }
 
   &[data-tone='steady'] {
+    background: rgba(71, 85, 105, 0.1);
+    border-color: rgba(71, 85, 105, 0.3);
+  }
+  
+  .dark &[data-tone='steady'] {
     background: rgba(248, 250, 252, 0.18);
   }
 
   &[data-tone='behind'] {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #b91c1c;
+  }
+  
+  .dark &[data-tone='behind'] {
     background: rgba(248, 113, 113, 0.2);
     border-color: rgba(248, 113, 113, 0.5);
+    color: #fca5a5;
   }
 `;
 
@@ -231,22 +282,40 @@ export const MetricLabel = styled.span`
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  opacity: 0.75;
+  opacity: 0.85;
+  color: #475569;
+  
+  .dark & {
+    color: rgba(255, 255, 255, 0.75);
+  }
 `;
 
 export const MetricValue = styled.span`
   display: block;
   font-size: 1.4rem;
   font-weight: 700;
+  color: #0f172a;
+  
+  .dark & {
+    color: #ffffff;
+  }
 `;
 
 export const MetricDelta = styled.span`
   font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.75);
+  color: #64748b;
+
+  .dark & {
+    color: rgba(255, 255, 255, 0.75);
+  }
 
   &[data-positive='true'] {
+    color: #16a34a;
+  }
+  
+  .dark &[data-positive='true'] {
     color: #bbf7d0;
   }
 `;
@@ -302,9 +371,15 @@ export const GoalChip = styled.span`
   font-size: 0.78rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--dashboard-hero-text);
-  border: 1px dashed rgba(255, 255, 255, 0.35);
-  background: rgba(255, 255, 255, 0.1);
+  color: #1f2937;
+  border: 1px dashed rgba(15, 23, 42, 0.3);
+  background: rgba(15, 23, 42, 0.08);
+  
+  .dark & {
+    color: var(--dashboard-hero-text);
+    border: 1px dashed rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.1);
+  }
 `; 
 
 export const InsightCard = styled(motion.div)`
@@ -336,15 +411,23 @@ export const InsightCopy = styled.div`
 
 export const InsightLabel = styled.span`
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: #64748b;
   text-transform: uppercase;
   letter-spacing: 0.08em;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 export const InsightValue = styled.span`
   font-size: 1rem;
   font-weight: 600;
-  color: var(--text-color);
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 // Animated "Create Note" hero tile
@@ -538,11 +621,15 @@ export const Sidebar = styled.aside`
 
 export const SidebarSectionTitle = styled.div`
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: #64748b;
   margin: 0.25rem 0 0.5rem;
   padding: 0 0.25rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 export const SidebarLink = styled(NavLink)`
@@ -551,9 +638,14 @@ export const SidebarLink = styled(NavLink)`
   gap: 8px;
   padding: 8px 10px;
   border-radius: 8px;
-  color: var(--text-color);
+  color: #1f2937;
   text-decoration: none;
   transition: background-color 0.2s ease, color 0.2s ease;
+  
+  .dark & {
+    color: #e2e8f0;
+  }
+  
   &.active {
     background: var(--sidebar-active-bg);
     color: var(--primary-color);
@@ -590,6 +682,11 @@ export const WelcomeText = styled.h1`
   letter-spacing: 0.2px;
   margin: 0;
   font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 
@@ -626,7 +723,11 @@ export const Wave = styled.span`
 
 export const SubHeading = styled.div`
   font-size: 0.95rem;
-  color: var(--text-light);
+  color: #64748b;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 
@@ -686,25 +787,38 @@ export const TimelineHeader = styled.div`
     text-transform: uppercase;
     font-size: 0.75rem;
     letter-spacing: 0.2em;
-    color: var(--text-light);
+    color: #64748b;
     margin-bottom: 0.3rem;
+  }
+  
+  .dark & .eyebrow {
+    color: #94a3b8;
   }
 
   h3 {
     margin: 0;
     font-size: 1.2rem;
+    color: #0f172a;
+  }
+  
+  .dark & h3 {
+    color: #f1f5f9;
   }
 `;
 
 export const TimelineAction = styled.button`
   border: 1px solid var(--card-border-strong);
   background: transparent;
-  color: var(--text-color);
+  color: #0f172a;
   padding: 0.45rem 1.15rem;
   border-radius: 999px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+
+  .dark & {
+    color: #e2e8f0;
+  }
 
   &:hover {
     background: var(--sidebar-active-bg);
@@ -744,31 +858,52 @@ export const TimelineContent = styled.div`
 
   .title {
     font-weight: 600;
-    color: var(--text-color);
+    color: #0f172a;
+  }
+
+  .dark & .title {
+    color: #f1f5f9;
   }
 
   .preview {
     font-size: 0.9rem;
-    color: var(--text-light);
+    color: #64748b;
+  }
+  
+  .dark & .preview {
+    color: #94a3b8;
   }
 `;
 
 export const TimelineTime = styled.span`
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: #64748b;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 
 export const NoteDate = styled.div`
   font-size: 0.85rem;
-  color: var(--text-light);
+  color: #64748b;
   margin-bottom: 0.5rem;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 export const NoteTitle = styled.div`
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 export const EmptyNotes = styled.div`
@@ -789,12 +924,21 @@ export const EmptyNotesText = styled.div`
   font-size: 1.1rem;
   font-weight: 600;
   margin-bottom: 0.25rem;
+  color: #0f172a;
+  
+  .dark & {
+    color: #f1f5f9;
+  }
 `;
 
 export const EmptyNotesSubtext = styled.div`
   font-size: 0.95rem;
-  color: var(--text-light);
+  color: #64748b;
   margin-bottom: 1rem;
+  
+  .dark & {
+    color: #94a3b8;
+  }
 `;
 
 

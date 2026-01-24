@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { FiCamera, FiTrash2, FiEdit2, FiLogOut, FiMail, FiUser, FiKey } from 'react-icons/fi';
 import Card from '../components/common/Card';
@@ -6,6 +7,7 @@ import Input from '../components/common/Input';
 import Button from '../components/common/Button';
 import Alert from '../components/common/Alert';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { Header } from '../components/common';
 
 const PageBackground = styled.div`
@@ -170,6 +172,8 @@ const mockUserImg = 'https://api.dicebear.com/7.x/identicon/svg?seed=user';
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
+  const { resetTheme } = useTheme();
+  const navigate = useNavigate();
   const [profileImg, setProfileImg] = useState<string>(mockUserImg);
   const [username, setUsername] = useState(user?.name || '');
   const [email, setEmail] = useState(user?.email || '');
@@ -319,7 +323,11 @@ const ProfilePage: React.FC = () => {
           <LogoutButton
             variant="danger"
             leftIcon={<FiLogOut />}
-            onClick={logout}
+            onClick={() => {
+              logout();
+              resetTheme();
+              navigate('/login');
+            }}
             fullWidth
           >
             Logout
