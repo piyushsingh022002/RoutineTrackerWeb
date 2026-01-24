@@ -27,6 +27,8 @@ import {
   QuickItem,
   Menu,
   MenuItem,
+  AdminLinkWrapper,
+  AdminTooltip,
 } from '../common.styles/Header.styles';
 
 import MyListsModal from '../notes/MyListsModal';
@@ -245,14 +247,19 @@ const Header: React.FC = () => {
         ) : (
           !isLoading && (
             <div style={{ marginLeft: 'auto' }}>
-              <ExternalLink
-                href="https://my-portfolio-kappa-five-56.vercel.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                title="Admin's Portal"
-              >
-                Admin's Portal
-              </ExternalLink>
+              <AdminLinkWrapper>
+                <ExternalLink
+                  href="https://my-portfolio-kappa-five-56.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Admin's Portal
+                </ExternalLink>
+                <AdminTooltip role="status" aria-live="polite">
+                  <strong>Admin Notice</strong>
+                  Hovering here reveals this notice. Click the button to visit the admin's portfolio.
+                </AdminTooltip>
+              </AdminLinkWrapper>
             </div>
           )
         )}

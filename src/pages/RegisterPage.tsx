@@ -20,6 +20,8 @@ import {
   SignInLink,
 } from '../pages.styles/RegisterPage.styles';
 import ROUTE_PATHS from '../routes/RoutePaths';
+import Button from '../components/common/Button';
+import { TopRightAction } from '../pages.styles/RegisterPage.styles';
 
 //states to manage the form
 type RegisterState = {
@@ -140,7 +142,19 @@ const RegisterPage: React.FC = () => {
 
   return (
     <RegisterContainer>
+      <TopRightAction data-cursor-block>
+        <Button
+          variant="outline"
+          size="medium"
+          shape="pill"
+          type="button"
+          onClick={() => navigate(ROUTE_PATHS.ROOT)}
+        >
+          Home
+        </Button>
+      </TopRightAction>
       <RegisterCard
+        data-cursor-block
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -230,6 +244,7 @@ const RegisterPage: React.FC = () => {
           Already have an account?
           <SignInLink to="/login">Sign in</SignInLink>
         </SignInText>
+
       </RegisterCard>
     </RegisterContainer>
   );

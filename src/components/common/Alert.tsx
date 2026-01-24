@@ -58,21 +58,34 @@ const AlertContainer = styled(motion.div)<{ $variant: AlertVariant }>`
   position: relative;
   padding: 1rem;
   margin-bottom: 1rem;
-  border-radius: 4px;
+  border-radius: 8px;
   display: flex;
   align-items: flex-start;
+  box-shadow: ${(props) => props.$variant === 'error' ? '0 4px 12px rgba(0, 0, 0, 0.15)' : 'none'};
+  border-width: ${(props) => props.$variant === 'error' ? '2px' : '1px'};
+  border-style: solid;
   
   background-color: ${(props) => getAlertColor(props.$variant).bg};
-  border: 1px solid ${(props) => getAlertColor(props.$variant).border};
+  border-color: ${(props) => getAlertColor(props.$variant).border};
   color: ${(props) => getAlertColor(props.$variant).text};
+  
+  ${(props) => props.$variant === 'error' && `
+    animation: shake 0.5s ease-in-out;
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+  `}
 `;
 
 const IconContainer = styled.div`
   margin-right: 0.75rem;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 `;
 
 const ContentContainer = styled.div`
@@ -86,6 +99,7 @@ const AlertTitle = styled.div`
 
 const AlertMessage = styled.div`
   font-size: 0.875rem;
+  font-weight: 500;
 `;
 
 const CloseButton = styled.button`

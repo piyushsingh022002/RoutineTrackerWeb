@@ -57,6 +57,7 @@ const LoginForm: React.FC = () => {
     password: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
+  const [loginError, setLoginError] = useState<string | null>(null);
   const { login, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -67,6 +68,7 @@ const LoginForm: React.FC = () => {
     // Clear errors when user starts typing
     if (error) clearError();
     if (formError) setFormError(null);
+    if (loginError) setLoginError(null);
   };
 
   const validateForm = (): boolean => {
@@ -94,8 +96,28 @@ const LoginForm: React.FC = () => {
       await login(credentials);
       navigate('/dashboard');
     } catch (err) {
-      // Error is handled by the AuthContext
-       console.error("Login failed:", err);
+      // Get error message directly from the thrown error
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      
+      // Set local error state for immediate display
+      setLoginError(errorMessage);
+      
+      if (errorMessage.toLowerCase().includes('email not found') || 
+          errorMessage.toLowerCase().includes('not found') ||
+          errorMessage.toLowerCase().includes('invalid') ||
+          errorMessage.toLowerCase().includes('unauthorized') ||
+          errorMessage.toLowerCase().includes('user')) {
+        // Delay navigation to allow error alert to display
+        setTimeout(() => {
+          navigate('/register', { 
+            state: { 
+              showMessage: true,
+              email: credentials.email 
+            } 
+          });
+        }, 2000);
+      }
+      console.error("Login failed:", err);
     }
   };
 
@@ -108,13 +130,13 @@ const LoginForm: React.FC = () => {
     >
       <Title>Welcome Back</Title>
       
-      {(error || formError) && (
+      {(loginError || formError) && (
         <Alert 
           variant="error" 
-          message={formError || error || 'An error occurred'} 
+          message={formError || loginError || 'An error occurred'} 
           onClose={() => {
-            if (error) clearError();
             if (formError) setFormError(null);
+            if (loginError) setLoginError(null);
           }}
         />
       )}

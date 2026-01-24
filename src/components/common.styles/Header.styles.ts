@@ -102,6 +102,44 @@ export const ExternalLink = styled.a`
   }
 `;
 
+export const AdminLinkWrapper = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-right: 0.5rem;
+
+  &:hover > div {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+`;
+
+export const AdminTooltip = styled.div`
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 240px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #4f46e5 100%);
+  color: #f8fafc;
+  border-radius: 12px;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.22);
+  border: 1px solid rgba(255,255,255,0.08);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  pointer-events: none;
+  z-index: 1500;
+  font-size: 0.92rem;
+  line-height: 1.4;
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 800;
+  }
+`;
+
 export const StyledNavLink = styled(RouterNavLink)`
   color: var(--text-color);
   text-decoration: none;
