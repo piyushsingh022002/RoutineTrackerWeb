@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/common/Button';
 import ROUTE_PATHS from '../routes/RoutePaths';
+import { sendOtp } from '../services/authPasswordApi';
 import {
   OtpContainer,
   OtpCard,
@@ -31,28 +32,36 @@ const OtpPage: React.FC = () => {
   const [errors, setErrors] = useState<{ contact?: string; terms?: string }>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Validation temporarily removed for testing flow
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validation removed for testing
-    // if (!validateForm()) return;
+    // Basic validation
+    if (!contactValue.trim()) {
+      setErrors({ contact: 'Please enter your email address' });
+      return;
+    }
+
+    if (!agreedToTerms) {
+      setErrors({ terms: 'You must agree to the terms' });
+      return;
+    }
 
     setIsSubmitting(true);
+    setErrors({});
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      // TODO: Implement actual OTP sending logic here
-      console.log('Sending OTP to:', contactMethod, contactValue);
-      
-      // Navigate to OTP verification page
-      navigate(ROUTE_PATHS.OTP_VERIFICATION);
-    } catch (error) {
-      console.error('Failed to send OTP:', error);
-      setErrors({ contact: 'Failed to send OTP. Please try again.' });
+      await sendOtp(contactValue);
+
+      // Store email in session storage as backup
+      sessionStorage.setItem('reset_email', contactValue);
+
+      // Navigate to OTP verification page with email
+      navigate(ROUTE_PATHS.OTP_VERIFICATION, {
+        state: { email: contactValue },
+      });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to send OTP. Please try again.';
+      setErrors({ contact: message });
     } finally {
       setIsSubmitting(false);
     }
