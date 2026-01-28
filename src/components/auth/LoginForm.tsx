@@ -57,7 +57,6 @@ const LoginForm: React.FC = () => {
     password: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
-  const [loginError, setLoginError] = useState<string | null>(null);
   const { login, error, clearError, isLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -68,7 +67,6 @@ const LoginForm: React.FC = () => {
     // Clear errors when user starts typing
     if (error) clearError();
     if (formError) setFormError(null);
-    if (loginError) setLoginError(null);
   };
 
   const validateForm = (): boolean => {
@@ -87,6 +85,7 @@ const LoginForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     
     if (!validateForm()) {
       return;
@@ -96,36 +95,15 @@ const LoginForm: React.FC = () => {
       await login(credentials);
       navigate('/dashboard');
     } catch (err) {
-      // Get error message directly from the thrown error
-      const errorMessage = err instanceof Error ? err.message : String(err);
-      
-      // Set local error state for immediate display
-      setLoginError(errorMessage);
-      
-      if (errorMessage.toLowerCase().includes('email not found') || 
-          errorMessage.toLowerCase().includes('not found') ||
-          errorMessage.toLowerCase().includes('invalid') ||
-          errorMessage.toLowerCase().includes('unauthorized') ||
-          errorMessage.toLowerCase().includes('user')) {
-        // Delay navigation to allow error alert to display
-        setTimeout(() => {
-          navigate('/register', { 
-            state: { 
-              showMessage: true,
-              email: credentials.email 
-            } 
-          });
-        }, 2000);
-      }
-      console.error("Login failed:", err);
+      // Error is handled by the AuthContext
     }
   };
 
   if (isLoading) {
     return (
       <NotebookLoader 
-        message="Logging in" 
-        subtext="Authenticating your credentials..."
+        message="Please wait, shortly" 
+        subtext="Signing you in"
       />
     );
   }
@@ -139,13 +117,13 @@ const LoginForm: React.FC = () => {
     >
       <Title>Welcome Back</Title>
       
-      {(loginError || formError) && (
+      {(error || formError) && (
         <Alert 
           variant="error" 
-          message={formError || loginError || 'An error occurred'} 
+          message={formError || error || 'An error occurred'} 
           onClose={() => {
+            if (error) clearError();
             if (formError) setFormError(null);
-            if (loginError) setLoginError(null);
           }}
         />
       )}
@@ -181,8 +159,6 @@ const LoginForm: React.FC = () => {
         variant="primary"
         shape="pill"
         fullWidth
-        isLoading={isLoading}
-        disabled={isLoading}
       >
         Login
       </Button>

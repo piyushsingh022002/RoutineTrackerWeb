@@ -2,12 +2,13 @@ import styled from "styled-components";
 
 const AuthContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: center;
   height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #fdfcfb 45%, #f7f7ff 70%, #f9fafb 100%);
   position: relative;
   overflow: hidden;
+  zoom: 1;
+  transform: scale(1);
+  transform-origin: top left;
 
   .dark & {
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 45%, #1a1f35 70%, #0f172a 100%);
@@ -46,4 +47,22 @@ const AuthContainer = styled.div`
   }
 `;
 
-export { AuthContainer };
+const LoaderOverlay = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(248, 250, 252, 0.95);
+  backdrop-filter: blur(2px);
+  z-index: 9999;
+
+  .dark & {
+    background: rgba(15, 23, 42, 0.95);
+  }
+`;
+
+export { AuthContainer, LoaderOverlay };

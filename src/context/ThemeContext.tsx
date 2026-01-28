@@ -7,11 +7,14 @@ interface ThemeContextType {
   theme: Theme;
   toggleTheme: () => void;
   resetTheme: () => void;
+  appearanceEnabled: boolean;
+  setAppearanceEnabled: (enabled: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 const THEME_STORAGE_KEY = 'routineTrackerTheme';
+const APPEARANCE_STORAGE_KEY = 'routineTrackerAppearance';
 
 const isBrowser = () => typeof window !== 'undefined';
 
@@ -29,6 +32,11 @@ const resolveInitialTheme = (): Theme => {
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>(() => resolveInitialTheme());
   const [hasUserPreference, setHasUserPreference] = useState<boolean>(() => readStoredTheme() !== null);
+  const [appearanceEnabled, setAppearanceEnabled] = useState<boolean>(() => {
+    if (!isBrowser()) return false;
+    const stored = window.localStorage.getItem(APPEARANCE_STORAGE_KEY);
+    return stored === 'true';
+  });
 
   useEffect(() => {
     if (typeof document === 'undefined') return;
@@ -67,6 +75,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   }, [hasUserPreference]);
 
   const toggleTheme = () => {
+    if (!appearanceEnabled) return; // Don't allow theme toggle if appearance is disabled
     setTheme((prev) => {
       const nextTheme = prev === 'light' ? 'dark' : 'light';
       if (isBrowser()) {
@@ -75,6 +84,20 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
       return nextTheme;
     });
     setHasUserPreference(true);
+  };
+
+  const handleSetAppearanceEnabled = (enabled: boolean) => {
+    setAppearanceEnabled(enabled);
+    if (isBrowser()) {
+      window.localStorage.setItem(APPEARANCE_STORAGE_KEY, String(enabled));
+    }
+    // Reset to light theme when appearance is disabled
+    if (!enabled) {
+      setTheme('light');
+      if (isBrowser()) {
+        window.localStorage.setItem(THEME_STORAGE_KEY, 'light');
+      }
+    }
   };
 
   const resetTheme = () => {
@@ -86,7 +109,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme, resetTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, resetTheme, appearanceEnabled, setAppearanceEnabled: handleSetAppearanceEnabled }}>
       {children}
     </ThemeContext.Provider>
   );

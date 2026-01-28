@@ -1,9 +1,9 @@
 import React, { useReducer } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import ROUTE_PATHS from '../routes/RoutePaths';
 import Button from '../components/common/Button';
+import Alert from '../components/common/Alert';
 import {
   LoginContainer,
   LoginCard,
@@ -139,14 +139,12 @@ const LoginPage: React.FC = () => {
         <Title>Sign in to your account</Title>
         
         {error && (
-          <motion.div
-            className="alert alert-error"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {error}
-          </motion.div>
+          <Alert
+            variant="error"
+            message={error}
+            onClose={() => clearError()}
+            showIcon={true}
+          />
         )}
         
         <Form onSubmit={handleSubmit}>
