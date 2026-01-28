@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
-import { Button, Input, Alert } from '../common';
+import { Button, Input, Alert, NotebookLoader } from '../common';
 import { Link } from 'react-router-dom';
 
 const FormContainer = styled(motion.form)`
@@ -128,6 +128,15 @@ const RegisterForm: React.FC = () => {
        console.error("Registration failed:", err);
     }
   };
+
+  if (isLoading) {
+    return (
+      <NotebookLoader 
+        message="Creating account" 
+        subtext="Setting up your new account..."
+      />
+    );
+  }
 
   return (
     <FormContainer
