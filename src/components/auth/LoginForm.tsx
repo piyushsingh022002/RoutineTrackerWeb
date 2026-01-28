@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import type { LoginCredentials } from '../../types';
-import { Button, Input, Alert } from '../common';
+import { Button, Input, Alert, NotebookLoader } from '../common';
 
 const FormContainer = styled(motion.form)`
   display: flex;
@@ -120,6 +120,15 @@ const LoginForm: React.FC = () => {
       console.error("Login failed:", err);
     }
   };
+
+  if (isLoading) {
+    return (
+      <NotebookLoader 
+        message="Logging in" 
+        subtext="Authenticating your credentials..."
+      />
+    );
+  }
 
   return (
     <FormContainer
