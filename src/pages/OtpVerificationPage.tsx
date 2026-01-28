@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Button from '../components/common/Button';
 import ROUTE_PATHS from '../routes/RoutePaths';
+import { verifyOtp, sendOtp } from '../services/authPasswordApi';
 import {
   OtpVerificationContainer,
   OtpVerificationCard,
@@ -23,12 +24,21 @@ import {
 
 const OtpVerificationPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const email = location.state?.email || sessionStorage.getItem('reset_email') || '';
   const [otp, setOtp] = useState<string[]>(new Array(6).fill(''));
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [timeLeft, setTimeLeft] = useState(120); // 2 minutes
   const [canResend, setCanResend] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Redirect if no email found
+  useEffect(() => {
+    if (!email) {
+      navigate(ROUTE_PATHS.FORGOT_PASSWORD);
+    }
+  }, [email, navigate]);
 
   // Timer countdown
   useEffect(() => {
@@ -112,11 +122,15 @@ const OtpVerificationPage: React.FC = () => {
     setOtp(new Array(6).fill(''));
     setError('');
     
-    // TODO: Implement actual resend OTP logic
-    console.log('Resending OTP...');
-    
-    // Show feedback
-    alert('OTP has been resent to your email/phone');
+    try {
+      await sendOtp(email);
+      // Optionally show success feedback
+      console.log('OTP resent successfully');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to resend OTP. Please try again.';
+      setError(message);
+      setCanResend(true); // Allow retry if failed
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,28 +138,36 @@ const OtpVerificationPage: React.FC = () => {
 
     const otpValue = otp.join('');
     
-    // Validation removed for testing
-    // if (otpValue.length !== 6) {
-    //   setError('Please enter all 6 digits');
-    //   return;
-    // }
+    // Validation
+    if (otpValue.length !== 6) {
+      setError('Please enter all 6 digits');
+      return;
+    }
+
+    if (!email) {
+      setError('Email not found. Please go back and try again.');
+      return;
+    }
 
     setIsSubmitting(true);
     setError('');
 
-    // Simulate API call
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      
-      // TODO: Implement actual OTP verification logic
-      console.log('Verifying OTP:', otpValue);
-      
-      // For demo, accept any input
-      // Navigate to new password page
-      navigate(ROUTE_PATHS.NEW_PASSWORD);
-    } catch (error) {
-      console.error('Failed to verify OTP:', error);
-      setError('Invalid OTP. Please try again.');
+      const { successCode } = await verifyOtp(email, otpValue);
+
+      // Store successCode in session storage as backup
+      sessionStorage.setItem('reset_successCode', successCode);
+
+      // Navigate to new password page with successCode and email
+      navigate(ROUTE_PATHS.NEW_PASSWORD, {
+        state: { 
+          successCode: successCode,
+          email: email 
+        },
+      });
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Invalid OTP. Please try again.';
+      setError(message);
       setOtp(new Array(6).fill(''));
       inputRefs.current[0]?.focus();
     } finally {
