@@ -3,8 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 export const RegisterContainer = styled.div`
-  min-height: 100vh;
-  width: 100vw;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;

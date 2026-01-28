@@ -2,7 +2,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Loader from './common/Loader';
+import { NotebookLoader } from './common';
 
 interface PublicRouteProps {
   children: React.ReactElement;
@@ -11,12 +11,12 @@ interface PublicRouteProps {
 export const PublicRoute: React.FC<PublicRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  if (isLoading) {
-    return <Loader fullPage />;
-  }
-
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
+  }
+
+  if (isLoading) {
+    return <NotebookLoader />;
   }
 
   return children;

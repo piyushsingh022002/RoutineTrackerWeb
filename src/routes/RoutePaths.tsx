@@ -21,6 +21,7 @@ const ROUTE_PATHS = {
     NEWNOTE: '/notes/new',
     VIEWNOTE: '/notes/:id',
     NOTEEDIT: '/notes/:id/edit',
+    TEST_NOTEBOOK_LOADER: '/test/notebookloader',
     NOTFOUNDPAGE: '*'
 };
 

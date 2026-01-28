@@ -5,22 +5,17 @@ import { Link } from 'react-router-dom';
 import { device } from '../styles/breakpoints';
 
 export const LoginContainer = styled.div`
-	min-height: 100vh;
 	width: 100%;
+	height: 100%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	padding: 1.5rem 0.75rem;
-	background: radial-gradient(circle at 20% 20%, rgba(79,70,229,0.06), transparent 35%),
-		radial-gradient(circle at 80% 0%, rgba(17,24,39,0.05), transparent 40%),
-		rgba(248, 250, 252, 1);
+	background: transparent;
 	box-sizing: border-box;
-	
-	.dark & {
-		background: radial-gradient(circle at 20% 20%, rgba(99,102,241,0.15), transparent 35%),
-			radial-gradient(circle at 80% 0%, rgba(79,70,229,0.12), transparent 40%),
-			rgba(15, 23, 42, 1);
-	}
+	zoom: 1;
+	transform: scale(1);
+	transform-origin: top left;
 	
 	@media ${device.tablet} {
 		padding: 2rem 1rem;
@@ -43,6 +38,9 @@ export const LoginCard = styled(motion.div)`
 	box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
 	backdrop-filter: blur(4px);
 	padding: 1.75rem;
+	zoom: 1;
+	transform: scale(1);
+	transform-origin: top center;
 	
 	.dark & {
 		background-color: #1e293b;

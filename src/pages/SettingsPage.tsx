@@ -1,4 +1,7 @@
 import React, { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../context/ThemeContext';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   SettingPageContainer,
   LeftSection,
@@ -13,8 +16,9 @@ import {
   SettingsContent,
   SettingButton,
   UserInfo,
-  UserInfoWrapper
+  UserInfoWrapper,
 } from '../pages.styles/SettingPage.styles';
+import Button from '../components/common/Button';
 import type { User } from '../types/index';
 
 // Dummy user for demo
@@ -27,21 +31,23 @@ const dummyUser: User = {
 };
 import SettingsModal from '../components/Modal/SettingsModal';
 
-const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void }> = ({ checked, onChange }) => (
-  <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }> = ({ checked, onChange, disabled = false }) => (
+  <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, cursor: disabled ? 'not-allowed' : 'pointer', opacity: disabled ? 0.5 : 1 }}>
     <div
-      onClick={() => onChange(!checked)}
+      onClick={() => !disabled && onChange(!checked)}
       role="switch"
       aria-checked={checked}
-      tabIndex={0}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onChange(!checked); }}
+      aria-disabled={disabled}
+      tabIndex={disabled ? -1 : 0}
+      onKeyDown={(e) => { if (!disabled && (e.key === 'Enter' || e.key === ' ')) onChange(!checked); }}
       style={{
         width: 44,
         height: 26,
         borderRadius: 999,
         background: checked ? '#4a6cf7' : '#e6e9ef',
         position: 'relative',
-        transition: 'background 0.2s ease'
+        transition: 'background 0.2s ease',
+        cursor: disabled ? 'not-allowed' : 'pointer'
       }}
     >
       <div style={{
@@ -72,18 +78,20 @@ const SettingCard: React.FC<{ title: string; desc?: string; actions?: React.Reac
 );
 
 const SettingPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { appearanceEnabled, setAppearanceEnabled } = useTheme();
   const [user, setUser] = useState<User>(dummyUser);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
   const [phone, setPhone] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
   const [emailNotif, setEmailNotif] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
   const handleSignOut = () => alert('Signing out...');
+  const handleGoHome = () => navigate('/dashboard');
 
   const handleSave = () => {
     setUser((u) => ({ ...u, name, email }));
@@ -142,10 +150,33 @@ const SettingPage: React.FC = () => {
           </ProfileWrapper>
         </div>
 
-        <SignOutWrapper style={{ gap: 12 }}>
-          <SettingButton onClick={() => setEditMode(true)}>Edit Profile</SettingButton>
-          <SettingButton onClick={handleSignOut}>Sign Out</SettingButton>
-        </SignOutWrapper>
+        <AnimatePresence>
+          {!editMode && (
+            <motion.div
+              initial={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{ width: '100%', overflow: 'hidden' }}
+            >
+              <SignOutWrapper style={{ gap: 12 }}>
+                <SettingButton onClick={() => setEditMode(true)}>Edit Profile</SettingButton>
+                <SettingButton onClick={handleSignOut}>Sign Out</SettingButton>
+              </SignOutWrapper>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <div style={{ width: '100%', display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+          <Button
+            variant="outline"
+            size="medium"
+            shape="pill"
+            type="button"
+            onClick={handleGoHome}
+          >
+            Home
+          </Button>
+        </div>
       </LeftSection>
 
       <RightSection>
@@ -172,13 +203,13 @@ const SettingPage: React.FC = () => {
           <SettingCard
             title="Notifications"
             desc="Control email updates and notification preferences."
-            actions={<Toggle checked={emailNotif} onChange={setEmailNotif} />}
+            actions={<Toggle checked={emailNotif} onChange={setEmailNotif} disabled />}
           />
 
           <SettingCard
             title="Appearance"
             desc="Switch between light and dark modes for a comfortable view."
-            actions={<Toggle checked={darkMode} onChange={setDarkMode} />}
+            actions={<Toggle checked={appearanceEnabled} onChange={setAppearanceEnabled} />}
           />
 
           <SettingCard

@@ -2,27 +2,42 @@ import React from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 
-const writeAnimation = keyframes`
-  0%, 100% {
-    transform: translate(0, 0) rotate(-45deg);
-  }
-  25% {
-    transform: translate(5px, -5px) rotate(-45deg);
+const bounce = keyframes`
+  0% {
+    transform: translateY(0);
   }
   50% {
-    transform: translate(10px, 0) rotate(-45deg);
+    transform: translateY(80px);
   }
-  75% {
-    transform: translate(5px, 5px) rotate(-45deg);
+  100% {
+    transform: translateY(0);
   }
 `;
 
-const pageFlip = keyframes`
-  0%, 100% {
-    transform: rotateY(0deg);
+const colorShift = keyframes`
+  0% {
+    background-color: #4f7cff;
   }
   50% {
-    transform: rotateY(10deg);
+    background-color: #7aa2ff;
+  }
+  100% {
+    background-color: #4f7cff;
+  }
+`;
+
+const shadowPulse = keyframes`
+  0% {
+    transform: scale(0.6);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(0.6);
+    opacity: 0.2;
   }
 `;
 
@@ -45,177 +60,68 @@ const LoaderContainer = styled(motion.div)`
   justify-content: center;
   width: 100%;
   max-width: 400px;
-  padding: 3rem;
-  gap: 2rem;
+  padding: 1.5rem 2rem;
+  gap: 1.5rem;
 `;
 
-const NotebookWrapper = styled.div`
-  position: relative;
-  width: 180px;
-  height: 220px;
-  perspective: 1000px;
+const BallWrapper = styled.div`
+  width: 120px;
+  height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 `;
 
-const Notebook = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(145deg, #ffffff, #f5f5f5);
-  border-radius: 8px;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  animation: ${pageFlip} 3s ease-in-out infinite;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    left: 20px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(to bottom, 
-      transparent 0%, 
-      #e74c3c 10%, 
-      #e74c3c 90%, 
-      transparent 100%);
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 12px;
-    left: 8px;
-    right: 8px;
-    bottom: 12px;
-    background: repeating-linear-gradient(
-      transparent,
-      transparent 25px,
-      #e0e0e0 25px,
-      #e0e0e0 26px
-    );
-    border-radius: 4px;
-  }
+const Ball = styled.div`
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  animation:
+    ${bounce} 1.4s ease-in-out infinite,
+    ${colorShift} 3s ease-in-out infinite;
+  box-shadow: 0 8px 20px rgba(79, 124, 255, 0.35);
 `;
 
-const NotebookSpiral = styled.div`
-  position: absolute;
-  left: -8px;
-  top: 15px;
-  bottom: 15px;
-  width: 16px;
-  background: linear-gradient(to bottom, #333 0%, #555 100%);
-  border-radius: 8px;
-  box-shadow: 
-    inset 0 2px 4px rgba(0, 0, 0, 0.3),
-    2px 0 4px rgba(0, 0, 0, 0.2);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    height: 100%;
-    background: repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 8px,
-      rgba(0, 0, 0, 0.3) 8px,
-      rgba(0, 0, 0, 0.3) 10px
-    );
-  }
-`;
-
-const PencilWrapper = styled.div`
-  position: absolute;
-  bottom: 20px;
-  right: 15px;
-  width: 80px;
-  height: 80px;
-  animation: ${writeAnimation} 2s ease-in-out infinite;
-  z-index: 10;
-`;
-
-const Pencil = styled.div`
-  position: relative;
-  width: 8px;
-  height: 70px;
-  background: linear-gradient(to bottom, 
-    #ffd700 0%, 
-    #ffed4e 40%, 
-    #ffed4e 70%, 
-    #ff6b6b 70%, 
-    #ff6b6b 75%, 
-    #333 75%, 
-    #333 100%
-  );
-  border-radius: 4px;
-  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 8px solid #333;
-  }
-  
-  &::after {
-    content: '';
-    position: absolute;
-    top: 15%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    height: 2px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 1px;
-  }
-`;
-
-const PencilEraser = styled.div`
-  position: absolute;
-  top: -6px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 10px;
+const Shadow = styled.div`
+  margin-top: 70px;
+  width: 36px;
   height: 8px;
-  background: #ff6b6b;
-  border-radius: 2px;
-  border-top: 2px solid #c92a2a;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.35),
+    transparent
+  );
+  border-radius: 50%;
+  animation: ${shadowPulse} 1.4s ease-in-out infinite;
 `;
 
 const LoadingText = styled.div`
-  font-size: 1.125rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #4a6cf7;
   text-align: center;
+  letter-spacing: 0.5px;
+  font-family: 'Georgia', 'Garamond', serif;
   animation: ${shimmer} 1.5s ease-in-out infinite;
 `;
 
 const LoadingSubtext = styled.div`
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: #6c757d;
   text-align: center;
-  margin-top: -1rem;
+  margin-top: -0.5rem;
 `;
 
 const DotsWrapper = styled.div`
   display: flex;
-  gap: 6px;
+  gap: 5px;
   justify-content: center;
 `;
 
 const Dot = styled.div<{ delay: number }>`
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   background: #4a6cf7;
   border-radius: 50%;
   animation: ${shimmer} 1.5s ease-in-out infinite;
@@ -228,23 +134,19 @@ interface NotebookLoaderProps {
 }
 
 const NotebookLoader: React.FC<NotebookLoaderProps> = ({ 
-  message = "Processing",
-  subtext = "Please wait while we handle your request"
+  message = "Please wait, shortly",
+  subtext = "Processing your request"
 }) => {
   return (
     <LoaderContainer
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={{ duration: 0.3 }}
     >
-      <NotebookWrapper>
-        <NotebookSpiral />
-        <Notebook />
-        <PencilWrapper>
-          <PencilEraser />
-          <Pencil />
-        </PencilWrapper>
-      </NotebookWrapper>
+      <BallWrapper>
+        <Ball />
+        <Shadow />
+      </BallWrapper>
       
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
         <LoadingText>{message}</LoadingText>

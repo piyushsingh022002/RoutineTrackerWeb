@@ -1,7 +1,7 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import Loader from './common/Loader';
+import { NotebookLoader } from './common';
 import ROUTE_PATHS from '../routes/RoutePaths';
 
 interface ProtectedRouteProps {
@@ -11,11 +11,7 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Debugging: log auth state to help trace routing behavior during navigation
-  // (This can be removed after diagnosing the issue.)
-  console.debug('[ProtectedRoute] isLoading=', isLoading, 'isAuthenticated=', isAuthenticated);
-
-  if (isLoading) return <Loader fullPage />;
+  if (isLoading) return <NotebookLoader />;
   if (!isAuthenticated) return <Navigate to={ROUTE_PATHS.LOGIN} replace />;
 
   return children;

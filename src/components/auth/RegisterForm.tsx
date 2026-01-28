@@ -132,8 +132,8 @@ const RegisterForm: React.FC = () => {
   if (isLoading) {
     return (
       <NotebookLoader 
-        message="Creating account" 
-        subtext="Setting up your new account..."
+        message="Please wait, shortly" 
+        subtext="Creating your account"
       />
     );
   }
@@ -227,8 +227,6 @@ const RegisterForm: React.FC = () => {
         variant="primary"
         shape="pill"
         fullWidth
-        isLoading={isLoading}
-        disabled={isLoading}
       >
         Register
       </Button>

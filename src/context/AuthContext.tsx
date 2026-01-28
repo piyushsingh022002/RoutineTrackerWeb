@@ -26,6 +26,7 @@ function isAxiosErrorWithMessage(err: unknown): err is { response: { status: num
 }
 
 type AuthAction =
+  | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'REGISTER_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'AUTH_ERROR'; payload: string }
@@ -36,6 +37,8 @@ type AuthAction =
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, isLoading: action.payload };
     case 'LOGIN_SUCCESS':
     case 'REGISTER_SUCCESS':
       localStorage.setItem('token', action.payload.token);
@@ -100,6 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [state.token]);
 
   const login = async (credentials: LoginCredentials) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const res = await axios.post(`${API_URL}/auth/login`, credentials, {
         headers: {
@@ -107,20 +111,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
       
-      if (res.status !== 200) {
-        const errorMessage = 'Email not found, please register first to login';
-        dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
-        throw new Error(errorMessage);
-      }
-      
       dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
     } catch (err: unknown) {
       let errorMessage = 'Login failed';
       
-      // Check for 401 Unauthorized
-      if (isAxiosErrorWithMessage(err) && err.response.status === 401) {
-        errorMessage = 'Email not found, please register first to login';
-      } else if (isAxiosErrorWithMessage(err)) {
+      // Use the actual error message from API
+      if (isAxiosErrorWithMessage(err)) {
         errorMessage = err.response.data.message;
       }
       
@@ -131,6 +127,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   //Register User Here 
   const register = async (credentials: RegisterCredentials) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const res = await axios.post(`${API_URL}/auth/register`, credentials, {
         headers: {

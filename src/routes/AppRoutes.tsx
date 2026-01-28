@@ -27,6 +27,7 @@ const ProfilePage = lazy(() => import('../pages/ProfilePage'));
 const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
 const ViewNote = lazy(() => import('../pages/ViewNote'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+const NotebookLoaderTest = lazy(() => import('../pages/NotebookLoaderTest'));
 
 const AppRoutes = () => {
   const { isAuthenticated } = useAuth();
@@ -42,6 +43,9 @@ const AppRoutes = () => {
     { path: ROUTE_PATHS.LANDINGPAGE, element: <LandingPage /> },
     { path: ROUTE_PATHS.PUBLIC_NOTE, element: <PublicNoteEditor /> },
     { path: ROUTE_PATHS.ABOUTIRT, element: <AboutIRTPage /> },
+    
+    // Test pages
+    { path: ROUTE_PATHS.TEST_NOTEBOOK_LOADER, element: <NotebookLoaderTest /> },
 
     // Auth pages wrapped in AuthLayout; each auth page is guarded by PublicRoute
     {

@@ -28,7 +28,7 @@ const getAlertColor = (variant: AlertVariant) => {
         bg: '#f8d7da',
         border: '#f5c6cb',
         text: '#721c24',
-        icon: '✕',
+        icon: '',
       };
     case 'warning':
       return {

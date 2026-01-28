@@ -40,12 +40,13 @@ import recotrackLogo from '../../../Logos/recotrack.logo.png';
 const Header: React.FC = () => {
   const { isAuthenticated, user, logout, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { theme, toggleTheme, resetTheme } = useTheme();
+  const { theme, toggleTheme, resetTheme, appearanceEnabled } = useTheme();
   const { notes } = useNotes();
   const { notifications } = useNotifications();
   const unreadCount = notifications ? notifications.filter((n) => !n.isRead).length : 0;
   const [menuOpen, setMenuOpen] = useState(false);
   const [showMyLists, setShowMyLists] = useState(false);
+  const [showThemeTooltip, setShowThemeTooltip] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   // Ensure profile menu is closed whenever MyLists modal is opened.
@@ -149,15 +150,61 @@ const Header: React.FC = () => {
           <>
           <RightGroup>
             {/* Theme toggle */}
-            <IconButton
-              type="button"
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-              aria-pressed={theme === 'dark'}
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              onClick={toggleTheme}
+            <div 
+              style={{ position: 'relative' }}
+              onMouseEnter={() => !appearanceEnabled && setShowThemeTooltip(true)}
+              onMouseLeave={() => setShowThemeTooltip(false)}
             >
-              {theme === 'dark' ? '🌙' : '☀️'}
-            </IconButton>
+              <IconButton
+                type="button"
+                aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                aria-pressed={theme === 'dark'}
+                title={appearanceEnabled ? (theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode') : ''}
+                onClick={toggleTheme}
+                disabled={!appearanceEnabled}
+                style={{
+                  opacity: appearanceEnabled ? 1 : 0.5,
+                  cursor: appearanceEnabled ? 'pointer' : 'not-allowed'
+                }}
+              >
+                {theme === 'dark' ? '🌙' : '☀️'}
+              </IconButton>
+              {showThemeTooltip && !appearanceEnabled && (
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    marginTop: '8px',
+                    padding: '8px 12px',
+                    background: '#333',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    whiteSpace: 'nowrap',
+                    zIndex: 1000,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  Turn the Appearance on in the settings
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '-4px',
+                      left: '50%',
+                      transform: 'translateX(-50%)',
+                      width: 0,
+                      height: 0,
+                      borderLeft: '4px solid transparent',
+                      borderRight: '4px solid transparent',
+                      borderBottom: '4px solid #333'
+                    }}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Notifications */}
             <IconButton aria-label="Notifications" onClick={() => navigate('/notifications')}>

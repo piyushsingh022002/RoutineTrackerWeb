@@ -237,3 +237,11 @@ export const UserInfoWrapper = styled.div`
     box-shadow: 0 4px 12px rgba(0,0,0,0.4);
   }
 `;
+
+export const TopRightAction = styled.div`
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+`;
