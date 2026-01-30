@@ -24,6 +24,7 @@ export interface Note {
   mediaUrls: string[];
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string | null;
 }
 
 export interface Notification {
