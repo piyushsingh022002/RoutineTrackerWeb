@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   SettingPageContainer,
@@ -19,16 +20,7 @@ import {
   UserInfoWrapper,
 } from '../pages.styles/SettingPage.styles';
 import Button from '../components/common/Button';
-import type { User } from '../types/index';
 
-// Dummy user for demo
-const dummyUser: User = {
-  id: 1,
-  name: 'John Doe',
-  email: 'john@example.com',
-  createdAt: '2023-08-20',
-  avatarUrl: ''
-};
 import SettingsModal from '../components/Modal/SettingsModal';
 
 const Toggle: React.FC<{ checked: boolean; onChange: (v: boolean) => void; disabled?: boolean }> = ({ checked, onChange, disabled = false }) => (
@@ -80,23 +72,26 @@ const SettingCard: React.FC<{ title: string; desc?: string; actions?: React.Reac
 const SettingPage: React.FC = () => {
   const navigate = useNavigate();
   const { appearanceEnabled, setAppearanceEnabled } = useTheme();
-  const [user, setUser] = useState<User>(dummyUser);
+  const { user, logout } = useAuth();
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [phone, setPhone] = useState('');
+  const [fullName, setFullName] = useState(user?.fullName || '');
+  const [email, setEmail] = useState(user?.email || '');
+  const [phone, setPhone] = useState(user?.phoneNumber || '');
   const [emailNotif, setEmailNotif] = useState(true);
   const [twoFactor, setTwoFactor] = useState(false);
   const fileRef = useRef<HTMLInputElement | null>(null);
 
-  const handleSignOut = () => alert('Signing out...');
+  const handleSignOut = () => {
+    logout();
+    navigate('/login');
+  };
   const handleGoHome = () => navigate('/dashboard');
 
   const handleSave = () => {
-    setUser((u) => ({ ...u, name, email }));
+    // TODO: Implement API call to update user profile
+    alert('Profile saved - API integration pending');
     setEditMode(false);
-    alert('Profile saved');
   };
 
   const handleAvatarClick = () => fileRef.current?.click();
@@ -104,9 +99,13 @@ const SettingPage: React.FC = () => {
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
-    const url = URL.createObjectURL(file);
-    setUser((u) => ({ ...u, avatarUrl: url }));
+    // TODO: Implement avatar upload to API
+    alert('Avatar upload - API integration pending');
   };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <SettingPageContainer>
@@ -116,7 +115,7 @@ const SettingPage: React.FC = () => {
           <ProfileWrapper>
             <div style={{ position: 'relative' }}>
               <Avatar
-                src={user.avatarUrl || '/default-avatar.png'}
+                src={user.profile?.avatarUrl || '/default-avatar.png'}
                 alt="Profile Image"
                 onClick={handleAvatarClick}
                 style={{ cursor: 'pointer' }}
@@ -129,21 +128,23 @@ const SettingPage: React.FC = () => {
 
             {!editMode ? (
               <>
-                <UserName>{user.name}</UserName>
+                <UserName>{user.fullName}</UserName>
+                <UserEmail>@{user.username}</UserEmail>
                 <UserEmail>{user.email}</UserEmail>
+                <UserEmail>{user.phoneNumber}</UserEmail>
                 <UserJoined>Joined: {new Date(user.createdAt).toLocaleDateString()}</UserJoined>
               </>
             ) : (
               <div style={{ width: '100%' }}>
-                <label style={{ display: 'block', fontSize: 12, color: '#444' }}>Name</label>
-                <input value={name} onChange={(e) => setName(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
+                <label style={{ display: 'block', fontSize: 12, color: '#444' }}>Full Name</label>
+                <input value={fullName} onChange={(e) => setFullName(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
                 <label style={{ display: 'block', marginTop: 8, fontSize: 12, color: '#444' }}>Email</label>
                 <input value={email} onChange={(e) => setEmail(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
                 <label style={{ display: 'block', marginTop: 8, fontSize: 12, color: '#444' }}>Phone</label>
-                <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Optional" style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
+                <input value={phone} onChange={(e) => setPhone(e.target.value)} style={{ width: '100%', padding: 8, borderRadius: 8, marginTop: 6, border: '1px solid #e6e9ef' }} />
                 <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                   <SettingButton onClick={handleSave}>Save</SettingButton>
-                  <SettingButton onClick={() => { setEditMode(false); setName(user.name); setEmail(user.email); }}>Cancel</SettingButton>
+                  <SettingButton onClick={() => { setEditMode(false); setFullName(user.fullName); setEmail(user.email); setPhone(user.phoneNumber); }}>Cancel</SettingButton>
                 </div>
               </div>
             )}
@@ -191,7 +192,10 @@ const SettingPage: React.FC = () => {
             open={showSettingsModal}
             onClose={() => setShowSettingsModal(false)}
             user={user}
-            onSave={(u) => setUser((prev) => ({ ...prev, ...(u as Partial<User>) }))}
+            onSave={() => {
+              // TODO: Implement save functionality
+              setShowSettingsModal(false);
+            }}
           />
 
           <SettingCard

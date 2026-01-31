@@ -67,7 +67,7 @@ interface Props {
 }
 
 const SettingsModal: React.FC<Props> = ({ open, onClose, user, onSave }) => {
-  const [username, setUsername] = useState(user.name || '');
+  const [username, setUsername] = useState(user.fullName || '');
   const [email, setEmail] = useState(user.email || '');
   const [workEmail, setWorkEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -78,7 +78,7 @@ const SettingsModal: React.FC<Props> = ({ open, onClose, user, onSave }) => {
   const [newPassword, setNewPassword] = useState('');
 
   const handleSave = () => {
-    onSave && onSave({ name: username, email });
+    onSave && onSave({ fullName: username, email });
     onClose();
     alert('Profile updated (demo)');
   };
@@ -89,7 +89,7 @@ const SettingsModal: React.FC<Props> = ({ open, onClose, user, onSave }) => {
         <div style={{ flex: 1 }}>
           <Section>
             <Label>Profile</Label>
-            <Small>Update your display name and avatar. Current: <strong style={{ marginLeft: 6 }}>{user.name}</strong></Small>
+            <Small>Update your display name and avatar. Current: <strong style={{ marginLeft: 6 }}>{user.fullName}</strong></Small>
             <div style={{ marginTop: 10 }}>
               <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Display name" />
             </div>

@@ -61,8 +61,8 @@ const Header: React.FC = () => {
   };
 
   const getUserInitials = () => {
-    if (!user?.name) return '';
-    return user.name
+    if (!user?.fullName) return '';
+    return user.fullName
       .split(' ')
       .map((n) => n[0])
       .join('')
@@ -226,14 +226,14 @@ const Header: React.FC = () => {
             {/* Profile avatar */}
             <div style={{ position: 'relative' }} ref={menuRef}>
               <AvatarButton aria-label="User menu" onClick={() => setMenuOpen((v) => !v)}>
-                <Avatar $src={user?.avatarUrl}>{!user?.name ? '' : getUserInitials()}</Avatar>
+                <Avatar $src={user?.profile?.avatarUrl || undefined}>{!user?.fullName ? '' : getUserInitials()}</Avatar>
               </AvatarButton>
               {menuOpen && (
                 <ProfileDropdown>
                   <ProfileHeader>
-                    <Avatar $src={user?.avatarUrl} />
+                    <Avatar $src={user?.profile?.avatarUrl || undefined} />
                     <div>
-                      <ProfileName>{user?.name || 'User'}</ProfileName>
+                      <ProfileName>{user?.username || 'User'}</ProfileName>
                       <div style={{ fontSize: 12, color: 'var(--text-light)' }}>{user?.email}</div>
                     </div>
                   </ProfileHeader>

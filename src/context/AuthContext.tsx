@@ -89,9 +89,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
       try {
-        const res = await axios.get(`${API_URL}/auth/user`, {
+        const res = await axios.get(`${API_URL}/user`, {
           headers: {
             'X-Client-Id': 'web-ui-v1.0',
+            'Authorization': `Bearer ${state.token}`,
           },
         });
         dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data });
@@ -102,6 +103,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadUser();
   }, [state.token]);
 
+  // Helper function to fetch user details after login/register
+  const fetchUserDetails = async (token: string): Promise<User> => {
+    const res = await axios.get(`${API_URL}/user`, {
+      headers: {
+        'X-Client-Id': 'web-ui-v1.0',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return res.data;
+  };
+
   const login = async (credentials: LoginCredentials) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
@@ -111,7 +123,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         },
       });
       
-      dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
+      const { token } = res.data;
+      
+      // Fetch user details with the token
+      const user = await fetchUserDetails(token);
+      
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
     } catch (err: unknown) {
       let errorMessage = 'Login failed';
       
@@ -134,7 +151,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'X-Client-Id': 'web-ui-v1.0',
         },
       });
-      dispatch({ type: 'REGISTER_SUCCESS', payload: res.data});
+      
+      const { token } = res.data;
+      
+      // Fetch user details with the token
+      const user = await fetchUserDetails(token);
+      
+      dispatch({ type: 'REGISTER_SUCCESS', payload: { user, token } });
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Registration failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
