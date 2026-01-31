@@ -1,10 +1,16 @@
 export interface User {
-  id: number;
-  name: string;
+  id: string;
+  username: string;
+  fullName: string;
   email: string;
+  phoneNumber: string;
+  dob: string;
+  passwordHash: string;
   createdAt: string;
-  // Optional profile image URL
-  avatarUrl?: string;
+  updatedAt: string;
+  profile: {
+    avatarUrl: string | null;
+  };
 }
 
 export interface AuthState {
@@ -17,18 +23,19 @@ export interface AuthState {
 
 export interface Note {
   id: string | number;
-  userId: number;
+  userId: string | number;
   title: string;
   content: string;
   tags: string[];
   mediaUrls: string[];
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string | null;
 }
 
 export interface Notification {
   id: number;
-  userId: number;
+  userId: string | number;
   message: string;
   isRead: boolean;
   createdAt: string;
@@ -36,7 +43,7 @@ export interface Notification {
 
 export interface ActivityLog {
   id: number;
-  userId: number;
+  userId: string | number;
   date: string;
   hasNote: boolean;
   streakCount: number;

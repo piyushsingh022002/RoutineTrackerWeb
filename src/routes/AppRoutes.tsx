@@ -16,6 +16,7 @@ const LandingPage = lazy(() => import('../pages/LandingPage'));
 const PublicNoteEditor = lazy(() => import('../pages/PublicNoteEditor'));
 const AboutIRTPage = lazy(() => import('../pages/AboutIRTPage'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const NotesListPage = lazy(() => import('../pages/NotesListPage'));
 const PrivateNotes = lazy(() => import('../pages/PrivateNotes'));
 const NoteEditor = lazy(() => import('../pages/NoteEditor'));
 const CreatePrivateNote = lazy(() => import('../pages/CreatePrivateNote'));
@@ -64,6 +65,7 @@ const AppRoutes = () => {
       element: <ProtectedRoute><Outlet /></ProtectedRoute>,
       children: [
         { path: ROUTE_PATHS.DASHBOARD, element: <Dashboard /> },
+        { path: ROUTE_PATHS.NOTES, element: <NotesListPage /> },
         { path: ROUTE_PATHS.PRIVATENOTES, element: <PrivateNotes /> },
         { path: ROUTE_PATHS.CREATE_NEW, element: <CreatePrivateNote /> },
         { path: ROUTE_PATHS.NOTEPLUS, element: <NotePlusPage /> },

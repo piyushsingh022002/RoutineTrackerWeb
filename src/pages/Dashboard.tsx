@@ -96,7 +96,7 @@ const Dashboard = () => {
   const noteDays = new Set((notes || []).map((n: Note) => format(new Date(n.createdAt), 'yyyy-MM-dd')));
   const activityLogs = days.map((d, idx) => ({
     id: idx + 1,
-    userId: user?.id || 0,
+    userId: user?.id || '',
     date: d.toISOString(),
     hasNote: noteDays.has(format(d, 'yyyy-MM-dd')),
     streakCount: 0,
@@ -219,10 +219,10 @@ const Dashboard = () => {
                       {(() => {
                         const hour = new Date().getHours();
                         const greeting = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-                        const firstName = (user?.name || 'Explorer').split(' ')[0];
+                        const displayName = user?.username || 'Explorer';
                         return (
                           <>
-                            Good {greeting}, <GradientName>{firstName}</GradientName>
+                            Good {greeting}, <GradientName>{displayName}</GradientName>
                             <Wave>👋</Wave>
                           </>
                         );

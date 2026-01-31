@@ -175,7 +175,7 @@ const ProfilePage: React.FC = () => {
   const { resetTheme } = useTheme();
   const navigate = useNavigate();
   const [profileImg, setProfileImg] = useState<string>(mockUserImg);
-  const [username, setUsername] = useState(user?.name || '');
+  const [username, setUsername] = useState(user?.fullName || '');
   const [email, setEmail] = useState(user?.email || '');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [oldPassword, setOldPassword] = useState('');
@@ -317,7 +317,7 @@ const ProfilePage: React.FC = () => {
             </AvatarOverlay>
           </AvatarWrapper>
           <ProfileInfo>
-            <ProfileName>{user?.name || 'User'}</ProfileName>
+            <ProfileName>{user?.fullName || 'User'}</ProfileName>
             <ProfileEmail>{user?.email || 'user@email.com'}</ProfileEmail>
           </ProfileInfo>
           <LogoutButton

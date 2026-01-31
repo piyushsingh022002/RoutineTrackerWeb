@@ -3,80 +3,64 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import styled from 'styled-components';
 import { useNotes } from '../context/NotesContext';
+import Header from '../components/common/Header';
 import Loader from '../components/common/Loader';
+import { device } from '../styles/breakpoints';
 
 const ViewNoteContainer = styled.div`
   min-height: 100vh;
-  width: 1430px;
-  background-color: var(--bg-color);
-  padding: 2rem;
+  width: 100%;
+  background:
+    radial-gradient(ellipse 110% 80% at 20% 0%, var(--dashboard-overlay-2) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 70% at 80% 0%, var(--dashboard-overlay-3) 0%, transparent 65%),
+    linear-gradient(120deg, var(--dashboard-base-start) 0%, var(--dashboard-base-end) 100%);
+  background-attachment: fixed;
+  padding-top: 88px;
+  padding-bottom: 2rem;
+
+  @media ${device.tablet} {
+    padding-top: 72px;
+  }
+
+  @media ${device.mobile} {
+    padding-top: 64px;
+  }
 `;
 
-const NoteCard = styled(motion.div)`
-  background-color: white;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+const Content = styled.div`
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+
+  @media ${device.tablet} {
+    padding: 1.5rem;
+  }
+
+  @media ${device.mobile} {
+    padding: 1rem;
+  }
 `;
 
-const NoteHeader = styled.div`
+const NoteCard = styled(motion.div)`
+  background-color: var(--bg-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 2rem;
+
+  @media ${device.tablet} {
+    padding: 1.5rem;
+  }
+
+  @media ${device.mobile} {
+    padding: 1.25rem;
+  }
+`;
+
+const BackButtonBar = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   margin-bottom: 2rem;
-`;
-
-const NoteTitle = styled.h1`
-  font-size: 1.75rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-`;
-
-const NoteDate = styled.p`
-  font-size: 0.875rem;
-  color: var(--text-light);
-`;
-
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 0.5rem;
-`;
-
-const Button = styled.button`
-  padding: 0.5rem 1rem;
-  border-radius: var(--radius);
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-`;
-
-const EditButton = styled(Link)`
-  padding: 0.5rem 1rem;
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  border-radius: var(--radius);
-  font-weight: 500;
-  display: inline-block;
-  text-align: center;
-  transition: var(--transition);
-
-  &:hover {
-    background-color: var(--primary-hover);
-    color: white;
-  }
-`;
-
-const DeleteButton = styled(Button)`
-  background-color: var(--danger-color);
-  color: white;
-  border: none;
-
-  &:hover {
-    background-color: var(--danger-hover);
-  }
+  gap: 1rem;
 `;
 
 const BackButton = styled(Link)`
@@ -84,19 +68,135 @@ const BackButton = styled(Link)`
   align-items: center;
   gap: 0.5rem;
   color: var(--text-color);
-  font-weight: 500;
-  margin-bottom: 1rem;
-  transition: var(--transition);
+  font-weight: 600;
+  transition: all 0.2s ease;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
 
   &:hover {
     color: var(--primary-color);
+    background: rgba(59, 130, 246, 0.15);
+    transform: translateX(-2px);
+  }
+
+  @media ${device.mobile} {
+    font-size: 0.9rem;
+  }
+`;
+
+const NoteHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+
+  @media ${device.mobile} {
+    flex-direction: column;
+    align-items: stretch;
+  }
+`;
+
+const NoteTitle = styled.h1`
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+
+  @media ${device.tablet} {
+    font-size: 1.5rem;
+  }
+
+  @media ${device.mobile} {
+    font-size: 1.25rem;
+  }
+`;
+
+const NoteDate = styled.p`
+  font-size: 0.875rem;
+  color: var(--text-light);
+  margin: 0;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+
+  @media ${device.mobile} {
+    width: 100%;
+
+    button,
+    a {
+      flex: 1;
+      min-width: 100px;
+    }
+  }
+`;
+
+const Button = styled.button`
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  font-size: 0.95rem;
+
+  @media ${device.mobile} {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+`;
+
+const EditButton = styled(Link)`
+  padding: 0.625rem 1.25rem;
+  background: linear-gradient(135deg, var(--primary-color) 0%, #6366f1 100%);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  display: inline-block;
+  text-align: center;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-size: 0.95rem;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(59, 130, 246, 0.3);
+  }
+
+  @media ${device.mobile} {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+  }
+`;
+
+const DeleteButton = styled(Button)`
+  background-color: var(--danger-color);
+  color: white;
+
+  &:hover {
+    background-color: var(--danger-hover);
+    transform: translateY(-2px);
   }
 `;
 
 const NoteContent = styled.div`
-  line-height: 1.6;
+  line-height: 1.8;
   margin-bottom: 2rem;
   white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  font-size: 1rem;
+  color: var(--text-color);
+
+  @media ${device.mobile} {
+    font-size: 0.95rem;
+  }
 `;
 
 const NoteTags = styled.div`
@@ -107,16 +207,21 @@ const NoteTags = styled.div`
 `;
 
 const NoteTag = styled.span`
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  background-color: rgba(79, 70, 229, 0.1);
+  font-size: 0.8rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(59, 130, 246, 0.1);
   color: var(--primary-color);
-  border-radius: var(--radius-sm);
+  border-radius: 0.5rem;
+  font-weight: 600;
+
+  @media ${device.mobile} {
+    font-size: 0.75rem;
+  }
 `;
 
 const MediaSection = styled.div`
   margin-top: 2rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--card-border);
   padding-top: 1.5rem;
 `;
 
@@ -130,18 +235,29 @@ const MediaGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 1rem;
+
+  @media ${device.mobile} {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
 `;
 
 const MediaItem = styled.div`
   border-radius: var(--radius);
   overflow: hidden;
   box-shadow: var(--shadow);
+  background: var(--bg-color);
 `;
 
 const MediaImage = styled.img`
   width: 100%;
   height: 150px;
   object-fit: cover;
+  display: block;
+
+  @media ${device.mobile} {
+    height: 120px;
+  }
 `;
 
 const MediaDocument = styled.a`
@@ -150,15 +266,22 @@ const MediaDocument = styled.a`
   align-items: center;
   justify-content: center;
   height: 150px;
-  background-color: rgba(79, 70, 229, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   color: var(--primary-color);
   text-decoration: none;
   padding: 1rem;
   text-align: center;
   font-weight: 500;
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: rgba(79, 70, 229, 0.2);
+    background: rgba(59, 130, 246, 0.2);
+    transform: scale(1.05);
+  }
+
+  @media ${device.mobile} {
+    height: 120px;
+    padding: 0.75rem;
   }
 `;
 
@@ -167,15 +290,14 @@ const DocumentIcon = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-// ...existing code...
-
 const ErrorMessage = styled.div`
-  background-color: rgba(239, 68, 68, 0.1);
+  background: rgba(239, 68, 68, 0.1);
   color: var(--danger-color);
-  padding: 1rem;
+  padding: 1.25rem;
   border-radius: var(--radius);
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   text-align: center;
+  border-left: 4px solid var(--danger-color);
 `;
 
 const ConfirmDialog = styled(motion.div)`
@@ -184,7 +306,7 @@ const ConfirmDialog = styled(motion.div)`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,12 +315,16 @@ const ConfirmDialog = styled(motion.div)`
 `;
 
 const DialogContent = styled(motion.div)`
-  background-color: white;
+  background: var(--bg-light);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   padding: 2rem;
   max-width: 400px;
   width: 100%;
+
+  @media ${device.mobile} {
+    padding: 1.5rem;
+  }
 `;
 
 const DialogTitle = styled.h2`
@@ -210,32 +336,50 @@ const DialogTitle = styled.h2`
 const DialogText = styled.p`
   margin-bottom: 1.5rem;
   color: var(--text-light);
+  line-height: 1.5;
 `;
 
 const DialogButtons = styled.div`
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  flex-wrap: wrap;
+
+  @media ${device.mobile} {
+    gap: 0.75rem;
+
+    button {
+      flex: 1;
+      min-width: 100px;
+    }
+  }
 `;
 
 const CancelButton = styled(Button)`
-  background-color: transparent;
+  background: transparent;
   color: var(--text-color);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--card-border-strong);
 
   &:hover {
-    background-color: var(--bg-color);
+    background: var(--bg-color);
   }
 `;
 
 const ConfirmButton = styled(Button)`
-  background-color: var(--danger-color);
+  background: var(--danger-color);
   color: white;
   border: none;
 
   &:hover {
-    background-color: var(--danger-hover);
+    background: var(--danger-hover);
   }
+`;
+
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
 `;
 
 const ViewNote: React.FC = () => {
@@ -254,9 +398,9 @@ const ViewNote: React.FC = () => {
     if (id) {
       try {
         await deleteNote(id);
-        navigate('/dashboard');
+        navigate('/notes');
       } catch (err) {
-        console.error("Login again please!!", err);
+        console.error("Failed to delete note:", err);
       }
     }
   };
@@ -281,116 +425,140 @@ const ViewNote: React.FC = () => {
   
   if (isLoading) {
     return (
-      <ViewNoteContainer>
-        <NoteCard>
-          <Loader text="Loading note..." />
-        </NoteCard>
-      </ViewNoteContainer>
+      <>
+        <Header />
+        <ViewNoteContainer>
+          <Content>
+            <NoteCard>
+              <LoadingContainer>
+                <Loader text="Loading note..." />
+              </LoadingContainer>
+            </NoteCard>
+          </Content>
+        </ViewNoteContainer>
+      </>
     );
   }
   
   if (error) {
     return (
-      <ViewNoteContainer>
-        <NoteCard>
-          <ErrorMessage>{error}</ErrorMessage>
-          <BackButton to="/dashboard">← Back to Dashboard</BackButton>
-        </NoteCard>
-      </ViewNoteContainer>
+      <>
+        <Header />
+        <ViewNoteContainer>
+          <Content>
+            <NoteCard>
+              <ErrorMessage>{error}</ErrorMessage>
+              <BackButton to="/notes">← Back to All Notes</BackButton>
+            </NoteCard>
+          </Content>
+        </ViewNoteContainer>
+      </>
     );
   }
   
   if (!currentNote) {
     return (
-      <ViewNoteContainer>
-        <NoteCard>
-          <ErrorMessage>Note not found</ErrorMessage>
-          <BackButton to="/dashboard">← Back to Dashboard</BackButton>
-        </NoteCard>
-      </ViewNoteContainer>
+      <>
+        <Header />
+        <ViewNoteContainer>
+          <Content>
+            <NoteCard>
+              <ErrorMessage>Note not found</ErrorMessage>
+              <BackButton to="/notes">← Back to All Notes</BackButton>
+            </NoteCard>
+          </Content>
+        </ViewNoteContainer>
+      </>
     );
   }
   
   return (
-    <ViewNoteContainer>
-      <NoteCard
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <BackButton to="/dashboard">← Back to Dashboard</BackButton>
-        
-        <NoteHeader>
-          <div>
-            <NoteTitle>{currentNote.title}</NoteTitle>
-            <NoteDate>{formatDate(currentNote.createdAt)}</NoteDate>
-          </div>
-          <ButtonGroup>
-            <EditButton to={`/notes/${id}/edit`}>Edit</EditButton>
-            <DeleteButton onClick={() => setShowDeleteConfirm(true)}>Delete</DeleteButton>
-          </ButtonGroup>
-        </NoteHeader>
-        
-        <NoteContent>{currentNote.content}</NoteContent>
-        
-        {currentNote.tags && currentNote.tags.length > 0 && (
-          <NoteTags>
-            {currentNote.tags.map((tag, index) => (
-              <NoteTag key={index}>{tag}</NoteTag>
-            ))}
-          </NoteTags>
-        )}
-        
-        {currentNote.mediaUrls && currentNote.mediaUrls.length > 0 && (
-          <MediaSection>
-            <MediaTitle>Attachments</MediaTitle>
-            <MediaGrid>
-              {currentNote.mediaUrls.map((url, index) => (
-                <MediaItem key={index}>
-                  {isImageUrl(url) ? (
-                    <MediaImage src={url} alt={`Attachment ${index + 1}`} />
-                  ) : (
-                    <MediaDocument href={url} target="_blank" rel="noopener noreferrer">
-                      <DocumentIcon>📄</DocumentIcon>
-                      <span>Document {index + 1}</span>
-                    </MediaDocument>
-                  )}
-                </MediaItem>
-              ))}
-            </MediaGrid>
-          </MediaSection>
-        )}
-      </NoteCard>
-      
-      {/* Delete Confirmation Dialog */}
-      {showDeleteConfirm && (
-        <ConfirmDialog
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <DialogContent
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            transition={{ duration: 0.2 }}
+    <>
+      <Header />
+      <ViewNoteContainer>
+        <Content>
+          <BackButtonBar>
+            <BackButton to="/notes">← Back to All Notes</BackButton>
+          </BackButtonBar>
+
+          <NoteCard
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
           >
-            <DialogTitle>Delete Note</DialogTitle>
-            <DialogText>
-              Are you sure you want to delete this note? This action cannot be undone.
-            </DialogText>
-            <DialogButtons>
-              <CancelButton onClick={() => setShowDeleteConfirm(false)}>
-                Cancel
-              </CancelButton>
-              <ConfirmButton onClick={handleDelete}>
-                Delete
-              </ConfirmButton>
-            </DialogButtons>
-          </DialogContent>
-        </ConfirmDialog>
-      )}
-    </ViewNoteContainer>
+            <NoteHeader>
+              <div>
+                <NoteTitle>{currentNote.title}</NoteTitle>
+                <NoteDate>{formatDate(currentNote.createdAt)}</NoteDate>
+              </div>
+              <ButtonGroup>
+                <EditButton to={`/notes/${id}/edit`}>✏️ Edit</EditButton>
+                <DeleteButton onClick={() => setShowDeleteConfirm(true)}>🗑️ Delete</DeleteButton>
+              </ButtonGroup>
+            </NoteHeader>
+            
+            <NoteContent>{currentNote.content}</NoteContent>
+            
+            {currentNote.tags && currentNote.tags.length > 0 && (
+              <NoteTags>
+                {currentNote.tags.map((tag, index) => (
+                  <NoteTag key={index}>#{tag}</NoteTag>
+                ))}
+              </NoteTags>
+            )}
+            
+            {currentNote.mediaUrls && currentNote.mediaUrls.length > 0 && (
+              <MediaSection>
+                <MediaTitle>📎 Attachments</MediaTitle>
+                <MediaGrid>
+                  {currentNote.mediaUrls.map((url, index) => (
+                    <MediaItem key={index}>
+                      {isImageUrl(url) ? (
+                        <MediaImage src={url} alt={`Attachment ${index + 1}`} />
+                      ) : (
+                        <MediaDocument href={url} target="_blank" rel="noopener noreferrer">
+                          <DocumentIcon>📄</DocumentIcon>
+                          <span>Doc {index + 1}</span>
+                        </MediaDocument>
+                      )}
+                    </MediaItem>
+                  ))}
+                </MediaGrid>
+              </MediaSection>
+            )}
+          </NoteCard>
+          
+          {/* Delete Confirmation Dialog */}
+          {showDeleteConfirm && (
+            <ConfirmDialog
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <DialogContent
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <DialogTitle>Delete Note?</DialogTitle>
+                <DialogText>
+                  Are you sure you want to delete this note? This action cannot be undone.
+                </DialogText>
+                <DialogButtons>
+                  <CancelButton onClick={() => setShowDeleteConfirm(false)}>
+                    Cancel
+                  </CancelButton>
+                  <ConfirmButton onClick={handleDelete}>
+                    Delete
+                  </ConfirmButton>
+                </DialogButtons>
+              </DialogContent>
+            </ConfirmDialog>
+          )}
+        </Content>
+      </ViewNoteContainer>
+    </>
   );
 };
 

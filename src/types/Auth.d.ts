@@ -1,8 +1,6 @@
 export interface AuthResponse {
   token: string;
-  username: string;
-  email: string;
-  id: string;
+  message: string;
 }
 
 export interface AuthContextType {
