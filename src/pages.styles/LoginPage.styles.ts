@@ -13,6 +13,7 @@ export const LoginContainer = styled.div`
 	padding: 1.5rem 0.75rem;
 	background: transparent;
 	box-sizing: border-box;
+	overflow-y: auto;
 	zoom: 1;
 	transform: scale(1);
 	transform-origin: top left;
@@ -28,6 +29,7 @@ export const LoginContainer = styled.div`
 export const LoginCard = styled(motion.div)`
 	width: 100%;
 	max-width: 440px;
+	max-height: calc(100vh - 3rem);
 	justify-content: center;
 	display: flex;
 	align-items: center;
@@ -41,6 +43,7 @@ export const LoginCard = styled(motion.div)`
 	zoom: 1;
 	transform: scale(1);
 	transform-origin: top center;
+	overflow: hidden;
 	
 	.dark & {
 		background-color: #1e293b;
@@ -50,9 +53,11 @@ export const LoginCard = styled(motion.div)`
 	
 	@media ${device.tablet} {
 		padding: 2rem;
+		max-height: calc(100vh - 4rem);
 	}
 	@media ${device.mobile} {
 		padding: 1.25rem;
+		max-height: calc(100vh - 1.5rem);
 	}
 `;
 

@@ -29,6 +29,7 @@ type AuthAction =
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'LOGIN_SUCCESS'; payload: { user: User; token: string } }
   | { type: 'REGISTER_SUCCESS'; payload: { user: User; token: string } }
+  | { type: 'SET_TOKEN_AUTHENTICATED'; payload: string }
   | { type: 'AUTH_ERROR'; payload: string }
   | { type: 'LOGOUT' }
   | { type: 'CLEAR_ERROR' }
@@ -39,6 +40,10 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
+    case 'SET_TOKEN_AUTHENTICATED':
+      // Token is set and user is authenticated, but user details are loading
+      localStorage.setItem('token', action.payload);
+      return { ...state, token: action.payload, isAuthenticated: true, isLoading: true, error: null };
     case 'LOGIN_SUCCESS':
     case 'REGISTER_SUCCESS':
       localStorage.setItem('token', action.payload.token);
@@ -72,6 +77,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  //set axios default header when token changes
   useEffect(() => {
     if (state.token) {
       //if token exist or changes, it will update the header
@@ -82,37 +88,75 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [state.token]);
 
+  // useEffect(() => {
+  //   const loadUser = async () => {
+  //     if (!state.token) {
+  //       dispatch({ type: 'LOAD_USER_FAIL' });
+  //       return;
+  //     }
+  //     try {
+  //       const res = await axios.get(`${API_URL}/user`, {
+  //         headers: {
+  //           'X-Client-Id': 'web-ui-v1.0',
+  //           'Authorization': `Bearer ${state.token}`,
+  //         },
+  //       });
+  //       // Support both res.data.data and res.data for user object
+  //       const userData = res.data?.data || res.data;
+  //       dispatch({ type: 'LOAD_USER_SUCCESS', payload: userData });
+  //     } catch (err) {
+  //       console.error('Failed to load user:', err);
+  //       dispatch({ type: 'LOAD_USER_FAIL' });
+  //     }
+  //   };
+  //   loadUser();
+  // }, [state.token]);
+
+  // 2) User Loader Effect (Add THIS here)
   useEffect(() => {
     const loadUser = async () => {
       if (!state.token) {
         dispatch({ type: 'LOAD_USER_FAIL' });
         return;
       }
+
       try {
         const res = await axios.get(`${API_URL}/user`, {
           headers: {
             'X-Client-Id': 'web-ui-v1.0',
-            'Authorization': `Bearer ${state.token}`,
+            Authorization: `Bearer ${state.token}`,
           },
         });
-        dispatch({ type: 'LOAD_USER_SUCCESS', payload: res.data });
-      } catch {
+
+        const userData = res.data?.data || res.data;
+        dispatch({ type: 'LOAD_USER_SUCCESS', payload: userData });
+      } catch (err) {
+        console.error('Failed to load user:', err);
         dispatch({ type: 'LOAD_USER_FAIL' });
       }
     };
+
     loadUser();
   }, [state.token]);
 
   // Helper function to fetch user details after login/register
-  const fetchUserDetails = async (token: string): Promise<User> => {
-    const res = await axios.get(`${API_URL}/user`, {
-      headers: {
-        'X-Client-Id': 'web-ui-v1.0',
-        'Authorization': `Bearer ${token}`,
-      },
-    });
-    return res.data;
-  };
+  // const fetchUserDetails = async (token: string): Promise<User | null> => {
+  //   try {
+  //     const res = await axios.get(`${API_URL}/user`, {
+  //       headers: {
+  //         'X-Client-Id': 'web-ui-v1.0',
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //     });
+  //     // Support both res.data.data and res.data for user object
+  //     const userData = res.data?.data || res.data;
+  //     return userData as User;
+  //   } catch (err) {
+  //     console.error('Failed to fetch user details:', err);
+  //     // Return null if user details fetch fails, we'll load them on the useEffect instead
+  //     return null;
+  //   }
+  // };
 
   const login = async (credentials: LoginCredentials) => {
     dispatch({ type: 'SET_LOADING', payload: true });
@@ -122,27 +166,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'X-Client-Id': 'web-ui-v1.0',
         },
       });
-      
+
       const { token } = res.data;
-      
-      // Fetch user details with the token
-      const user = await fetchUserDetails(token);
-      
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+
+      // Immediately authenticate
+    dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+
+      // Try to fetch user details, but don't fail if it doesn't work
+      // const user = await fetchUserDetails(token);
+
+      // if (user) {
+      //   dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      // } else {
+      //   // If we can't fetch user details immediately, set token as authenticated
+      //   // and let useEffect load user details
+      //   dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+      // }
     } catch (err: unknown) {
       let errorMessage = 'Login failed';
-      
+
       // Use the actual error message from API
       if (isAxiosErrorWithMessage(err)) {
         errorMessage = err.response.data.message;
       }
-      
+
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
       throw new Error(errorMessage);
     }
   };
 
-  //Register User Here 
+  // Register User
   const register = async (credentials: RegisterCredentials) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
@@ -151,13 +204,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           'X-Client-Id': 'web-ui-v1.0',
         },
       });
-      
+
       const { token } = res.data;
-      
-      // Fetch user details with the token
-      const user = await fetchUserDetails(token);
-      
-      dispatch({ type: 'REGISTER_SUCCESS', payload: { user, token } });
+
+      dispatch({ type: 'REGISTER_SUCCESS', payload: token });
+      dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+
+      // Try to fetch user details, but don't fail if it doesn't work
+      // const user = await fetchUserDetails(token);
+
+      // if (user) {
+      //   dispatch({ type: 'REGISTER_SUCCESS', payload: { user, token } });
+      // } else {
+      //   // If we can't fetch user details immediately, set token as authenticated
+      //   // and let useEffect load user details
+      //   dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+      // }
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Registration failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });

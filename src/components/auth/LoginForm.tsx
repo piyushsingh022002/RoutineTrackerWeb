@@ -57,8 +57,15 @@ const LoginForm: React.FC = () => {
     password: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
-  const { login, error, clearError, isLoading } = useAuth();
+  const { login, error, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Auto-navigate to dashboard when authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -93,9 +100,11 @@ const LoginForm: React.FC = () => {
     
     try {
       await login(credentials);
-      navigate('/dashboard');
+      // Navigation will happen automatically in ProtectedRoute when isAuthenticated becomes true
+      // No need for manual navigation here
     } catch (err) {
       // Error is handled by the AuthContext
+      console.error('Login error:', err);
     }
   };
 
