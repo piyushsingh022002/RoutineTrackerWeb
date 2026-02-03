@@ -1,64 +1,110 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
-import { Button, Input, Alert, NotebookLoader } from '../common';
-import { Link } from 'react-router-dom';
+import { Input, Alert, NotebookLoader } from '../common';
+import {
+  Logo,
+  Title,
+  Label,
+  SubmitButton,
+  SignUpText,
+  SignUpLink,
+} from '../../pages.styles/LoginPage.styles';
 
-const FormContainer = styled(motion.form)`
+const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 400px;
-  gap: 1.5rem;
+  gap: 1rem;
 `;
 
-const Title = styled.h2`
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 1rem 0;
-  text-align: center;
-`;
-
-const LoginLink = styled.div`
-  font-size: 0.875rem;
-  color: #6c757d;
-  text-align: center;
-  margin-top: 1rem;
+const ScrollableForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-bottom: 1rem;
   
-  a {
-    color: #4a6cf7;
-    text-decoration: none;
-    font-weight: 500;
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 3px;
     
     &:hover {
-      text-decoration: underline;
+      background: #a0aec0;
     }
   }
+  
+  /* For Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e0 transparent;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+`;
+
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
 const PasswordRequirements = styled.ul`
   font-size: 0.75rem;
   color: #6c757d;
-  margin: -1rem 0 0 1.5rem;
+  margin: -0.8rem 0 0 1.5rem;
   padding: 0;
+`;
+
+const LoaderWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  width: 100%;
 `;
 
 const RegisterForm: React.FC = () => {
   const [credentials, setCredentials] = useState<RegisterCredentials>({
+    fullName: '',
     username: '',
     email: '',
     password: '',
     confirmPassword: '',
+    phoneNumber: '',
+    dob: '',
+    securityQuestion: '',
+    securityAnswer: '',
   });
   const [formError, setFormError] = useState<string | null>(null);
   const [showEmailNotFoundMessage, setShowEmailNotFoundMessage] = useState(false);
-  const { register, error, clearError, isLoading } = useAuth();
+  const { register, error, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Auto-navigate to dashboard when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Check if coming from failed login attempt
   useEffect(() => {
@@ -79,6 +125,11 @@ const RegisterForm: React.FC = () => {
   };
 
   const validateForm = (): boolean => {
+    if (!credentials.fullName.trim()) {
+      setFormError('Full name is required');
+      return false;
+    }
+
     if (!credentials.username.trim()) {
       setFormError('Username is required');
       return false;
@@ -92,6 +143,11 @@ const RegisterForm: React.FC = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(credentials.email)) {
       setFormError('Please enter a valid email address');
+      return false;
+    }
+    
+    if (!credentials.dob) {
+      setFormError('Date of birth is required');
       return false;
     }
     
@@ -115,6 +171,7 @@ const RegisterForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    clearError();
     
     if (!validateForm()) {
       return;
@@ -122,30 +179,28 @@ const RegisterForm: React.FC = () => {
     
     try {
       await register(credentials);
-      navigate('/dashboard');
+      // Navigation will happen automatically when isAuthenticated becomes true
     } catch (err) {
       // Error is handled by the AuthContext
-       console.error("Registration failed:", err);
+      console.error('Registration failed:', err);
     }
   };
 
   if (isLoading) {
     return (
-      <NotebookLoader 
-        message="Please wait, shortly" 
-        subtext="Creating your account"
-      />
+      <LoaderWrapper>
+        <NotebookLoader 
+          message="Please wait, shortly" 
+          subtext="Creating your account"
+        />
+      </LoaderWrapper>
     );
   }
 
   return (
-    <FormContainer
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      onSubmit={handleSubmit}
-    >
-      <Title>Create Account</Title>
+    <FormContainer>
+      <Logo>InternRoutineTracker</Logo>
+      <Title>Create your account</Title>
       
       {showEmailNotFoundMessage && (
         <Alert 
@@ -168,72 +223,152 @@ const RegisterForm: React.FC = () => {
         />
       )}
       
-      <Input
-        label="Username"
-        type="text"
-        name="username"
-        value={credentials.username}
-        onChange={handleChange}
-        placeholder="Choose a username"
-        fullWidth
-        required
-        leftIcon={<span>👤</span>}
-      />
+      <ScrollableForm>
+        <FormGroup>
+          <Label htmlFor="fullName">Full Name</Label>
+          <Input
+            id="fullName"
+            type="text"
+            name="fullName"
+            value={credentials.fullName}
+            onChange={handleChange}
+            placeholder="Enter your full name"
+            fullWidth
+            required
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="username">Username</Label>
+          <Input
+            id="username"
+            type="text"
+            name="username"
+            value={credentials.username}
+            onChange={handleChange}
+            placeholder="Choose a username"
+            fullWidth
+            required
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            value={credentials.email}
+            onChange={handleChange}
+            placeholder="you@example.com"
+            fullWidth
+            required
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="dob">Date of Birth</Label>
+          <Input
+            id="dob"
+            type="date"
+            name="dob"
+            value={credentials.dob}
+            onChange={handleChange}
+            fullWidth
+            required
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="phoneNumber">Phone Number</Label>
+          <Input
+            id="phoneNumber"
+            type="tel"
+            name="phoneNumber"
+            value={credentials.phoneNumber}
+            onChange={handleChange}
+            placeholder="Enter your phone number (optional)"
+            fullWidth
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="securityQuestion">Security Question</Label>
+          <Input
+            id="securityQuestion"
+            type="text"
+            name="securityQuestion"
+            value={credentials.securityQuestion}
+            onChange={handleChange}
+            placeholder="E.g., What's your pet's name? (optional)"
+            fullWidth
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="securityAnswer">Security Answer</Label>
+          <Input
+            id="securityAnswer"
+            type="text"
+            name="securityAnswer"
+            value={credentials.securityAnswer}
+            onChange={handleChange}
+            placeholder="Answer to your security question (optional)"
+            fullWidth
+          />
+        </FormGroup>
+        
+        <FormGroup>
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            name="password"
+            value={credentials.password}
+            onChange={handleChange}
+            placeholder="••••••••"
+            fullWidth
+            required
+          />
+        </FormGroup>
+        
+        <PasswordRequirements>
+          <li>At least 8 characters long</li>
+          <li>Include uppercase and lowercase letters</li>
+          <li>Include at least one number or special character</li>
+        </PasswordRequirements>
+        
+        <FormGroup>
+          <Label htmlFor="confirmPassword">Confirm Password</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            name="confirmPassword"
+            value={credentials.confirmPassword}
+            onChange={handleChange}
+            placeholder="••••••••"
+            fullWidth
+            required
+          />
+        </FormGroup>
+      </ScrollableForm>
       
-      <Input
-        label="Email"
-        type="email"
-        name="email"
-        value={credentials.email}
-        onChange={handleChange}
-        placeholder="Enter your email"
-        fullWidth
-        required
-        leftIcon={<span>📧</span>}
-      />
-      
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        value={credentials.password}
-        onChange={handleChange}
-        placeholder="Create a password"
-        fullWidth
-        required
-        leftIcon={<span>🔒</span>}
-      />
-      
-      <PasswordRequirements>
-        <li>At least 8 characters long</li>
-        <li>Include uppercase and lowercase letters</li>
-        <li>Include at least one number or special character</li>
-      </PasswordRequirements>
-      
-      <Input
-        label="Confirm Password"
-        type="password"
-        name="confirmPassword"
-        value={credentials.confirmPassword}
-        onChange={handleChange}
-        placeholder="Confirm your password"
-        fullWidth
-        required
-        leftIcon={<span>🔒</span>}
-      />
-      
-      <Button
-        type="submit"
-        variant="primary"
-        shape="pill"
-        fullWidth
-      >
-        Register
-      </Button>
-      
-      <LoginLink>
-        Already have an account? <Link to="/login">Login</Link>
-      </LoginLink>
+      <ButtonGroup>
+        <SubmitButton
+          type="button"
+          onClick={handleSubmit}
+          disabled={isLoading}
+          whileHover={{ scale: isLoading ? 1 : 1.02 }}
+          whileTap={{ scale: isLoading ? 1 : 0.98 }}
+        >
+          {isLoading ? 'Creating account...' : 'Create account'}
+        </SubmitButton>
+        
+        <SignUpText>
+          Already have an account?
+          <SignUpLink to="/login">Sign in</SignUpLink>
+        </SignUpText>
+      </ButtonGroup>
     </FormContainer>
   );
 };

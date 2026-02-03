@@ -54,9 +54,16 @@ export interface LoginCredentials {
   password: string;
 }
 
-export interface RegisterCredentials extends LoginCredentials {
+export interface RegisterCredentials {
+  fullName: string;
   username: string;
+  email: string;
+  password: string;
   confirmPassword: string;
+  phoneNumber?: string;
+  dob: string; // ISO date string
+  securityQuestion?: string;
+  securityAnswer?: string;
 }
 
 export interface ApiResponse<T> {
