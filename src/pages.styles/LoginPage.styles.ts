@@ -4,26 +4,86 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { device } from '../styles/breakpoints';
 
-export const LoginContainer = styled.div`
-	width: 100%;
-	height: 100%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 1.5rem 0.75rem;
-	background: transparent;
-	box-sizing: border-box;
-	overflow-y: auto;
-	zoom: 1;
-	transform: scale(1);
-	transform-origin: top left;
+// export const LoginContainer = styled.div`
+// 	width: 100%;
+// 	height: 100%;
+// 	display: flex;
+// 	align-items: center;
+// 	justify-content: center;
+// 	padding: 1.5rem 0.75rem;
+// 	background: transparent;
+// 	box-sizing: border-box;
+// 	overflow-y: auto;
+// 	zoom: 1;
+// 	transform: scale(1);
+// 	transform-origin: top left;
 	
-	@media ${device.tablet} {
-		padding: 2rem 1rem;
-	}
-	@media ${device.laptop} {
-		padding: 3rem 2rem;
-	}
+// 	@media ${device.tablet} {
+// 		padding: 2rem 1rem;
+// 	}
+// 	@media ${device.laptop} {
+// 		padding: 3rem 2rem;
+// 	}
+// `;
+
+export const LoginContainer = styled.div`
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+//   padding: 1.5rem 0.75rem;
+  box-sizing: border-box;
+  overflow: hidden; /* IMPORTANT: no scroll */
+
+  /* Dynamic Gradient */
+  background: radial-gradient(
+      circle at 20% 20%,
+      rgba(79, 70, 229, 0.22),
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 30%,
+      rgba(124, 58, 237, 0.20),
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 50% 80%,
+      rgba(14, 165, 233, 0.14),
+      transparent 60%
+    ),
+    linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+
+  background-size: 120% 120%;
+  animation: bgMove 12s ease infinite;
+
+  @keyframes bgMove {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  @media ${device.tablet} {
+    padding: 2rem 1rem;
+  }
+
+  @media ${device.laptop} {
+    padding: 3rem 2rem;
+  }
+`;
+
+
+export const CardWrapper = styled.div`
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
 `;
 
 export const LoginCard = styled(motion.div)`
@@ -61,29 +121,90 @@ export const LoginCard = styled(motion.div)`
 	}
 `;
 
-export const Logo = styled.div`
-	font-size: 1.65rem;
-	font-weight: 800;
-	text-align: center;
-	margin-bottom: 1.5rem;
-	background: linear-gradient(120deg, #111827 0%, #4338ca 45%, #7c3aed 100%);
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
+// export const Logo = styled.div`
+// 	font-size: 1.65rem;
+// 	font-weight: 800;
+// 	text-align: center;
+// 	margin-bottom: 1.5rem;
+// 	background: linear-gradient(120deg, #111827 0%, #4338ca 45%, #7c3aed 100%);
+// 	-webkit-background-clip: text;
+// 	-webkit-text-fill-color: transparent;
+// 	background-clip: text;
+// `;
+
+// export const Logo = styled.div`
+//   font-size: 1.65rem;
+//   font-weight: 800;
+//   text-align: center;
+//   margin-bottom: 0.5rem;
+
+//   background: linear-gradient(120deg, #0f172a 0%, #4f46e5 45%, #7c3aed 100%);
+//   -webkit-background-clip: text;
+//   -webkit-text-fill-color: transparent;
+//   background-clip: text;
+
+//   letter-spacing: 0.4px;
+// `;
+
+interface LogoProps {
+  gradient?: string;
+  fontSize?: string;
+  letterSpacing?: string;
+}
+
+export const Logo = styled.div<LogoProps>`
+  font-size: ${(props) => props.fontSize || '1.65rem'};
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 0.1rem;
+
+  background: ${(props) =>
+    props.gradient ||
+    'linear-gradient(120deg, #0f172a 0%, #4f46e5 45%, #7c3aed 100%)'};
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+
+  letter-spacing: ${(props) => props.letterSpacing || '0.4px'};
 `;
 
-export const Title = styled.h1`
-	font-size: 1.35rem;
-	font-weight: 700;
-	color: #0f172a;
-	text-align: center;
-	margin-bottom: 1.25rem;
-	letter-spacing: -0.01em;
+
+// export const Title = styled.h1`
+// 	font-size: 1.35rem;
+// 	font-weight: 700;
+// 	color: #0f172a;
+// 	text-align: center;
+// 	margin-bottom: 1.25rem;
+// 	letter-spacing: -0.01em;
 	
-	.dark & {
-		color: #f1f5f9;
-	}
+// 	.dark & {
+// 		color: #f1f5f9;
+// 	}
+// `;
+
+export const Title = styled.h1`
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+
+  /* Modern color */
+  color: #0b1220;
+
+  /* Subtle gradient touch */
+  background: linear-gradient(120deg, #0b1220 0%, #4f46e5 60%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+
+  .dark & {
+    color: #f8fafc;
+    background: none;
+    -webkit-text-fill-color: initial;
+  }
 `;
+
 
 export const Form = styled.form`
 	display: flex;

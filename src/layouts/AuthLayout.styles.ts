@@ -2,6 +2,7 @@ import styled from "styled-components";
 
 const AuthContainer = styled.div`
   display: flex;
+  min-height: 100vh;
   height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #fdfcfb 45%, #f7f7ff 70%, #f9fafb 100%);
   position: relative;
@@ -47,22 +48,52 @@ const AuthContainer = styled.div`
   }
 `;
 
-const LoaderOverlay = styled.div`
+// const LoaderOverlay = styled.div`
+//   position: absolute;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   background: rgba(248, 250, 252, 0.95);
+//   backdrop-filter: blur(2px);
+//   z-index: 9999;
+
+//   .dark & {
+//     background: rgba(15, 23, 42, 0.95);
+//   }
+// `;
+
+// export const AuthContent = styled.div`
+//   flex: 1;
+//   display: flex;
+//   justify-content: center;   /* CENTER horizontally */
+//   align-items: center;       /* CENTER vertically */
+//   padding: 2rem;
+// `;
+
+export const AuthContent = styled.div`
+  flex: 1;
+  min-height: 100vh; /* IMPORTANT */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+
+ const LoaderOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
-  right: 0;
-  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255,255,255,0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(248, 250, 252, 0.95);
-  backdrop-filter: blur(2px);
-  z-index: 9999;
-
-  .dark & {
-    background: rgba(15, 23, 42, 0.95);
-  }
+  z-index: 50;
 `;
 
 export { AuthContainer, LoaderOverlay };

@@ -20,7 +20,11 @@ import {
   SignUpText,
   SignUpLink,
   TopRightAction,
+  // CardWrapper
 } from '../pages.styles/LoginPage.styles';
+
+import { LoaderOverlay } from '../components/common/LoaderOverlay'; // CHANGED
+import { NotebookLoader } from '../components/common'; // CHANGED
 
 //state type definition
 type LoginState = {
@@ -71,7 +75,7 @@ const LoginPage: React.FC = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password, formErrors, isSubmitting } = state;
 
-  const { login, error, clearError } = useAuth();
+  const { login, error, clearError , isLoading } = useAuth();
   const navigate = useNavigate();
 
   //validate the form inputs
@@ -129,6 +133,16 @@ const LoginPage: React.FC = () => {
           Home
         </Button>
       </TopRightAction>
+      {/* CHANGED: wrap in relative container */}
+      {/* <CardWrapper> */}
+
+        {/* CHANGED: loader overlay ONLY on login card */}
+        {isLoading && (
+          <LoaderOverlay>
+            <NotebookLoader message="Please wait" subtext="Signing you in" />
+          </LoaderOverlay>
+        )}
+
       <LoginCard
         data-cursor-block
         initial={{ opacity: 0, y: 20 }}
@@ -194,6 +208,7 @@ const LoginPage: React.FC = () => {
         </SignUpText>
 
       </LoginCard>
+      {/* </CardWrapper> */}
     </LoginContainer>
   );
 };
