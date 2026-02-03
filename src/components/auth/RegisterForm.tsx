@@ -199,8 +199,8 @@ const RegisterForm: React.FC = () => {
 
   return (
     <FormContainer>
-      <Logo>InternRoutineTracker</Logo>
-      <Title>Create your account</Title>
+      <Logo>Record Tracker Web</Logo>
+      <Title>Create your account, Start today</Title>
       
       {showEmailNotFoundMessage && (
         <Alert 

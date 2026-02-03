@@ -6,6 +6,8 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { html } from '@codemirror/lang-html';
 import { markdown } from '@codemirror/lang-markdown';
+import Button from '../components/common/Button';
+import ROUTE_PATHS from '../routes/RoutePaths';
 
 const PublicNoteEditor: React.FC = () => {
 	const editorRef = useRef<HTMLDivElement | null>(null);
@@ -30,7 +32,12 @@ const PublicNoteEditor: React.FC = () => {
 		editorRef.current?.focus();
 	};
 
-	const getContent = () => editorRef.current?.innerHTML || '';
+	const getContent = () => {
+		if (mode === 'code') {
+			return `<pre><code>${codeText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`;
+		}
+		return editorRef.current?.innerHTML || '';
+	};
 
 	const downloadWord = () => {
 		const content = getContent();
@@ -38,25 +45,29 @@ const PublicNoteEditor: React.FC = () => {
 		const footer = '</body></html>';
 		const blob = new Blob([header + content + footer], { type: 'application/msword' });
 		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = 'note.doc';
-		a.click();
-		URL.revokeObjectURL(url);
+		const w = window.open(url, '_blank', 'noopener,noreferrer');
+		if (!w) {
+			// Fallback: download directly if popup blocked
+			const a = document.createElement('a');
+			a.href = url;
+			a.download = 'note.doc';
+			a.click();
+		}
+		setTimeout(() => URL.revokeObjectURL(url), 100);
 	};
 
 	const downloadPDF = () => {
-		// Fallback: open printable window so user can save as PDF via browser print
+		// Open printable window in new tab so user can save as PDF via browser print
 		const content = getContent();
 		const w = window.open('', '_blank', 'noopener,noreferrer');
 		if (!w) return;
 		w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Export Note</title>');
-		w.document.write('<style>body{font-family:Inter,Arial; padding:24px; line-height:1.4; color:#111} img{max-width:100%;}</style>');
+		w.document.write('<style>body{font-family:Inter,Arial; padding:24px; line-height:1.4; color:#111} img{max-width:100%;} pre{background:#f5f5f5; padding:12px; border-radius:4px; overflow-x:auto;} code{font-family:monospace;} @media print { body { padding: 0; } }</style>');
 		w.document.write('</head><body>');
 		w.document.write(content);
 		w.document.write('</body></html>');
 		w.document.close();
-		setTimeout(() => { w.print(); }, 300);
+		setTimeout(() => { w.print(); }, 500);
 	};
 
 	const sendEmail = () => {
@@ -148,6 +159,10 @@ const PublicNoteEditor: React.FC = () => {
 			)}
 
 			<S.Toolbar aria-hidden={loading} data-theme={theme}>
+				<div>
+					<Button variant="outline" size="small" onClick={() => navigate(ROUTE_PATHS.LANDINGPAGE)}>🏠 Home</Button>
+				</div>
+
 				<div>
 					<button onClick={() => exec('bold')} title="Bold">B</button>
 					<button onClick={() => exec('italic')} title="Italic">I</button>
