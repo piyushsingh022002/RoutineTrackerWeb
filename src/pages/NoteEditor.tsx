@@ -48,7 +48,7 @@ import {
   SmallRemove,
   ImportMessage,
 } from '../pages.styles/NoteEditor.style';
-import type { Note } from '../types';
+import { NOTE_LABELS, type Note, type NoteLabel } from '../types';
 import { useNotes } from "../context/NotesContext";
 import { FaDownload, FaTimes, FaCheck, FaUpload, FaEye } from "react-icons/fa";
 import { jsPDF } from "jspdf";
@@ -61,6 +61,7 @@ import { python } from "@codemirror/lang-python";
 import { json as jsonLang } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { css as cssLang } from "@codemirror/lang-css";
+import { LabelToggle } from "../components/common/LabelToggle";
 
 interface NoteEditorProps {
   hideHeader?: boolean;
@@ -105,6 +106,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
       setTitle(initialNote.title || '');
       setContent(initialNote.content || '');
       setTags(initialNote.tags || []);
+      setLabels(initialNote.labels || []);
       setFileUrls(initialNote.mediaUrls || []);
     }
   }, [initialNote]);
@@ -113,6 +115,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
   const [content, setContent] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [labels, setLabels] = useState<NoteLabel[]>([]);
   const [files, setFiles] = useState<File[]>([]);
   const [fileUrls, setFileUrls] = useState<string[]>([]);
   const [formErrors, setFormErrors] = useState<{
@@ -325,6 +328,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
           title,
           content: finalContent,
           tags,
+          labels,
           mediaUrls: fileUrls,
         };
 
@@ -334,6 +338,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
             ...noteData,
             id: Number(id),
             userId: 1, // fallback userId
+            labels: noteData.labels,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           } as Note);
@@ -351,6 +356,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
               ...noteData,
               id: Date.now(), // temp id
               userId: 1, // fallback userId
+              labels: noteData.labels,
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             });
@@ -479,6 +485,17 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
       // reset input to allow re-selecting the same file
       e.target.value = '';
     }
+  };
+
+  const hasLabel = (label: NoteLabel) =>
+    labels.includes(label);
+
+  const toggleLabel = (label: NoteLabel) => {
+    setLabels(prev =>
+      prev.includes(label)
+        ? prev.filter((l: NoteLabel) => l !== label)
+        : [...prev, label]
+    );
   };
 
   return (
@@ -679,6 +696,23 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
                       <SectionDescription>Save progress, download a PDF, or import existing notes.</SectionDescription>
                     </SectionHeader>
                     <ButtonGroup>
+
+                      <LabelToggle
+  label="Favourite"
+  checked={hasLabel(NOTE_LABELS.FAVORITE)}
+  onToggle={() => toggleLabel(NOTE_LABELS.FAVORITE)}
+/>
+
+<LabelToggle
+  label="Important"
+  checked={hasLabel(NOTE_LABELS.IMPORTANT)}
+  onToggle={() => toggleLabel(NOTE_LABELS.IMPORTANT)}
+/>
+<LabelToggle
+  label="Pinned"
+  checked={hasLabel(NOTE_LABELS.PINNED)}
+  onToggle={() => toggleLabel(NOTE_LABELS.PINNED)}
+/>
                       <SecondaryButton
                         type="button"
                         onClick={() => setIsPreviewOpen(true)}

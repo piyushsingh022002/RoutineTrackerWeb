@@ -3,6 +3,7 @@ import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import type { Note } from '../types';
 import { useAuth } from './AuthContext';
+import { getFavouriteNotes, getImportantNotes, getDeletedNotes } from '../services/notesApi';
 
 // API base URL
 const API_URL = import.meta.env.VITE_API_URL || 'https://recotrackapi.onrender.com/api';
@@ -10,6 +11,9 @@ const API_URL = import.meta.env.VITE_API_URL || 'https://recotrackapi.onrender.c
 // Notes state interface
 interface NotesState {
   notes: Note[];
+  favouriteNotes: Note[];
+  importantNotes: Note[];
+  deletedNotes: Note[];
   currentNote: Note | null;
   isLoading: boolean;
   error: string | null;
@@ -18,6 +22,9 @@ interface NotesState {
 // Initial notes state
 const initialState: NotesState = {
   notes: [],
+  favouriteNotes: [],
+  importantNotes: [],
+  deletedNotes: [],
   currentNote: null,
   isLoading: false,
   error: null,
@@ -28,6 +35,15 @@ type NotesAction =
   | { type: 'GET_NOTES_REQUEST' }
   | { type: 'GET_NOTES_SUCCESS'; payload: Note[] }
   | { type: 'GET_NOTES_FAILURE'; payload: string }
+  | { type: 'GET_FAVOURITE_NOTES_REQUEST' }
+  | { type: 'GET_FAVOURITE_NOTES_SUCCESS'; payload: Note[] }
+  | { type: 'GET_FAVOURITE_NOTES_FAILURE'; payload: string }
+  | { type: 'GET_IMPORTANT_NOTES_REQUEST' }
+  | { type: 'GET_IMPORTANT_NOTES_SUCCESS'; payload: Note[] }
+  | { type: 'GET_IMPORTANT_NOTES_FAILURE'; payload: string }
+  | { type: 'GET_DELETED_NOTES_REQUEST' }
+  | { type: 'GET_DELETED_NOTES_SUCCESS'; payload: Note[] }
+  | { type: 'GET_DELETED_NOTES_FAILURE'; payload: string }
   | { type: 'GET_NOTE_REQUEST' }
   | { type: 'GET_NOTE_SUCCESS'; payload: Note }
   | { type: 'GET_NOTE_FAILURE'; payload: string }
@@ -51,6 +67,9 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
     case 'CREATE_NOTE_REQUEST':
     case 'UPDATE_NOTE_REQUEST':
     case 'DELETE_NOTE_REQUEST':
+    case 'GET_FAVOURITE_NOTES_REQUEST':
+    case 'GET_IMPORTANT_NOTES_REQUEST':
+    case 'GET_DELETED_NOTES_REQUEST':
       return {
         ...state,
         isLoading: true,
@@ -60,6 +79,24 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
       return {
         ...state,
         notes: action.payload,
+        isLoading: false,
+      };
+    case 'GET_FAVOURITE_NOTES_SUCCESS':
+      return {
+        ...state,
+        favouriteNotes: action.payload,
+        isLoading: false,
+      };
+    case 'GET_IMPORTANT_NOTES_SUCCESS':
+      return {
+        ...state,
+        importantNotes: action.payload,
+        isLoading: false,
+      };
+    case 'GET_DELETED_NOTES_SUCCESS':
+      return {
+        ...state,
+        deletedNotes: action.payload,
         isLoading: false,
       };
     case 'GET_NOTE_SUCCESS':
@@ -113,6 +150,9 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
     case 'CREATE_NOTE_FAILURE':
     case 'UPDATE_NOTE_FAILURE':
     case 'DELETE_NOTE_FAILURE':
+    case 'GET_FAVOURITE_NOTES_FAILURE':
+    case 'GET_IMPORTANT_NOTES_FAILURE':
+    case 'GET_DELETED_NOTES_FAILURE':
       return {
         ...state,
         isLoading: false,
@@ -136,6 +176,9 @@ const notesReducer = (state: NotesState, action: NotesAction): NotesState => {
 // Notes context type
 interface NotesContextType extends NotesState {
   getNotes: () => Promise<void>;
+  getFavouriteNotes: () => Promise<void>;
+  getImportantNotes: () => Promise<void>;
+  getDeletedNotes: () => Promise<void>;
   getNote: (id: string) => Promise<void>;
   // Return the created note so callers can await and receive the saved resource
   createNote: (note: Partial<Note>) => Promise<Note>;
@@ -172,6 +215,57 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } catch (err: unknown) {
       const errorMessage = getErrorMessage(err, 'Failed to fetch notes');
       dispatch({ type: 'GET_NOTES_FAILURE', payload: errorMessage });
+    }
+  }, [isAuthenticated, token]);
+
+  const getFavouriteNotesFunc = React.useCallback(async () => {
+    if (!isAuthenticated || !token) return;
+
+    dispatch({ type: 'GET_FAVOURITE_NOTES_REQUEST' });
+    try {
+      let notesList = await getFavouriteNotes(token);
+      // Ensure it's always an array
+      if (!Array.isArray(notesList)) {
+        notesList = [];
+      }
+      dispatch({ type: 'GET_FAVOURITE_NOTES_SUCCESS', payload: notesList });
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, 'Failed to fetch favourite notes');
+      dispatch({ type: 'GET_FAVOURITE_NOTES_FAILURE', payload: errorMessage });
+    }
+  }, [isAuthenticated, token]);
+
+  const getImportantNotesFunc = React.useCallback(async () => {
+    if (!isAuthenticated || !token) return;
+
+    dispatch({ type: 'GET_IMPORTANT_NOTES_REQUEST' });
+    try {
+      let notesList = await getImportantNotes(token);
+      // Ensure it's always an array
+      if (!Array.isArray(notesList)) {
+        notesList = [];
+      }
+      dispatch({ type: 'GET_IMPORTANT_NOTES_SUCCESS', payload: notesList });
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, 'Failed to fetch important notes');
+      dispatch({ type: 'GET_IMPORTANT_NOTES_FAILURE', payload: errorMessage });
+    }
+  }, [isAuthenticated, token]);
+
+  const getDeletedNotesFunc = React.useCallback(async () => {
+    if (!isAuthenticated || !token) return;
+
+    dispatch({ type: 'GET_DELETED_NOTES_REQUEST' });
+    try {
+      let notesList = await getDeletedNotes(token);
+      // Ensure it's always an array
+      if (!Array.isArray(notesList)) {
+        notesList = [];
+      }
+      dispatch({ type: 'GET_DELETED_NOTES_SUCCESS', payload: notesList });
+    } catch (err: unknown) {
+      const errorMessage = getErrorMessage(err, 'Failed to fetch deleted notes');
+      dispatch({ type: 'GET_DELETED_NOTES_FAILURE', payload: errorMessage });
     }
   }, [isAuthenticated, token]);
 
@@ -269,6 +363,9 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       value={{
         ...state,
         getNotes,
+        getFavouriteNotes: getFavouriteNotesFunc,
+        getImportantNotes: getImportantNotesFunc,
+        getDeletedNotes: getDeletedNotesFunc,
         getNote,
         createNote,
         updateNote,

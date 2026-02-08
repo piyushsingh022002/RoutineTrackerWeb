@@ -119,13 +119,13 @@ const DotsWrapper = styled.div`
   justify-content: center;
 `;
 
-const Dot = styled.div<{ delay: number }>`
+const Dot = styled.div<{ $delay: number }>`
   width: 6px;
   height: 6px;
   background: #4a6cf7;
   border-radius: 50%;
   animation: ${shimmer} 1.5s ease-in-out infinite;
-  animation-delay: ${props => props.delay}s;
+  animation-delay: ${props => props.$delay}s;
 `;
 
 interface NotebookLoaderProps {
@@ -151,9 +151,9 @@ const NotebookLoader: React.FC<NotebookLoaderProps> = ({
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
         <LoadingText>{message}</LoadingText>
         <DotsWrapper>
-          <Dot delay={0} />
-          <Dot delay={0.2} />
-          <Dot delay={0.4} />
+          <Dot $delay={0} />
+          <Dot $delay={0.2} />
+          <Dot $delay={0.4} />
         </DotsWrapper>
       </div>
       
