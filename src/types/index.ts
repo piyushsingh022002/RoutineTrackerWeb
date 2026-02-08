@@ -21,12 +21,21 @@ export interface AuthState {
   error: string | null;
 }
 
+export const NOTE_LABELS = {
+  FAVORITE: "Favorite",
+  IMPORTANT: "Important",
+  PINNED: "Pinned",
+} as const;
+
+export type NoteLabel = typeof NOTE_LABELS[keyof typeof NOTE_LABELS];
+
 export interface Note {
   id: string | number;
   userId: string | number;
   title: string;
   content: string;
   tags: string[];
+   labels: NoteLabel[];
   mediaUrls: string[];
   createdAt: string;
   updatedAt: string;
