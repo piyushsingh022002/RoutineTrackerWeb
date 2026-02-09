@@ -6,22 +6,13 @@ import CustomCursor from '../components/common/CustomCursor';
 // import { NotebookLoader } from '../components/common';
 
 const AuthLayout = () => {
-    // const { isLoading } = useAuth();
 
     return (
         <AuthContainer>
             <CustomCursor />
             <AuthSideBar />
-            {/* {isLoading && (
-                <LoaderOverlay>
-                    <NotebookLoader 
-                        message="Please wait" 
-                        subtext="Processing your request"
-                    />
-                </LoaderOverlay>
-            )} */}
             <AuthContent>
-            <Outlet />
+                <Outlet />
             </AuthContent>
         </AuthContainer>
     )

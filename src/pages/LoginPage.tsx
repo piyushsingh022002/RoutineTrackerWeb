@@ -65,13 +65,6 @@ const reducer = (state : LoginState, action: LoginActions) =>{
 };
 
 const LoginPage: React.FC = () => {
-
-  // const [email, setEmail] = useState('');
-  // const [password, setPassword] = useState('');
-  // const [formErrors, setFormErrors] = useState<{ email?: string; password?: string }>({});
-  // const [isSubmitting, setIsSubmitting] = useState(false);
-
-  //initialize the reducer state here
   const [state, dispatch] = useReducer(reducer, initialState);
   const { email, password, formErrors, isSubmitting } = state;
 
@@ -133,10 +126,6 @@ const LoginPage: React.FC = () => {
           Home
         </Button>
       </TopRightAction>
-      {/* CHANGED: wrap in relative container */}
-      {/* <CardWrapper> */}
-
-        {/* CHANGED: loader overlay ONLY on login card */}
         {isLoading && (
           <LoaderOverlay>
             <NotebookLoader message="Please wait" subtext="Signing you in" />
@@ -208,7 +197,6 @@ const LoginPage: React.FC = () => {
         </SignUpText>
 
       </LoginCard>
-      {/* </CardWrapper> */}
     </LoginContainer>
   );
 };
