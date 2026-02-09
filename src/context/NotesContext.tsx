@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import axios from 'axios';
 import type { Note } from '../types';
 import { useAuth } from './AuthContext';
