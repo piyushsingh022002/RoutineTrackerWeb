@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Sidebar as StyledSidebar,
   SidebarSectionTitle,
@@ -18,23 +18,28 @@ const navItems = [
   { to: '/notes/new', icon: '➕', label: 'New Note' },
   { to: '/noteplus', icon: '🤖', label: 'ChatGPT' },
   { to: '/teams', icon: '👥', label: 'Teams' },
-  { to: '/notes?filter=favorite', icon: '⭐', label: 'Favourite Notes' },
-  { to: '/notes?filter=important', icon: '❗', label: 'Important Notes' },
+  { to: '/notes/favourites', icon: '⭐', label: 'Favourite Notes' },
+  { to: '/notes/important', icon: '❗', label: 'Important Notes' },
   { to: '/notes', icon: '🗂️', label: 'All Notes' },
-  { to: '/notes?filter=deleted', icon: '🗑️', label: 'Deleted Notes' },
+  { to: '/notes/deleted', icon: '🗑️', label: 'Deleted Notes' },
 ];
 
 const DashboardSidebar: React.FC<Props> = ({ collapsed = false, onToggle }) => {
   const { favouriteNotes, importantNotes, deletedNotes, getFavouriteNotes, getImportantNotes, getDeletedNotes, isLoading } = useNotes();
   const { isAuthenticated } = useAuth();
+  
+  // Track if sections data has been loaded to avoid repeated API calls
+  const [dataLoaded, setDataLoaded] = useState(false);
 
+  // Load data for each section only once when component mounts
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !dataLoaded) {
       getFavouriteNotes();
       getImportantNotes();
       getDeletedNotes();
+      setDataLoaded(true);
     }
-  }, [isAuthenticated, getFavouriteNotes, getImportantNotes, getDeletedNotes]);
+  }, [isAuthenticated, dataLoaded, getFavouriteNotes, getImportantNotes, getDeletedNotes]);
 
   return (
     <StyledSidebar>
@@ -74,12 +79,20 @@ const DashboardSidebar: React.FC<Props> = ({ collapsed = false, onToggle }) => {
         <Divider />
 
         <SidebarSectionTitle style={{ marginTop: 8 }}>{!collapsed ? 'Browse' : ''}</SidebarSectionTitle>
-        {navItems.slice(2).map((it) => (
+        {navItems.slice(2, 5).map((it) => (
           <SidebarLink key={it.to} to={it.to} title={it.label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ width: 20, textAlign: 'center' }}>{it.icon}</span>
             {!collapsed && <span>{it.label}</span>}
           </SidebarLink>
         ))}
+        <SidebarLink to={navItems[5].to} title={navItems[5].label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ width: 20, textAlign: 'center' }}>{navItems[5].icon}</span>
+          {!collapsed && <span>{navItems[5].label}</span>}
+        </SidebarLink>
+        <SidebarLink to={navItems[6].to} title={navItems[6].label} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ width: 20, textAlign: 'center' }}>{navItems[6].icon}</span>
+          {!collapsed && <span>{navItems[6].label}</span>}
+        </SidebarLink>
 
         {/* Favourite Notes Section */}
         {Array.isArray(favouriteNotes) && favouriteNotes.length > 0 && (
@@ -112,7 +125,7 @@ const DashboardSidebar: React.FC<Props> = ({ collapsed = false, onToggle }) => {
               ))}
               {favouriteNotes.length > 5 && !collapsed && (
                 <SidebarLink
-                  to="/notes?filter=favorite"
+                  to="/notes/favourites"
                   title="View all favourites"
                   style={{
                     display: 'flex',
@@ -162,7 +175,7 @@ const DashboardSidebar: React.FC<Props> = ({ collapsed = false, onToggle }) => {
               ))}
               {importantNotes.length > 5 && !collapsed && (
                 <SidebarLink
-                  to="/notes?filter=important"
+                  to="/notes/important"
                   title="View all important notes"
                   style={{
                     display: 'flex',
@@ -212,7 +225,7 @@ const DashboardSidebar: React.FC<Props> = ({ collapsed = false, onToggle }) => {
               ))}
               {deletedNotes.length > 5 && !collapsed && (
                 <SidebarLink
-                  to="/notes?filter=deleted"
+                  to="/notes/deleted"
                   title="View all deleted notes"
                   style={{
                     display: 'flex',

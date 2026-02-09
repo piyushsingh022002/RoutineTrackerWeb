@@ -351,13 +351,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     dispatch({ type: 'CLEAR_ERROR' });
   };
 
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      getNotes();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, token]);
-
   return (
     <NotesContext.Provider
       value={{
