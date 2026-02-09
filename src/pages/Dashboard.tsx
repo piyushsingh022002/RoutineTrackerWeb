@@ -1,7 +1,7 @@
 import Header from '../components/common/Header';
 import { useAuth } from '../context/AuthContext';
 import { useNotes } from '../context/NotesContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Loader from '../components/common/Loader';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
@@ -72,13 +72,18 @@ import StatsCard from '../components/layout/StatsCard';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { notes, isLoading, clearCurrentNote } = useNotes();
+  const { notes, isLoading, clearCurrentNote, getNotes } = useNotes();
   const [openNote, setOpenNote] = useState<Note | null>(null);
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(false);
   // collapse by default per request
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
   const [calendarCollapsed, setCalendarCollapsed] = useState(true);
+
+  // Load notes when Dashboard page is navigated to
+  useEffect(() => {
+    getNotes();
+  }, [getNotes]);
   const gridVariants = {
     hidden: {},
     show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } },

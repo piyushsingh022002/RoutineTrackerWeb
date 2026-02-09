@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer } from 'react';
 import axios from 'axios';
 import type { Note } from '../types';
 import { useAuth } from './AuthContext';
@@ -350,13 +350,6 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
-
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      getNotes();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, token]);
 
   return (
     <NotesContext.Provider
