@@ -7,15 +7,13 @@ import { ThemeProvider } from './context/ThemeContext';
 import CustomCursor from './components/common/CustomeCursor';
 import AppRoutes from './routes/AppRoutes';
 
-                
-
 function App() {
   return (
     <ThemeProvider>
       <GlobalStyle />
-       <CustomCursor />
-        <Router>
-         <AuthProvider>
+      <CustomCursor />
+      <Router>
+        <AuthProvider>
           <NotesProvider>
             <NotificationsProvider>
               <AppRoutes />

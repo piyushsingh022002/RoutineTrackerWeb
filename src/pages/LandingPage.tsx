@@ -1,5 +1,5 @@
 
-import { Button, Header } from "../components/common";
+import { Button } from "../components/common";
 import { motion } from "framer-motion";
 import { useTheme } from "../context/ThemeContext";
 import {
@@ -21,6 +21,7 @@ import {
 } from "../pages.styles/LandingPage.styles";
 
 import { useNavigate } from "react-router-dom";
+import PublicHeader from "../components/Headers/PublicHeader";
 // import React, { useState } from "react";
 
 // Notes-related icons for hero section
@@ -48,7 +49,8 @@ const LandingPage: React.FC = () => {
 
   return (
     <>
-      <Header />
+      {/* <Header /> */}
+      <PublicHeader />
       {/* Theme Toggle Button - Fixed position below header */}
       <motion.button
         onClick={toggleTheme}
