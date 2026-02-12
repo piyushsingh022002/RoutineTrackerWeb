@@ -153,10 +153,10 @@ interface LogoProps {
 }
 
 export const Logo = styled.div<LogoProps>`
-  font-size: ${(props) => props.fontSize || '1.65rem'};
+  font-size: ${(props) => props.fontSize || '1.5rem'};
   font-weight: 800;
   text-align: center;
-  margin-bottom: 0.1rem;
+  margin-bottom: 0.05rem;
 
   background: ${(props) =>
     props.gradient ||
@@ -169,25 +169,11 @@ export const Logo = styled.div<LogoProps>`
   letter-spacing: ${(props) => props.letterSpacing || '0.4px'};
 `;
 
-
-// export const Title = styled.h1`
-// 	font-size: 1.35rem;
-// 	font-weight: 700;
-// 	color: #0f172a;
-// 	text-align: center;
-// 	margin-bottom: 1.25rem;
-// 	letter-spacing: -0.01em;
-	
-// 	.dark & {
-// 		color: #f1f5f9;
-// 	}
-// `;
-
 export const Title = styled.h1`
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   letter-spacing: -0.01em;
 
   /* Modern color */
@@ -263,13 +249,13 @@ export const ErrorMessage = styled.div`
 `;
 
 export const SubmitButton = styled(motion.button)`
-	padding: 0.85rem;
+	padding: 0.5rem;
 	background: linear-gradient(120deg, #4f46e5 0%, #4338ca 50%, #312e81 100%);
 	color: #f8fafc;
 	border: none;
 	border-radius: 14px;
 	font-weight: 700;
-	font-size: 1rem;
+	font-size: 0.85rem;
 	letter-spacing: 0.01em;
 	cursor: pointer;
 	transition: all 0.2s ease;
@@ -314,8 +300,8 @@ export const ForgotLink = styled(Link)`
 
 export const SignUpText = styled.div`
 	text-align: center;
-	font-size: 0.9rem;
-	margin-top: 1.5rem;
+	font-size: 0.90rem;
+	margin-top: 0.1rem;
 	color: #4b5563;
 `;
 

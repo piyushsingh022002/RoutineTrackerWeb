@@ -68,6 +68,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
+  googleAuth: (accessToken: string) => Promise<void>;
   logout: () => void;
   clearError: () => void;
 }
@@ -227,6 +228,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const googleAuth = async (accessToken: string) => {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    try {
+      const res = await axios.post(
+        `${API_URL}/auth/google`,
+        { accessToken },
+        {
+          headers: {
+            'X-Client-Id': 'web-ui-v1.0',
+          },
+        }
+      );
+
+      const { token } = res.data;
+
+      dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+    } catch (err: unknown) {
+      const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Google authentication failed';
+      dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
+      throw new Error(errorMessage);
+    }
+  };
+
   const logout = () => {
     dispatch({ type: 'LOGOUT' });
   };
@@ -236,7 +260,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, logout, clearError }}>
+    <AuthContext.Provider value={{ ...state, login, register, googleAuth, logout, clearError }}>
       {children}
     </AuthContext.Provider>
   );
