@@ -59,14 +59,14 @@ export interface ResetPasswordResponse {
  * Send OTP to email for password reset
  */
 export const sendOtp = (email: string): Promise<SendOtpResponse> => {
-  return authPasswordPost<SendOtpResponse>('/Auth/password/send-otp', { email });
+  return authPasswordPost<SendOtpResponse>('/password/send-otp', { email });
 };
 
 /**
  * Verify OTP code
  */
 export const verifyOtp = (email: string, otp: string): Promise<VerifyOtpResponse> => {
-  return authPasswordPost<VerifyOtpResponse>('/Auth/password/verify-otp', { email, otp });
+  return authPasswordPost<VerifyOtpResponse>('/password/verify-otp', { email, otp });
 };
 
 /**
@@ -78,7 +78,7 @@ export const resetPassword = (
   newPassword: string,
   confirmPassword: string
 ): Promise<ResetPasswordResponse> => {
-  return authPasswordPost<ResetPasswordResponse>('/Auth/password/reset', {
+  return authPasswordPost<ResetPasswordResponse>('/password/reset', {
     email,
     successCode,
     newPassword,

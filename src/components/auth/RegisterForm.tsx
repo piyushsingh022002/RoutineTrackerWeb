@@ -4,6 +4,10 @@ import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
 import { Input, Alert, NotebookLoader } from '../common';
+import { useGoogleLogin } from '@react-oauth/google';
+import googleLogo from '../../../Logos/google.webp';
+import createIcon from '../../../Logos/create.svg';
+import bookIcon from '../../../Logos/book.svg';
 import {
   Logo,
   Title,
@@ -18,6 +22,17 @@ const FormContainer = styled.div`
   flex-direction: column;
   width: 100%;
   gap: 1rem;
+`;
+
+const BrandLogo = styled(Logo)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+`;
+
+const StyledTitle = styled(Title)`
+  margin-top: -0.5rem;
 `;
 
 const ScrollableForm = styled.form`
@@ -60,10 +75,51 @@ const ButtonGroup = styled.div`
   width: 100%;
 `;
 
+const CreateButton = styled(SubmitButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+const GoogleButton = styled(SubmitButton)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+`;
+
+const GoogleIcon = styled.img`
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+`;
+
+const CreateIcon = styled.img`
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  flex-shrink: 0;
+`;
+
+const BookIcon = styled.img`
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  flex-shrink: 0;
+`;
+
 const FormGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+`;
+
+const FieldError = styled.div`
+  color: #dc2626;
+  font-size: 0.75rem;
+  margin-top: -0.25rem;
 `;
 
 const PasswordRequirements = styled.ul`
@@ -93,9 +149,11 @@ const RegisterForm: React.FC = () => {
     securityQuestion: '',
     securityAnswer: '',
   });
-  const [formError, setFormError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<
+    Partial<Record<keyof RegisterCredentials, string>>
+  >({});
   const [showEmailNotFoundMessage, setShowEmailNotFoundMessage] = useState(false);
-  const { register, error, clearError, isLoading, isAuthenticated } = useAuth();
+  const { register, googleAuth, error, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -118,55 +176,52 @@ const RegisterForm: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
-    
+
     // Clear errors when user starts typing
     if (error) clearError();
-    if (formError) setFormError(null);
+    if (fieldErrors[name as keyof RegisterCredentials]) {
+      setFieldErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const validateForm = (): boolean => {
+    const errors: Partial<Record<keyof RegisterCredentials, string>> = {};
+
     if (!credentials.fullName.trim()) {
-      setFormError('Full name is required');
-      return false;
+      errors.fullName = 'Full name is required';
     }
 
     if (!credentials.username.trim()) {
-      setFormError('Username is required');
-      return false;
+      errors.username = 'Username is required';
     }
-    
+
     if (!credentials.email.trim()) {
-      setFormError('Email is required');
-      return false;
+      errors.email = 'Email is required';
+    } else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(credentials.email)) {
+        errors.email = 'Please enter a valid email address';
+      }
     }
-    
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(credentials.email)) {
-      setFormError('Please enter a valid email address');
-      return false;
-    }
-    
+
     if (!credentials.dob) {
-      setFormError('Date of birth is required');
-      return false;
+      errors.dob = 'Date of birth is required';
     }
-    
+
     if (!credentials.password) {
-      setFormError('Password is required');
-      return false;
+      errors.password = 'Password is required';
+    } else if (credentials.password.length < 8) {
+      errors.password = 'Password must be at least 8 characters long';
     }
-    
-    if (credentials.password.length < 8) {
-      setFormError('Password must be at least 8 characters long');
-      return false;
+
+    if (!credentials.confirmPassword) {
+      errors.confirmPassword = 'Confirm your password';
+    } else if (credentials.password !== credentials.confirmPassword) {
+      errors.confirmPassword = 'Passwords do not match';
     }
-    
-    if (credentials.password !== credentials.confirmPassword) {
-      setFormError('Passwords do not match');
-      return false;
-    }
-    
-    return true;
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,6 +241,20 @@ const RegisterForm: React.FC = () => {
     }
   };
 
+  //google login handler (placeholder for future implementation)
+  const loginWithGoogle = useGoogleLogin({
+    onSuccess: async (res) => {
+      try {
+        await googleAuth(res.access_token);
+      } catch (err) {
+        console.error('Google authentication failed:', err);
+      }
+    },
+    onError: () => {
+      console.error('Google Sign Up Failed');
+    },
+  });
+
   if (isLoading) {
     return (
       <LoaderWrapper>
@@ -199,8 +268,11 @@ const RegisterForm: React.FC = () => {
 
   return (
     <FormContainer>
-      <Logo>Record Tracker Web</Logo>
-      <Title>Create your account, Start today</Title>
+      <BrandLogo>
+        <BookIcon src={bookIcon} alt="logo" />
+        Record Tracker Web
+      </BrandLogo>
+      <StyledTitle>Create your account, Start today</StyledTitle>
       
       {showEmailNotFoundMessage && (
         <Alert 
@@ -212,13 +284,12 @@ const RegisterForm: React.FC = () => {
         />
       )}
       
-      {(error || formError) && (
+      {error && (
         <Alert 
           variant="error" 
-          message={formError || error || 'An error occurred'} 
+          message={error || 'An error occurred'} 
           onClose={() => {
             if (error) clearError();
-            if (formError) setFormError(null);
           }}
         />
       )}
@@ -236,6 +307,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.fullName && <FieldError>{fieldErrors.fullName}</FieldError>}
         </FormGroup>
         
         <FormGroup>
@@ -250,6 +322,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.username && <FieldError>{fieldErrors.username}</FieldError>}
         </FormGroup>
         
         <FormGroup>
@@ -264,6 +337,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.email && <FieldError>{fieldErrors.email}</FieldError>}
         </FormGroup>
         
         <FormGroup>
@@ -277,6 +351,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.dob && <FieldError>{fieldErrors.dob}</FieldError>}
         </FormGroup>
         
         <FormGroup>
@@ -330,6 +405,7 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.password && <FieldError>{fieldErrors.password}</FieldError>}
         </FormGroup>
         
         <PasswordRequirements>
@@ -350,20 +426,33 @@ const RegisterForm: React.FC = () => {
             fullWidth
             required
           />
+          {fieldErrors.confirmPassword && (
+            <FieldError>{fieldErrors.confirmPassword}</FieldError>
+          )}
         </FormGroup>
       </ScrollableForm>
       
       <ButtonGroup>
-        <SubmitButton
+        <CreateButton
           type="button"
           onClick={handleSubmit}
           disabled={isLoading}
           whileHover={{ scale: isLoading ? 1 : 1.02 }}
           whileTap={{ scale: isLoading ? 1 : 0.98 }}
         >
+          <CreateIcon src={createIcon} alt="Create" />
           {isLoading ? 'Creating account...' : 'Create account'}
-        </SubmitButton>
-        
+        </CreateButton>
+        <GoogleButton
+          type="button"
+          onClick={() => loginWithGoogle()}
+          // disabled={isLoading}
+          whileHover={{ scale: isLoading ? 1 : 1.02 }}
+          whileTap={{ scale: isLoading ? 1 : 0.98 }}
+        >
+          <GoogleIcon src={googleLogo} alt="Google" />
+          Sign up with Google
+        </GoogleButton>
         <SignUpText>
           Already have an account?
           <SignUpLink to="/login">Sign in</SignUpLink>
