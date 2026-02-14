@@ -68,7 +68,8 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (credentials: RegisterCredentials) => Promise<void>;
-  googleAuth: (accessToken: string) => Promise<void>;
+  googleAuth: (accessToken: string) => Promise<{ token: string; message: string; email?: string }>;
+  setAuthToken: (token: string) => void;
   logout: () => void;
   clearError: () => void;
 }
@@ -162,7 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (credentials: LoginCredentials) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const res = await axios.post(`${API_URL}/auth/login`, credentials, {
+      const res = await axios.post(`${API_URL}/Auth/login`, credentials, {
         headers: {
           'X-Client-Id': 'web-ui-v1.0',
         },
@@ -228,12 +229,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const googleAuth = async (accessToken: string) => {
+  const googleAuth = async (idToken: string): Promise<{ token: string; message: string; email?: string }> => {
     dispatch({ type: 'SET_LOADING', payload: true });
+
     try {
       const res = await axios.post(
-        `${API_URL}/auth/google`,
-        { accessToken },
+        `${API_URL}/Auth/google`,
+        { accessToken: idToken },
         {
           headers: {
             'X-Client-Id': 'web-ui-v1.0',
@@ -241,14 +243,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       );
 
-      const { token } = res.data;
+      const { token, message } = res.data;
+      
+      // Set loading to false when done
+      dispatch({ type: 'SET_LOADING', payload: false });
+      
+      // Return the response so the caller can decide what to do
+      // If token exists, it means user needs to set password (temp token)
+      // Otherwise, user is already registered and authenticated
+      return { token, message, email: res.data.email };
 
-      dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
     } catch (err: unknown) {
       const errorMessage = isAxiosErrorWithMessage(err) ? err.response.data.message : 'Google authentication failed';
       dispatch({ type: 'AUTH_ERROR', payload: errorMessage });
       throw new Error(errorMessage);
     }
+  };
+
+  const setAuthToken = (token: string) => {
+    dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
   };
 
   const logout = () => {
@@ -260,7 +273,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, login, register, googleAuth, logout, clearError }}>
+    <AuthContext.Provider value={{ ...state, login, register, googleAuth, setAuthToken, logout, clearError }}>
       {children}
     </AuthContext.Provider>
   );

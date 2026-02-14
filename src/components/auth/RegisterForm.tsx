@@ -4,8 +4,10 @@ import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
 import { Input, Alert, NotebookLoader } from '../common';
-import { useGoogleLogin } from '@react-oauth/google';
-import googleLogo from '../../../Logos/google.webp';
+import SetPasswordForm from './SetPasswordForm';
+// import { useGoogleLogin } from '@react-oauth/google';
+// import googleLogo from '../../../Logos/google.webp';
+import { GoogleLogin } from '@react-oauth/google';
 import createIcon from '../../../Logos/create.svg';
 import bookIcon from '../../../Logos/book.svg';
 import {
@@ -75,6 +77,12 @@ const ButtonGroup = styled.div`
   width: 100%;
 `;
 
+const GoogleButtonWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  width: 100%;
+`;
+
 const CreateButton = styled(SubmitButton)`
   display: flex;
   align-items: center;
@@ -82,19 +90,19 @@ const CreateButton = styled(SubmitButton)`
   gap: 0.5rem;
 `;
 
-const GoogleButton = styled(SubmitButton)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-`;
+// const GoogleButton = styled(SubmitButton)`
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+//   gap: 0.5rem;
+// `;
 
-const GoogleIcon = styled.img`
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  flex-shrink: 0;
-`;
+// const GoogleIcon = styled.img`
+//   width: 18px;
+//   height: 18px;
+//   object-fit: contain;
+//   flex-shrink: 0;
+// `;
 
 const CreateIcon = styled.img`
   width: 18px;
@@ -153,7 +161,10 @@ const RegisterForm: React.FC = () => {
     Partial<Record<keyof RegisterCredentials, string>>
   >({});
   const [showEmailNotFoundMessage, setShowEmailNotFoundMessage] = useState(false);
-  const { register, googleAuth, error, clearError, isLoading, isAuthenticated } = useAuth();
+  const [showSetPassword, setShowSetPassword] = useState(false);
+  const [oauthData, setOauthData] = useState<{ email: string; tempToken: string } | null>(null);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const { register, googleAuth, setAuthToken, error, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -242,25 +253,109 @@ const RegisterForm: React.FC = () => {
   };
 
   //google login handler (placeholder for future implementation)
-  const loginWithGoogle = useGoogleLogin({
-    onSuccess: async (res) => {
-      try {
-        await googleAuth(res.access_token);
-      } catch (err) {
-        console.error('Google authentication failed:', err);
-      }
-    },
-    onError: () => {
-      console.error('Google Sign Up Failed');
-    },
-  });
+  // const loginWithGoogle = useGoogleLogin({
+  //   flow: 'implicit',
+  //   scope: 'openid email profile',
 
-  if (isLoading) {
+  //   onSuccess: async (res) => {
+  //     try {
+  //        if (res.credential) {
+  //       // send ID token instead of access_token
+  //       await googleAuth(res.credential);
+  //     } else {
+  //       console.error('Google did not return a credential.');
+  //     }
+  //     } catch (err) {
+  //       console.error('Google authentication failed:', err);
+  //     }
+  //   },
+  //   onError: () => {
+  //     console.error('Google Sign Up Failed');
+  //   },
+  // });
+
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    if (!credentialResponse.credential) {
+      console.error('No credential received from Google.');
+      return;
+    }
+
+    setGoogleLoading(true);
+
+    try {
+      // Decode Google JWT to extract email
+      const base64Url = credentialResponse.credential.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      const googleUser = JSON.parse(jsonPayload);
+      const userEmail = googleUser.email;
+
+      const response = await googleAuth(credentialResponse.credential);
+      
+      console.log('Google auth response:', response);
+      
+      // Check if response contains a token (temp password token for setting password)
+      if (response.token && response.message === 'success') {
+        // User needs to set password - show SetPasswordForm
+        console.log('Setting password form with email:', userEmail);
+        setOauthData({
+          email: userEmail,
+          tempToken: response.token,
+        });
+        setShowSetPassword(true);
+        setGoogleLoading(false);
+      } else {
+        // User is already registered and authenticated
+        // Token should already be set by googleAuth
+        setGoogleLoading(false);
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      console.error('Google authentication failed:', err);
+      setGoogleLoading(false);
+    }
+  };
+
+  const handleSetPasswordSuccess = (token: string) => {
+    // Set the auth token and navigate to dashboard
+    setAuthToken(token);
+    navigate('/dashboard');
+  };
+
+  // Show SetPasswordForm if user logged in with Google and needs to set password
+  if (showSetPassword && oauthData) {
+    console.log('Rendering SetPasswordForm with:', oauthData);
+    return (
+      <SetPasswordForm
+        email={oauthData.email}
+        tempToken={oauthData.tempToken}
+        onSuccess={handleSetPasswordSuccess}
+      />
+    );
+  }
+
+  if (isLoading && !showSetPassword) {
     return (
       <LoaderWrapper>
         <NotebookLoader 
           message="Please wait, shortly" 
           subtext="Creating your account"
+        />
+      </LoaderWrapper>
+    );
+  }
+
+  if (googleLoading && !showSetPassword) {
+    return (
+      <LoaderWrapper>
+        <NotebookLoader 
+          message="Authenticating with Google" 
+          subtext="Please wait..."
         />
       </LoaderWrapper>
     );
@@ -443,7 +538,7 @@ const RegisterForm: React.FC = () => {
           <CreateIcon src={createIcon} alt="Create" />
           {isLoading ? 'Creating account...' : 'Create account'}
         </CreateButton>
-        <GoogleButton
+        {/* <GoogleButton
           type="button"
           onClick={() => loginWithGoogle()}
           // disabled={isLoading}
@@ -452,7 +547,19 @@ const RegisterForm: React.FC = () => {
         >
           <GoogleIcon src={googleLogo} alt="Google" />
           Sign up with Google
-        </GoogleButton>
+        </GoogleButton> */}
+
+        <GoogleButtonWrapper>
+          <GoogleLogin
+            width="240"
+            onSuccess={handleGoogleSuccess}
+            onError={() => {
+              console.error('Google Sign Up Failed');
+            }}
+            text="signup_with"
+            shape="rectangular"
+          />
+        </GoogleButtonWrapper>
         <SignUpText>
           Already have an account?
           <SignUpLink to="/login">Sign in</SignUpLink>

@@ -57,7 +57,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     logout();
     resetTheme();
-    navigate('/login');
+    navigate('/landing');
   };
 
   const getUserInitials = () => {
