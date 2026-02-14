@@ -326,7 +326,7 @@ const ProfilePage: React.FC = () => {
             onClick={() => {
               logout();
               resetTheme();
-              navigate('/login');
+              navigate('/landing');
             }}
             fullWidth
           >

@@ -85,3 +85,23 @@ export const resetPassword = (
     confirmPassword,
   });
 };
+
+/**
+ * Set password from OAuth token (Google login)
+ */
+export interface SetPasswordFromOAuthResponse {
+  token: string;
+  message: string;
+}
+
+export const setPasswordFromOAuth = (
+  email: string,
+  hashedTempPassword: string,
+  newPassword: string
+): Promise<SetPasswordFromOAuthResponse> => {
+  return authPasswordPost<SetPasswordFromOAuthResponse>('/password/set-from-oauth', {
+    email,
+    hashedTempPassword,
+    newPassword,
+  });
+};
