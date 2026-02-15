@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { useAuth } from '../../context/AuthContext';
 import type { RegisterCredentials } from '../../types';
 import { Input, Alert, NotebookLoader } from '../common';
-import SetPasswordForm from './SetPasswordForm';
 // import { useGoogleLogin } from '@react-oauth/google';
 // import googleLogo from '../../../Logos/google.webp';
 import { GoogleLogin } from '@react-oauth/google';
@@ -161,10 +160,8 @@ const RegisterForm: React.FC = () => {
     Partial<Record<keyof RegisterCredentials, string>>
   >({});
   const [showEmailNotFoundMessage, setShowEmailNotFoundMessage] = useState(false);
-  const [showSetPassword, setShowSetPassword] = useState(false);
-  const [oauthData, setOauthData] = useState<{ email: string; tempToken: string } | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { register, googleAuth, setAuthToken, error, clearError, isLoading, isAuthenticated } = useAuth();
+  const { register, googleAuth, error, clearError, isLoading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -293,25 +290,20 @@ const RegisterForm: React.FC = () => {
           .join('')
       );
       const googleUser = JSON.parse(jsonPayload);
-      const userEmail = googleUser.email;
+      console.log('Google user from JWT:', googleUser);
 
       const response = await googleAuth(credentialResponse.credential);
       
       console.log('Google auth response:', response);
       
-      // Check if response contains a token (temp password token for setting password)
+      // When API returns a normal auth token with success, treat it like
+      // login/register: token is set in AuthContext and user goes to dashboard
       if (response.token && response.message === 'success') {
-        // User needs to set password - show SetPasswordForm
-        console.log('Setting password form with email:', userEmail);
-        setOauthData({
-          email: userEmail,
-          tempToken: response.token,
-        });
-        setShowSetPassword(true);
         setGoogleLoading(false);
+        navigate('/dashboard');
       } else {
-        // User is already registered and authenticated
-        // Token should already be set by googleAuth
+        // Fallback: navigate to dashboard (any additional flows can be
+        // handled here in future without changing current behavior)
         setGoogleLoading(false);
         navigate('/dashboard');
       }
@@ -321,25 +313,7 @@ const RegisterForm: React.FC = () => {
     }
   };
 
-  const handleSetPasswordSuccess = (token: string) => {
-    // Set the auth token and navigate to dashboard
-    setAuthToken(token);
-    navigate('/dashboard');
-  };
-
-  // Show SetPasswordForm if user logged in with Google and needs to set password
-  if (showSetPassword && oauthData) {
-    console.log('Rendering SetPasswordForm with:', oauthData);
-    return (
-      <SetPasswordForm
-        email={oauthData.email}
-        tempToken={oauthData.tempToken}
-        onSuccess={handleSetPasswordSuccess}
-      />
-    );
-  }
-
-  if (isLoading && !showSetPassword) {
+  if (isLoading) {
     return (
       <LoaderWrapper>
         <NotebookLoader 
@@ -350,7 +324,7 @@ const RegisterForm: React.FC = () => {
     );
   }
 
-  if (googleLoading && !showSetPassword) {
+  if (googleLoading) {
     return (
       <LoaderWrapper>
         <NotebookLoader 
