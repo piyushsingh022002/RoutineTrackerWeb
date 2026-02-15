@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import AuthLayout from '../layouts/AuthLayout';
 import { PublicRoute } from '../components/PublicRoute';
 import { ProtectedRoute } from '../components/ProtectedRoute';
+import { NotebookLoader } from '../components/common';
 
 const LoginPage = lazy(() => import('../pages/LoginPage'));
 const RegisterPage = lazy(() => import('../pages/RegisterPage'));
@@ -71,7 +72,28 @@ const AuthRoutes = () => {
     },
   ]);
 
-  return <Suspense fallback={<div>Loading...</div>}>{routes}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            width: '100%',
+          }}
+        >
+          <NotebookLoader
+            message="Loading your account"
+            subtext="Preparing authentication pages"
+          />
+        </div>
+      }
+    >
+      {routes}
+    </Suspense>
+  );
 };
 
 export default AuthRoutes;

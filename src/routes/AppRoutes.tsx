@@ -5,6 +5,7 @@ import ROUTE_PATHS from './RoutePaths';
 import AuthLayout from '../layouts/AuthLayout';
 import { ProtectedRoute } from '../components/ProtectedRoute';
 import { PublicRoute } from '../components/PublicRoute';
+import { NotebookLoader } from '../components/common';
 
 // Lazy-load pages for better performance
 const LoginPage = lazy(() => import('../pages/LoginPage'));
@@ -93,7 +94,28 @@ const AppRoutes = () => {
     { path: ROUTE_PATHS.NOTFOUNDPAGE, element: <NotFound /> },
   ]);
 
-  return <Suspense fallback={<div>Loading...</div>}>{routes}</Suspense>;
+  return (
+    <Suspense
+      fallback={
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
+            width: '100%',
+          }}
+        >
+          <NotebookLoader
+            message="Loading your workspace"
+            subtext="Preparing your notes and dashboard"
+          />
+        </div>
+      }
+    >
+      {routes}
+    </Suspense>
+  );
 };
 
 export default AppRoutes;
