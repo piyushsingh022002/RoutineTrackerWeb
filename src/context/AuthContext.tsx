@@ -245,6 +245,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const { token, message } = res.data;
       
+      // If Google auth returns a normal auth token with success, treat it
+      // like a regular login/register and authenticate the user
+      if (token && message === 'success') {
+        dispatch({ type: 'SET_TOKEN_AUTHENTICATED', payload: token });
+      }
+      
       // Set loading to false when done
       dispatch({ type: 'SET_LOADING', payload: false });
       
@@ -280,6 +286,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 };
 
 //Export the useAuth hook
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
