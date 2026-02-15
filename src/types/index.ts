@@ -35,11 +35,24 @@ export interface Note {
   title: string;
   content: string;
   tags: string[];
-   labels: NoteLabel[];
+  labels: NoteLabel[];
   mediaUrls: string[];
   createdAt: string;
   updatedAt: string;
   deletedAt?: string | null;
+}
+
+// Workflow metadata for note creation/download/import flows
+export type SaveOptionValue = 'SAVE' | 'No';
+
+export type EventTypeValue = '' | 'Download' | 'IMPORT_EMAIL';
+
+// Payload used when creating notes from the editor or import flows
+export interface CreateNotePayload extends Partial<Note> {
+  saveOption?: SaveOptionValue;
+  eventType?: EventTypeValue;
+  externalEmail?: string | null;
+  reminderAt?: string | null;
 }
 
 export interface Notification {

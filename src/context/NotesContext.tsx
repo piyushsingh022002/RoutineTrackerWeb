@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { createContext, useContext, useReducer } from 'react';
 import axios from 'axios';
-import type { Note } from '../types';
+import type { Note, CreateNotePayload } from '../types';
 import { useAuth } from './AuthContext';
 import { getFavouriteNotes, getImportantNotes, getDeletedNotes } from '../services/notesApi';
 
@@ -181,7 +181,7 @@ interface NotesContextType extends NotesState {
   getDeletedNotes: () => Promise<void>;
   getNote: (id: string) => Promise<void>;
   // Return the created note so callers can await and receive the saved resource
-  createNote: (note: Partial<Note>) => Promise<Note>;
+  createNote: (note: CreateNotePayload) => Promise<Note>;
   updateNote: (id: string, note: Partial<Note>) => Promise<void>;
   deleteNote: (id: string | number) => Promise<void>;
   clearCurrentNote: () => void;
@@ -286,7 +286,7 @@ export const NotesProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, [token]);
 
-  const createNote = React.useCallback(async (note: Partial<Note>) => {
+  const createNote = React.useCallback(async (note: CreateNotePayload) => {
     dispatch({ type: 'CREATE_NOTE_REQUEST' });
     try {
       const res = await axios.post(`${API_URL}/Notes`, note, {

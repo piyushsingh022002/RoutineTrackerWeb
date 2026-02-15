@@ -48,7 +48,7 @@ import {
   SmallRemove,
   ImportMessage,
 } from '../pages.styles/NoteEditor.style';
-import { NOTE_LABELS, type Note, type NoteLabel } from '../types';
+import { NOTE_LABELS, type Note, type NoteLabel, type CreateNotePayload } from '../types';
 import { useNotes } from "../context/NotesContext";
 import { FaDownload, FaTimes, FaCheck, FaUpload, FaEye } from "react-icons/fa";
 import { jsPDF } from "jspdf";
@@ -62,6 +62,7 @@ import { json as jsonLang } from "@codemirror/lang-json";
 import { html } from "@codemirror/lang-html";
 import { css as cssLang } from "@codemirror/lang-css";
 import { LabelToggle } from "../components/common/LabelToggle";
+import SaveOptionPopup from "../components/Modal/SaveOptionPopup";
 
 interface NoteEditorProps {
   hideHeader?: boolean;
@@ -134,6 +135,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
   const [dialogStatus, setDialogStatus] = useState<'idle' | 'success' | 'error'>('idle');
   type LinkItem = { title: string; url: string };
   const [links, setLinks] = useState<LinkItem[]>([]);
+  const [activeOperation, setActiveOperation] = useState<'download' | 'import' | null>(null);
   // Helpers for links section in content (moved here so effects can reference them)
   const LINKS_START = '<!-- LINKS:START -->';
   const LINKS_END = '<!-- LINKS:END -->';
@@ -300,6 +302,21 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
     return Object.keys(errors).length === 0;
   };
 
+  const buildNotePayload = (overrides?: Partial<CreateNotePayload>): CreateNotePayload => {
+    const prunedLinks = links.filter(l => l.url && validateUrl(l.url));
+    const contentWithoutLinks = stripLinksBlock(content);
+    const finalContent = contentWithoutLinks + buildLinksBlock(prunedLinks);
+
+    return {
+      title,
+      content: finalContent,
+      tags,
+      labels,
+      mediaUrls: fileUrls,
+      ...overrides,
+    };
+  };
+
 
   const validateUrl = (val: string) => {
     try { const u = new URL(val); return !!u.protocol && !!u.host; } catch { return false; }
@@ -319,18 +336,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
       setIsSaving(true);
 
       try {
-        // Synthesize links block into content before sending
-        const prunedLinks = links.filter(l => l.url && validateUrl(l.url));
-        const contentWithoutLinks = stripLinksBlock(content);
-        const finalContent = contentWithoutLinks + buildLinksBlock(prunedLinks);
-
-        const noteData = {
-          title,
-          content: finalContent,
-          tags,
-          labels,
-          mediaUrls: fileUrls,
-        };
+        const noteData = buildNotePayload({ saveOption: 'SAVE', eventType: '' });
 
         if (isEditMode && id) {
           await updateNote(id, noteData);
@@ -448,42 +454,41 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
   }
 };
 
-  // Import notes from JSON file
-  const handleImportNotesChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const handleDownloadWithOptions = async (saveOption: 'SAVE' | 'No') => {
+    try {
+      const payload = buildNotePayload({
+        saveOption,
+        eventType: 'Download',
+      });
+      // Fire and forget; download should still work even if API fails
+      try {
+        await createNote(payload);
+      } catch (err) {
+        console.error('Failed to record download action:', err);
+      }
+    } finally {
+      handleDownloadPDF(null);
+    }
+  };
+
+  const handleImportEmail = async (saveOption: 'SAVE' | 'No', externalEmail?: string) => {
     setImportMessage(null);
     setIsImporting(true);
     try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      const list = Array.isArray(data) ? data : Array.isArray(data?.notes) ? data.notes : null;
-      if (!list) throw new Error('Invalid file format. Expecting an array of notes or { "notes": [...] }');
+      // Use the same note payload as Save Note, just add workflow fields
+      const payload: CreateNotePayload = buildNotePayload({
+        saveOption,
+        eventType: 'IMPORT_EMAIL',
+        externalEmail: externalEmail ?? undefined,
+      });
 
-      let created = 0;
-      for (const item of list) {
-        const t = (item?.title ?? '').toString();
-        const c = (item?.content ?? '').toString();
-        if (!t && !c) continue;
-        await createNote({
-          title: t || 'Untitled',
-          content: c || '',
-          tags: Array.isArray(item?.tags) ? item.tags : [],
-          mediaUrls: Array.isArray(item?.mediaUrls) ? item.mediaUrls : [],
-        });
-        created++;
-      }
-      setImportMessage(created > 0 ? `Imported ${created} note${created === 1 ? '' : 's'} successfully.` : 'No valid notes found to import.');
-    } catch (err: unknown) {
-      console.error('Import failed:', err);
-      const message = typeof err === 'object' && err !== null && 'message' in err && typeof (err as Record<string, unknown>).message === 'string'
-        ? (err as Record<string, unknown>).message as string
-        : 'Import failed. Please check the file and try again.';
-      setImportMessage(message);
+      await createNote(payload);
+      setImportMessage('Import request sent successfully.');
+    } catch (err) {
+      console.error('Import email request failed:', err);
+      setImportMessage('Import failed. Please try again.');
     } finally {
       setIsImporting(false);
-      // reset input to allow re-selecting the same file
-      e.target.value = '';
     }
   };
 
@@ -503,6 +508,18 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
       {!hideHeader && <Header />}
       <EditorContainer $inline={hideHeader}>
         <Content $inline={hideHeader}>
+          <SaveOptionPopup
+            open={activeOperation !== null}
+            operation={activeOperation === 'download' ? 'download' : 'import'}
+            onClose={() => setActiveOperation(null)}
+            onSelect={(opts) => {
+              if (activeOperation === 'download') {
+                void handleDownloadWithOptions(opts.saveOption);
+              } else if (activeOperation === 'import') {
+                void handleImportEmail(opts.saveOption, opts.externalEmail);
+              }
+            }}
+          />
           {/* Show dialog with saved note after creation */}
           {showNoteDialog && (
             <DialogOverlay onClick={closeDialog} tabIndex={-1}>
@@ -735,20 +752,13 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
                         <FaCheck />
                       </PrimaryButton>
                     </ButtonGroup>
-                    <DownloadButton type="button" onClick={() => handleDownloadPDF(null)}>
+                    <DownloadButton type="button" onClick={() => setActiveOperation('download')}>
                       Download as PDF
                       <FaDownload />
                     </DownloadButton>
-                    <input
-                      id="import-notes-input"
-                      type="file"
-                      accept="application/json"
-                      style={{ display: 'none' }}
-                      onChange={handleImportNotesChange}
-                    />
                     <SecondaryButton
                       type="button"
-                      onClick={() => document.getElementById('import-notes-input')?.click()}
+                      onClick={() => setActiveOperation('import')}
                       disabled={isImporting}
                       style={{ width: '100%', justifyContent: 'center' }}
                     >
