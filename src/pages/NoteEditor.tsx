@@ -344,7 +344,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
             ...noteData,
             id: Number(id),
             userId: 1, // fallback userId
-            labels: noteData.labels,
+            labels: noteData.labels ?? [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
           } as Note);
@@ -362,7 +362,7 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
               ...noteData,
               id: Date.now(), // temp id
               userId: 1, // fallback userId
-              labels: noteData.labels,
+              labels: noteData.labels ?? [],
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
             });
