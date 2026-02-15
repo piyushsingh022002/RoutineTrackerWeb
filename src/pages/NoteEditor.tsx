@@ -344,6 +344,11 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
             ...noteData,
             id: Number(id),
             userId: 1, // fallback userId
+            // Ensure all required Note fields are concrete types
+            title: noteData.title ?? '',
+            content: noteData.content ?? '',
+            tags: noteData.tags ?? [],
+            mediaUrls: noteData.mediaUrls ?? [],
             labels: noteData.labels ?? [],
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),
@@ -362,6 +367,11 @@ const NoteEditor: React.FC<NoteEditorProps> = ({ hideHeader = false }) => {
               ...noteData,
               id: Date.now(), // temp id
               userId: 1, // fallback userId
+              // Ensure all required Note fields are concrete types
+              title: noteData.title ?? '',
+              content: noteData.content ?? '',
+              tags: noteData.tags ?? [],
+              mediaUrls: noteData.mediaUrls ?? [],
               labels: noteData.labels ?? [],
               createdAt: new Date().toISOString(),
               updatedAt: new Date().toISOString(),
